@@ -64,6 +64,10 @@ module.exports = function (sequelize, Sequelize) {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     user.password = hashedPassword;
   });
+  User.beforeUpdate(async (user) => {
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    user.password = hashedPassword;
+  });
 
   User.prototype.validPassword = function (password) {
     return bcrypt.compareSync(password, this.password);

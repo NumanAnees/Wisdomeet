@@ -44,13 +44,9 @@ exports.register = async (req, res) => {
           });
 
           // Generate JWT token
-          const token = jwt.sign(
-            { userId: newUser.id },
-            process.env.JWT_SECRET,
-            {
-              expiresIn: "7d",
-            }
-          );
+          const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
+            expiresIn: "7d",
+          });
 
           // Return user object and token
           res.json({ user: newUser, token: token });
@@ -73,11 +69,44 @@ exports.login = async (req, res, next) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
     // Return user object and token
     res.json({ user: user, token: token });
   })(req, res, next);
+};
+
+//---------------------------------------Updat user--------------------------------
+exports.update = async (req, res, next) => {
+  const userId = req.user.id;
+  console.log(req.profile);
+
+  try {
+    // Find the user by ID
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Update allowed fields: name, age, gender, and password
+    user.name = req.body.name || user.name;
+    user.age = req.body.age || user.age;
+    user.gender = req.body.gender || user.gender;
+
+    if (req.body.password) {
+      // Update password if provided
+      user.password = req.body.password;
+    }
+
+    // Save updated user data
+    await user.save();
+
+    res.json({ message: "User information updated successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to update user information." });
+  }
 };
