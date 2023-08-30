@@ -93,14 +93,10 @@ exports.update = async (req, res, next) => {
     }
 
     // Update allowed fields: name, age, gender, and password
-    user.name = req.body.name || user.name;
-    user.age = req.body.age || user.age;
-    user.gender = req.body.gender || user.gender;
-
-    if (req.body.password) {
-      // Update password if provided
-      user.password = req.body.password;
-    }
+    user.name = req.body.name;
+    user.age = req.body.age;
+    user.gender = req.body.gender;
+    user.password = req.body.password;
 
     // Save updated user data
     await user.save();
@@ -109,5 +105,27 @@ exports.update = async (req, res, next) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to update user information." });
+  }
+};
+
+//------------------------------------Delete user information --------------------------------
+exports.deleteUser = async (req, res, next) => {
+  const userId = req.params.id;
+
+  try {
+    // Find the user by ID
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Delete user
+    await user.destroy();
+
+    res.status(200).json({ message: "User deleted successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to delete user." });
   }
 };
