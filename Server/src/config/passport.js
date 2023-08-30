@@ -1,13 +1,12 @@
-const sequelize = require("../src/db/db");
+const sequelize = require("../db/db");
 const { DataTypes } = require("sequelize");
-const User = require("../src/models/user")(sequelize, DataTypes);
+const User = require("../app/models/user")(sequelize, DataTypes);
 const passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
 
 // Configure passport
 passport.use(
   new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
-    console.log(email, password);
     User.findOne({ where: { email: email } })
       .then(async (user) => {
         if (!user) {
