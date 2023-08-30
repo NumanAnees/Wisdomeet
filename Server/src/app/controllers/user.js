@@ -1,3 +1,4 @@
+//Libraries imports
 const jwt = require("jsonwebtoken");
 const sequelize = require("../../db/db");
 const { DataTypes } = require("sequelize");
@@ -8,9 +9,9 @@ const passport = require("passport");
 const cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
-  cloud_name: "dhghdtteg",
-  api_key: "523389569168828",
-  api_secret: "c_SYdsF1M5IauIZrA3PASXbdVl0",
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
 });
 //-----------------------------Register--------------------------------
 exports.register = async (req, res) => {
@@ -49,7 +50,7 @@ exports.register = async (req, res) => {
           });
 
           // Return user object and token
-          res.json({ user: newUser, token: token });
+          res.status(201).json({ user: newUser, token: token });
         }
       }
     );
@@ -74,11 +75,11 @@ exports.login = async (req, res, next) => {
     });
 
     // Return user object and token
-    res.json({ user: user, token: token });
+    res.status(200).json({ user: user, token: token });
   })(req, res, next);
 };
 
-//---------------------------------------Updat user--------------------------------
+//---------------------------------------Update user--------------------------------
 exports.update = async (req, res, next) => {
   const userId = req.user.id;
   console.log(req.profile);
@@ -104,7 +105,7 @@ exports.update = async (req, res, next) => {
     // Save updated user data
     await user.save();
 
-    res.json({ message: "User information updated successfully." });
+    res.status(201).json({ message: "User information updated successfully." });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to update user information." });

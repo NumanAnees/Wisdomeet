@@ -21,3 +21,22 @@ exports.authMiddleware = async (req, res, next) => {
   req.profile = user;
   next();
 };
+
+//-----------------------------------_Admin middleware --------------------------------
+exports.adminMiddleware = async (req, res, next) => {
+  const adminUserId = req.user.id;
+  const user = await User.findOne({ where: { id: adminUserId } });
+  if (!user) {
+    return res.status(400).json({
+      error: "User not found",
+    });
+  }
+  if (user.role !== "Admin") {
+    return res.status(400).json({
+      error: "Admin resource. Access denied",
+    });
+  }
+
+  req.profile = user;
+  next();
+};
