@@ -71,6 +71,31 @@ module.exports = function (sequelize, Sequelize) {
     }
   );
 
+  User.associate = (models) => {
+    User.hasMany(models.Question);
+    User.hasMany(models.Answer);
+    User.belongsToMany(models.Topic, { through: models.UserTopic });
+    User.hasMany(models.Like, {
+      foreignKey: "userId",
+      constraints: false,
+      scope: {
+        entityType: "user",
+      },
+    });
+    User.hasMany(models.Dislike, {
+      foreignKey: "userId",
+      constraints: false,
+      scope: {
+        entityType: "user",
+      },
+    });
+    User.belongsToMany(models.Topic, {
+      through: models.UserFollows,
+      as: "followedTopics",
+      foreignKey: "userId",
+    });
+  };
+
   // Hook to hash the password before saving
   User.beforeCreate(async (user) => {
     const hashedPassword = await bcrypt.hash(user.password, 10);

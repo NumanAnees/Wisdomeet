@@ -4,15 +4,8 @@ const sequelize = require("../../db/db");
 const { DataTypes } = require("sequelize");
 const User = require("../models/user")(sequelize, DataTypes);
 const passport = require("passport");
+const cloudinary = require("../helpers/cloudinary.js");
 
-//-----------------------------Cloudinary---------------------------------
-const cloudinary = require("cloudinary").v2;
-
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_KEY,
-  api_secret: process.env.CLOUDINARY_SECRET,
-});
 //-----------------------------Register--------------------------------
 exports.register = async (req, res) => {
   try {
