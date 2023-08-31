@@ -19,13 +19,13 @@ const { runValidation } = require("../validators");
 router.post("/register", userRegisterValidator, runValidation, register);
 router.post("/login", userLoginValidator, runValidation, login);
 router.put(
-  "/update",
+  "/",
   requireSignin,
   authMiddleware,
   userUpdateValidator,
   runValidation,
   update
 );
-router.delete("/delete/:id", requireSignin, adminMiddleware, deleteUser);
+router.delete("/:id", requireSignin, adminMiddleware, deleteUser);
 
 module.exports = router;
