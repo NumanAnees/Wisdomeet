@@ -16,6 +16,7 @@ const {
 } = require("../validators/user");
 const { runValidation } = require("../validators");
 
+//Routes
 router.post("/register", userRegisterValidator, runValidation, register);
 router.post("/login", userLoginValidator, runValidation, login);
 router.put(
