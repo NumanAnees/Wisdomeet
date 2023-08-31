@@ -183,7 +183,7 @@ exports.getAllTopics = async (req, res) => {
   }
 };
 
-//---------------------------------------------Get a single topic--------------------------------
+//-------------------------------------Get a single topic--------------------------------
 exports.getTopic = async (req, res) => {
   try {
     const topicId = req.params.id;

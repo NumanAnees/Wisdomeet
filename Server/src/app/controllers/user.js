@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const sequelize = require("../../db/db");
 const { DataTypes } = require("sequelize");
 const User = require("../models/user")(sequelize, DataTypes);
+const Question = require("../models/question")(sequelize, DataTypes);
 const passport = require("passport");
 const cloudinary = require("../helpers/cloudinary.js");
 
@@ -120,5 +121,24 @@ exports.deleteUser = async (req, res, next) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to delete user." });
+  }
+};
+
+//------------------------------------------User Questions-------------------------------------------
+exports.getUserQuestions = async (req, res) => {
+  try {
+    const userId = req.user.id; // Get the current logged-in user's ID
+
+    // Retrieve all questions posted by the user
+    const userQuestions = await Question.findAll({
+      where: {
+        userId: userId,
+      },
+    });
+
+    res.status(200).json({ questions: userQuestions });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error retrieving user's questions." });
   }
 };

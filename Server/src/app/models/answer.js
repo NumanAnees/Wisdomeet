@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../../db/db");
+const sequelize = require("../../db");
 
 const Answer = sequelize.define(
   "Answer",
@@ -23,7 +23,7 @@ const Answer = sequelize.define(
     },
   },
   {
-    timestamps: false,
+    timestamps: true,
   }
 );
 
