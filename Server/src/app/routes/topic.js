@@ -13,8 +13,25 @@ const {
   getTopic,
 } = require("../controllers/topic");
 // import validator
-router.post("/", requireSignin, authMiddleware, create);
-router.put("/:id", requireSignin, authMiddleware, update);
+const { topicValidator } = require("../validators/topic");
+const { runValidation } = require("../validators");
+//Routes
+router.post(
+  "/",
+  requireSignin,
+  authMiddleware,
+  topicValidator,
+  runValidation,
+  create
+);
+router.put(
+  "/:id",
+  requireSignin,
+  authMiddleware,
+  topicValidator,
+  runValidation,
+  update
+);
 router.delete("/:id", requireSignin, authMiddleware, deleteTopic);
 router.put("/:id/follow", requireSignin, authMiddleware, followOrUnfollowTopic);
 router.get("/:id/followers", getFollowCount);
