@@ -23,4 +23,8 @@ const Dislike = sequelize.define(
   }
 );
 
+Dislike.associate = (models) => {
+  Dislike.belongsTo(models.User, { foreignKey: "userId" }); // Establishes relationship with User model
+};
+
 module.exports = Dislike;

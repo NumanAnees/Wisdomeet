@@ -23,4 +23,8 @@ const Like = sequelize.define(
   }
 );
 
+Like.associate = (models) => {
+  Like.belongsTo(models.User, { foreignKey: "userId" }); // Establishes relationship with User model
+};
+
 module.exports = Like;
