@@ -7,6 +7,7 @@ const {
   createQuestion,
   updateQuestion,
   deleteQuestion,
+  LikeDislikeQuestion,
 } = require("../controllers/question");
 // import validator
 
@@ -14,5 +15,6 @@ const {
 router.post("/:id", requireSignin, authMiddleware, createQuestion);
 router.put("/:id", requireSignin, authMiddleware, updateQuestion);
 router.delete("/:id", requireSignin, authMiddleware, deleteQuestion);
+router.post("/:id/like", requireSignin, authMiddleware, LikeDislikeQuestion);
 
 module.exports = router;
