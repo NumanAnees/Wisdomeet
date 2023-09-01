@@ -10,10 +10,26 @@ const {
   LikeDislikeQuestion,
 } = require("../controllers/question");
 // import validator
+const { questionValidator } = require("../validators/question");
+const { runValidation } = require("../validators");
 
 //Routes
-router.post("/:id", requireSignin, authMiddleware, createQuestion);
-router.put("/:id", requireSignin, authMiddleware, updateQuestion);
+router.post(
+  "/:id",
+  requireSignin,
+  authMiddleware,
+  questionValidator,
+  runValidation,
+  createQuestion
+);
+router.put(
+  "/:id",
+  requireSignin,
+  authMiddleware,
+  questionValidator,
+  runValidation,
+  updateQuestion
+);
 router.delete("/:id", requireSignin, authMiddleware, deleteQuestion);
 router.post("/:id/like", requireSignin, authMiddleware, LikeDislikeQuestion);
 
