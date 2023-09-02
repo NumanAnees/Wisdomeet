@@ -4,13 +4,16 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert("Questions", [
       {
-        text: "What is your favorite programming language?",
+        text: "Sample question 1",
         userId: 1, // Replace with an existing user's ID
         topicId: 1, // Replace with an existing topic's ID
-        createdAt: new Date(),
-        updatedAt: new Date(),
       },
-      // Add more questions here
+      {
+        text: "Sample question 2",
+        userId: 1, // Replace with another existing user's ID
+        topicId: 1, // Replace with the same or another existing topic's ID
+      },
+      // Add more questions as needed
     ]);
   },
 

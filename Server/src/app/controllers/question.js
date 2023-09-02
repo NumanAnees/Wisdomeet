@@ -1,11 +1,7 @@
 const sequelize = require("../../db/db");
-const { DataTypes } = require("sequelize");
-const Topic = require("../models/topic")(sequelize, DataTypes);
-const User = require("../models/user")(sequelize, DataTypes);
-const Question = require("../models/question")(sequelize, DataTypes);
-const UserFollows = require("../models/userFollows")(sequelize, DataTypes);
-const Like = require("../models/like")(sequelize, DataTypes);
 const cloudinary = require("../helpers/cloudinary.js");
+
+const { User, Topic, Question, UserFollows, Like } = require("../../../models");
 
 //----------------------------------------Create Question --------------------------------
 exports.createQuestion = async (req, res) => {
@@ -125,5 +121,47 @@ exports.LikeDislikeQuestion = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to like question." });
+  }
+};
+
+//--------------------------------------Questions of topics followings--------------------------------
+exports.getQuestionsByFollowedTopics = async (req, res) => {
+  try {
+    const userId = req.user.id; // Get the user's ID from the authenticated request
+
+    // Find the user by ID and include the followed topics
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: Topic,
+          as: "followedTopics",
+          attributes: ["id"], // Include only the ID of the followed topics
+        },
+      ],
+    });
+
+    // Extract the IDs of the followed topics
+    const followedTopicIds = user.followedTopics.map((topic) => topic.id);
+
+    // Find questions where the topicId is in the list of followed topics
+    const questions = await Question.findAll({
+      where: {
+        topicId: followedTopicIds,
+      },
+      // Include any necessary associations (e.g., user who posted the question)
+      include: [
+        {
+          model: User,
+          attributes: ["id", "name"], // Include only the relevant user information
+        },
+      ],
+      // You can add more options here to sort and paginate questions
+      // For example: order: [['createdAt', 'DESC']], limit: 10
+    });
+
+    res.status(200).json({ questions });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

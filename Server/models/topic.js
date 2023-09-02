@@ -1,7 +1,4 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../../db/db");
-
-module.exports = function (sequelize, Sequelize) {
+module.exports = (sequelize, DataTypes) => {
   const Topic = sequelize.define(
     "Topic",
     {
@@ -21,33 +18,27 @@ module.exports = function (sequelize, Sequelize) {
       topicPicture: {
         type: DataTypes.STRING,
       },
-      userId: {
+      createdBy: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      createdAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-      },
     },
-    {
-      timestamps: false,
-    }
+    { timestamps: false }
   );
-
-  Topic.associate = (models) => {
-    Topic.hasMany(models.Question);
+  Topic.associate = function (models) {
+    // associations can be defined here
+    Topic.belongsTo(models.User, {
+      foreignKey: "createdBy",
+      onDelete: "CASCADE",
+    });
     Topic.belongsToMany(models.User, {
       through: models.UserFollows,
-      as: "followers",
+      as: "followedTopics",
       foreignKey: "topicId",
     });
-    Topic.belongsTo(models.User, { foreignKey: "userId", as: "creator" });
+    Topic.hasMany(models.Question, {
+      foreignKey: "topicId",
+    });
   };
-
   return Topic;
 };
