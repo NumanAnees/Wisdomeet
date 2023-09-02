@@ -1,7 +1,7 @@
 const expressJwt = require("express-jwt");
 const sequelize = require("../../db/db");
 const { DataTypes } = require("sequelize");
-const User = require("../models/user")(sequelize, DataTypes);
+const User = require("../../../models/user")(sequelize, DataTypes);
 
 //--------------------------------------Authorization--------------------------------
 exports.requireSignin = expressJwt({
