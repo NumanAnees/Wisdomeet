@@ -8,7 +8,12 @@ module.exports = {
         entityType: "question",
         entityId: 1, // Replace with an existing question's ID
       },
-      // Add more likes here
+      {
+        userId: 1, // Replace with another existing user's ID
+        entityType: "question",
+        entityId: 2, // Replace with another existing question's ID
+      },
+      // Add more likes as needed
     ]);
   },
 

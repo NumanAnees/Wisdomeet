@@ -4,10 +4,9 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable("UserFollows", {
       id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
         type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
       },
       userId: {
         type: Sequelize.INTEGER,
@@ -16,8 +15,6 @@ module.exports = {
           model: "Users",
           key: "id",
         },
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE",
       },
       topicId: {
         type: Sequelize.INTEGER,
@@ -26,8 +23,6 @@ module.exports = {
           model: "Topics",
           key: "id",
         },
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE",
       },
     });
   },

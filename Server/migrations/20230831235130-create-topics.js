@@ -4,10 +4,9 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable("Topics", {
       id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
         type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
       },
       title: {
         type: Sequelize.STRING,
@@ -19,19 +18,15 @@ module.exports = {
       },
       topicPicture: {
         type: Sequelize.STRING,
-        allowNull: true,
       },
       createdBy: {
         type: Sequelize.INTEGER,
         allowNull: false,
-      },
-      createdAt: {
-        allowNull: true,
-        type: Sequelize.DATE,
-      },
-      updatedAt: {
-        allowNull: true,
-        type: Sequelize.DATE,
+        references: {
+          model: "Users",
+          key: "id",
+        },
+        onDelete: "CASCADE",
       },
     });
   },

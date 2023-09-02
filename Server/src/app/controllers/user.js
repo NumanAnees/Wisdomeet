@@ -1,11 +1,10 @@
 //Libraries imports
 const jwt = require("jsonwebtoken");
 const sequelize = require("../../db/db");
-const { DataTypes } = require("sequelize");
-const User = require("../models/user")(sequelize, DataTypes);
-const Question = require("../models/question")(sequelize, DataTypes);
 const passport = require("passport");
 const cloudinary = require("../helpers/cloudinary.js");
+
+const { User, Topic, Question, UserFollows, Like } = require("../../../models");
 
 //-----------------------------Register--------------------------------
 exports.register = async (req, res) => {
@@ -76,7 +75,6 @@ exports.login = async (req, res, next) => {
 //---------------------------------------Update user--------------------------------
 exports.update = async (req, res, next) => {
   const userId = req.user.id;
-  console.log(req.profile);
 
   try {
     // Find the user by ID
@@ -140,5 +138,40 @@ exports.getUserQuestions = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error retrieving user's questions." });
+  }
+};
+//--------------------------------------------test---------------------------------------------
+
+exports.test = async (req, res) => {
+  try {
+    const { userId } = req.params; // Assuming userId is passed as a route parameter
+
+    // Find the user with their liked questions
+    const user = await User.findByPk(1, {
+      include: [
+        {
+          model: Like,
+          where: { entityType: "question" },
+          include: {
+            model: Question,
+          },
+        },
+      ],
+    });
+
+    if (!user) {
+      // Handle the case where the user doesn't exist
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Access the liked questions through the association
+    const likedQuestions = user.Likes.map((like) => like.Question);
+
+    // Now `likedQuestions` contains an array of Question instances liked by the user
+    res.status(200).json(likedQuestions);
+  } catch (error) {
+    // Handle any errors
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -13,6 +13,7 @@ const {
   update,
   deleteUser,
   getUserQuestions,
+  test,
 } = require("../controllers/user");
 // import validator
 const {
@@ -35,5 +36,6 @@ router.put(
 );
 router.delete("/:id", requireSignin, adminMiddleware, deleteUser);
 router.get("/questions", requireSignin, authMiddleware, getUserQuestions);
+router.get("/test/:id", test);
 
 module.exports = router;
