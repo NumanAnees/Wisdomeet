@@ -9,6 +9,7 @@ const {
   deleteQuestion,
   LikeDislikeQuestion,
   getQuestionsByFollowedTopics,
+  searchQuestions,
 } = require("../controllers/question");
 // import validator
 const { questionValidator } = require("../validators/question");
@@ -40,4 +41,5 @@ router.get(
   getQuestionsByFollowedTopics
 );
 
+router.get("/search", searchQuestions);
 module.exports = router;
