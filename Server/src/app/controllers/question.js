@@ -2,7 +2,14 @@ const sequelize = require("../../db/db");
 const cloudinary = require("../helpers/cloudinary.js");
 const { Op } = require("sequelize");
 
-const { User, Topic, Question, UserFollows, Like } = require("../../../models");
+const {
+  User,
+  Topic,
+  Question,
+  UserFollows,
+  Like,
+  Answer,
+} = require("../../../models");
 
 //----------------------------------------Create Question --------------------------------
 exports.createQuestion = async (req, res) => {
@@ -88,6 +95,30 @@ exports.deleteQuestion = async (req, res) => {
     res.status(500).json({ message: "Error deleting question." });
   }
 };
+//-----------------------------------------------Get Single Question --------------------------------
+exports.getQuestionWithAnswers = async (req, res) => {
+  try {
+    const questionId = req.params.id; // Assuming you pass the question ID as a route parameter
+
+    // Find the question by ID
+    const question = await Question.findByPk(questionId, {
+      include: [
+        {
+          model: Answer,
+        },
+      ],
+    });
+
+    if (!question) {
+      return res.status(404).json({ error: "Question not found" });
+    }
+
+    res.status(200).json({ question });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Unable to fetch question and answers" });
+  }
+};
 
 //------------------------------------------------Like/Dislike a question ------------------------------------------------
 
@@ -127,44 +158,7 @@ exports.LikeDislikeQuestion = async (req, res) => {
 
 //--------------------------------------Questions of topics followings--------------------------------
 exports.getQuestionsByFollowedTopics = async (req, res) => {
-  try {
-    const userId = req.user.id; // Get the user's ID from the authenticated request
-
-    // Find the user by ID and include the followed topics
-    const user = await User.findByPk(userId, {
-      include: [
-        {
-          model: Topic,
-          as: "followedTopics",
-          attributes: ["id"], // Include only the ID of the followed topics
-        },
-      ],
-    });
-
-    // Extract the IDs of the followed topics
-    const followedTopicIds = user.followedTopics.map((topic) => topic.id);
-
-    // Find questions where the topicId is in the list of followed topics
-    const questions = await Question.findAll({
-      where: {
-        topicId: followedTopicIds,
-      },
-      // Include any necessary associations (e.g., user who posted the question)
-      include: [
-        {
-          model: User,
-          attributes: ["id", "name"], // Include only the relevant user information
-        },
-      ],
-      // You can add more options here to sort and paginate questions
-      // For example: order: [['createdAt', 'DESC']], limit: 10
-    });
-
-    res.status(200).json({ questions });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
+  console.log("Getting");
 };
 
 //------------------------------------------Search Question --------------------------------

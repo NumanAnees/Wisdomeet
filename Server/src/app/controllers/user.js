@@ -4,7 +4,14 @@ const sequelize = require("../../db/db");
 const passport = require("passport");
 const cloudinary = require("../helpers/cloudinary.js");
 
-const { User, Topic, Question, UserFollows, Like } = require("../../../models");
+const {
+  User,
+  Topic,
+  Question,
+  UserFollows,
+  Like,
+  Answer,
+} = require("../../../models");
 
 //-----------------------------Register--------------------------------
 exports.register = async (req, res) => {
@@ -140,38 +147,79 @@ exports.getUserQuestions = async (req, res) => {
     res.status(500).json({ message: "Error retrieving user's questions." });
   }
 };
-//--------------------------------------------test---------------------------------------------
-
-exports.test = async (req, res) => {
+//--------------------------------------------About me---------------------------------------------
+exports.about = async (req, res) => {
   try {
-    const { userId } = req.params; // Assuming userId is passed as a route parameter
+    const userId = req.user.id; // Assuming you pass the user ID as a route parameter
 
-    // Find the user with their liked questions
-    const user = await User.findByPk(1, {
+    // Find the user by ID with their followed topics
+    // Find the user by ID with their followed topics, asked questions, and answers
+    const user = await User.findByPk(userId, {
       include: [
         {
-          model: Like,
-          where: { entityType: "question" },
-          include: {
-            model: Question,
-          },
+          model: Topic,
+          as: "followedTopics",
+          through: "UserFollows", // Make sure to use the correct through model name
+        },
+        {
+          model: Question,
+          attributes: ["id", "text"], // Include only necessary attributes
+          include: [
+            {
+              model: Like,
+              where: { entityType: "question" },
+            },
+          ],
+        },
+        {
+          model: Answer,
+          attributes: ["id", "text"], // Include only necessary attributes
+          include: [
+            {
+              model: Like,
+              where: { entityType: "answer" },
+            },
+          ],
         },
       ],
     });
 
     if (!user) {
-      // Handle the case where the user doesn't exist
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ error: "User not found" });
     }
 
-    // Access the liked questions through the association
-    const likedQuestions = user.Likes.map((like) => like.Question);
-
-    // Now `likedQuestions` contains an array of Question instances liked by the user
-    res.status(200).json(likedQuestions);
+    res.status(200).json(user); // Respond with user info, followed topics, asked questions, and answers
   } catch (error) {
-    // Handle any errors
     console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ error: "Unable to fetch user info" });
+  }
+};
+
+//-------------------------------------------------User Profile --------------------------------
+exports.viewProfile = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    // Fetch user information
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Fetch questions answered by the user
+    const answeredQuestions = await Question.findAll({
+      include: [
+        {
+          model: Answer,
+          where: { userId },
+        },
+      ],
+    });
+
+    res.status(200).json({ user, answeredQuestions });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Unable to fetch user profile" });
   }
 };
