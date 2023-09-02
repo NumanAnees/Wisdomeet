@@ -10,6 +10,7 @@ const {
   LikeDislikeQuestion,
   getQuestionsByFollowedTopics,
   searchQuestions,
+  getQuestionWithAnswers,
 } = require("../controllers/question");
 // import validator
 const { questionValidator } = require("../validators/question");
@@ -33,6 +34,7 @@ router.put(
   updateQuestion
 );
 router.delete("/:id", requireSignin, authMiddleware, deleteQuestion);
+router.get("/:id", getQuestionWithAnswers);
 router.post("/:id/like", requireSignin, authMiddleware, LikeDislikeQuestion);
 router.get(
   "/followed",

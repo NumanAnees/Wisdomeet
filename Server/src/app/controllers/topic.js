@@ -1,7 +1,14 @@
 const sequelize = require("../../db/db");
 const cloudinary = require("../helpers/cloudinary.js");
 
-const { User, Topic, Question, UserFollows, Like } = require("../../../models");
+const {
+  User,
+  Topic,
+  Question,
+  UserFollows,
+  Like,
+  Answer,
+} = require("../../../models");
 
 //------------------------------Create a new topic ------------------------------
 exports.create = async (req, res) => {
