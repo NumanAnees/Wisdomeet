@@ -15,7 +15,10 @@ const {
 // import validator
 const { topicValidator } = require("../validators/topic");
 const { runValidation } = require("../validators");
-//Routes
+
+//----------------------------Routes-------------------------------------
+
+// Create a Topic
 router.post(
   "/",
   requireSignin,
@@ -24,6 +27,8 @@ router.post(
   runValidation,
   create
 );
+
+// Update a Topic
 router.put(
   "/:id",
   requireSignin,
@@ -32,10 +37,19 @@ router.put(
   runValidation,
   update
 );
-router.delete("/:id", requireSignin, authMiddleware, deleteTopic);
-router.put("/:id/follow", requireSignin, authMiddleware, followOrUnfollowTopic);
-router.get("/:id/followers", getFollowCount);
-router.get("/", getAllTopics);
-router.get("/:id", getTopic);
 
+// Delete a Topic
+router.delete("/:id", requireSignin, authMiddleware, deleteTopic);
+
+// Follow/Unfollow a Topic
+router.put("/:id/follow", requireSignin, authMiddleware, followOrUnfollowTopic);
+
+// Get Followers Count for a Topic
+router.get("/:id/followers", getFollowCount);
+
+// Get All Topics
+router.get("/", getAllTopics);
+
+// Get a Single Topic
+router.get("/:id", getTopic);
 module.exports = router;

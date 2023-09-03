@@ -8,8 +8,8 @@ const QuestionRoutes = require("./question");
 const AnswerRoutes = require("./answer");
 //middlewares
 router.use("/user", UserRoutes);
-router.use("/topic", TopicRoutes);
-router.use("/question", QuestionRoutes);
-router.use("/answer", AnswerRoutes);
+router.use("/topics", TopicRoutes);
+router.use("/questions", QuestionRoutes);
+router.use("/answers", AnswerRoutes);
 
 module.exports = router;
