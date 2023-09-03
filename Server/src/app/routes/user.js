@@ -25,9 +25,14 @@ const {
 } = require("../validators/user");
 const { runValidation } = require("../validators");
 
-//Routes
+//----------------------------Routes----------------------------
+// User Registration
 router.post("/register", userRegisterValidator, runValidation, register);
+
+// User Login
 router.post("/login", userLoginValidator, runValidation, login);
+
+// User Update
 router.put(
   "/",
   requireSignin,
@@ -36,10 +41,20 @@ router.put(
   runValidation,
   update
 );
+
+// User Deletion by admin
 router.delete("/:id", requireSignin, adminMiddleware, deleteUser);
+
+// User's Questions
 router.get("/questions", requireSignin, authMiddleware, getUserQuestions);
+
+// User's Profile
 router.get("/about", requireSignin, authMiddleware, about);
+
+// View User's Profile
 router.get("/about/:id", viewProfile);
+
+// Search Users
 router.get("/", search);
 
 module.exports = router;
