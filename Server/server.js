@@ -9,11 +9,13 @@ const morgan = require("morgan");
 const sequelize = require("./src/db/db");
 const passport = require("passport");
 const fileUpload = require("express-fileupload");
+var cors = require("cors");
 
 //Initializing express
 const app = express();
 
 //Express Middlewares
+app.use(cors());
 app.use(bodyParser.json());
 app.use(morgan("dev"));
 app.use(passport.initialize());
