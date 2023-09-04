@@ -37,7 +37,7 @@ const Signup = () => {
       formData.append("name", values.name);
       formData.append("age", values.age);
       formData.append("gender", values.gender);
-      formData.append("picture", values.picture); // Add picture to the formData
+      formData.append("picture", values.picture);
 
       const response = await axios.post(
         "http://localhost:8000/api/user/register",
@@ -72,13 +72,13 @@ const Signup = () => {
               name: "",
               age: "",
               gender: "male",
-              picture: null, // Set initial value to null
+              picture: null,
             }}
             validationSchema={validationSchema}
             onSubmit={handleSignup}
           >
             {(
-              { setFieldValue } // Use setFieldValue to handle file input changes
+              { setFieldValue } // Use setFieldValue to handle file input changes manually
             ) => (
               <Form>
                 <div className="mb-3">
@@ -151,7 +151,7 @@ const Signup = () => {
                     name="picture"
                     className="form-control"
                     onChange={(event) => {
-                      setFieldValue("picture", event.currentTarget.files[0]);
+                      setFieldValue("picture", event.currentTarget.files[0]); //imp...
                     }}
                   />
                   <ErrorMessage
