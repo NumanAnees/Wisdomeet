@@ -3,8 +3,7 @@ import "./home.css";
 import { Link } from "react-router-dom";
 
 const TopicCard = (props) => {
-  const { topic, left, handleFollowUnfollow } = props;
-  console.log(handleFollowUnfollow);
+  const { topic, left, handleFollowUnfollowBtn } = props;
   return (
     <li className="topic-card">
       <Link to={`/${topic.id}`} className="topic-link">
@@ -22,14 +21,14 @@ const TopicCard = (props) => {
         {left ? (
           <button
             className=" btn btn-success topic-card-btn"
-            onClick={() => handleFollowUnfollow(topic.id)}
+            onClick={() => handleFollowUnfollowBtn(topic.id)}
           >
             Follow
           </button>
         ) : (
           <button
             className=" btn btn-danger topic-card-btn"
-            onClick={() => handleFollowUnfollow(topic.id)}
+            onClick={() => handleFollowUnfollowBtn(topic.id)}
           >
             Unfollow
           </button>
