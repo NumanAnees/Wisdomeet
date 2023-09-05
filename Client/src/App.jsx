@@ -7,6 +7,7 @@ import Home from "./components/Home";
 import About from "./components/About";
 import PrivateRoute from "./helpers/PrivateRoute";
 import Error from "./components/Error";
+import Topic from "./components/Topic";
 
 //css imports
 import "react-toastify/dist/ReactToastify.css";
@@ -36,6 +37,7 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route element={<PrivateRoute />}>
+              <Route path="/:id" element={<Topic />} exact />
               <Route path="/" element={<Home />} exact />
               <Route path="/about" element={<About />} exact />
             </Route>

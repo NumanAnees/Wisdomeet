@@ -1,0 +1,52 @@
+.left-column,
+.right-column {
+  background-color: #f0f0f0;
+  height: 89vh;
+  overflow-y: auto;
+}
+
+.center-column {
+  background-color: #fff;
+  overflow-y: auto;
+  height: 89vh;
+
+  scrollbar-width: none;
+  /* -ms-overflow-style: none; for Internet Explorer and Microsoft Edge */
+}
+
+.center-column::-webkit-scrollbar {
+  width: 0;
+}
+.topic-card {
+  display: flex;
+  padding: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+  border: 0.1px solid #7a7a7a84;
+  margin-top: 1rem;
+}
+.topic-link {
+  outline: none;
+  text-decoration: none !important;
+}
+.topic-card:hover {
+  background-color: #7a7a7a5b;
+  cursor: pointer;
+}
+
+.topic-card-img {
+  height: 60px;
+  width: 60px;
+}
+.topic-card-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.topic-card-title {
+  margin-left: 0.8rem;
+  color: black;
+}
+.topic-card-btn {
+  padding: 0.4rem 1.5rem !important;
+}
