@@ -11,6 +11,7 @@ const {
   getFollowCount,
   getAllTopics,
   getTopic,
+  getFollowedTopics,
 } = require("../controllers/topic");
 // import validator
 const { topicValidator } = require("../validators/topic");
@@ -48,8 +49,12 @@ router.put("/:id/follow", requireSignin, authMiddleware, followOrUnfollowTopic);
 router.get("/:id/followers", getFollowCount);
 
 // Get All Topics
-router.get("/", getAllTopics);
+router.get("/", requireSignin, authMiddleware, getAllTopics);
+
+// Get Followed Topics
+router.get("/followed/", requireSignin, authMiddleware, getFollowedTopics);
 
 // Get a Single Topic
-router.get("/:id", getTopic);
+router.get("/:id", requireSignin, authMiddleware, getTopic);
+
 module.exports = router;

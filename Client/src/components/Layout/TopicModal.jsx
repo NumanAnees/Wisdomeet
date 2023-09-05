@@ -118,7 +118,7 @@ const TopicModalComponent = () => {
                   className="text-danger"
                 />
               </div>
-              <button type="submit" className="btn btn-success w-100">
+              <button type="submit" className="btn btn-danger w-100">
                 Add Topic
               </button>
             </Form>
