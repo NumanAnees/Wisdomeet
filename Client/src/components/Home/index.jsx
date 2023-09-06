@@ -6,6 +6,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { getToken } from "../../helpers/auth";
 import { handleFollowUnfollow } from "../../helpers/topicHelpers";
+import Question from "../Question";
 
 //css imports
 import "./home.css";
@@ -52,6 +53,37 @@ const Home = () => {
     }
   };
 
+  //delete this...................
+  const dummyQuestion = {
+    name: "John Doe",
+    picture: "https://example.com/johndoe-avatar.jpg",
+    text: "What is the capital of France?",
+  };
+
+  const dummyAnswers = [
+    {
+      name: "Alice Smith",
+      picture: "https://example.com/alicesmith-avatar.jpg",
+      text: "The capital of France is Paris.",
+      likes: 5,
+      dislikes: 1,
+    },
+    {
+      name: "Bob Johnson",
+      picture: "https://example.com/bobjohnson-avatar.jpg",
+      text: "Yes, it's Paris.",
+      likes: 3,
+      dislikes: 0,
+    },
+    {
+      name: "Eva Williams",
+      picture: "https://example.com/evawilliams-avatar.jpg",
+      text: "I think it's Paris too.",
+      likes: 2,
+      dislikes: 0,
+    },
+  ];
+
   useEffect(() => {
     getTopics();
   }, []);
@@ -75,13 +107,12 @@ const Home = () => {
               })}
           </Col>
           <Col xs={6} className="center-column">
-            <h2>Center Column</h2>
-            <p>
-              This is the center column with a lot of content that will make it
-              scrollable. You can add more text here to test the scroll
-              behavior.
-            </p>
-            <div style={{ height: "1000px" }}>{/*content*/}</div>
+            <h2 className="mt-2">All Questions:</h2>
+            <div style={{ height: "1000px" }}>
+              <Question question={dummyQuestion} answers={dummyAnswers} />
+              <Question question={dummyQuestion} answers={dummyAnswers} />
+              <Question question={dummyQuestion} answers={dummyAnswers} />
+            </div>
           </Col>
           <Col xs={3} className="right-column">
             <h2>Followed Topics</h2>

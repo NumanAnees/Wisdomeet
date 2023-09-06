@@ -20,7 +20,7 @@ const TopicCard = (props) => {
       <div>
         {left ? (
           <button
-            className=" btn btn-success topic-card-btn"
+            className=" btn btn-primary topic-card-btn"
             onClick={() => handleFollowUnfollowBtn(topic.id)}
           >
             Follow
