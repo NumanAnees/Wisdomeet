@@ -37,6 +37,11 @@ module.exports = function (sequelize, Sequelize) {
       constraints: false,
       scope: { entityType: "question" },
     });
+    Question.hasMany(models.Dislike, {
+      foreignKey: "entityId",
+      constraints: false,
+      scope: { entityType: "question" },
+    });
   };
 
   return Question;

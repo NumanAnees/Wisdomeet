@@ -11,6 +11,7 @@ const {
   UserFollows,
   Like,
   Answer,
+  Dislike,
 } = require("../../../models");
 
 //-----------------------------Register--------------------------------
