@@ -1,0 +1,33 @@
+.question-card {
+  margin-bottom: 20px;
+}
+.question-card-main {
+  display: flex;
+  align-items: center;
+}
+.question-card-avatar {
+  margin-right: 10px;
+}
+.question-card-username {
+  margin: 0px;
+  font-size: 18px;
+}
+.question-card-info {
+  color: gray;
+}
+.question-card-body {
+  display: flex;
+  align-items: center;
+}
+.question-card-parra {
+  margin-top: 10px;
+}
+
+.ant-btn-primary {
+  margin: 0px !important;
+  width: max-content !important;
+  margin-right: 6px !important;
+}
+.btn-style {
+  margin-right: 6px;
+}
