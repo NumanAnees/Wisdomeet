@@ -4,16 +4,15 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert("Likes", [
       {
-        userId: 1, // Replace with an existing user's ID
+        userId: 1,
         entityType: "question",
-        entityId: 1, // Replace with an existing question's ID
+        entityId: 1,
       },
       {
-        userId: 1, // Replace with another existing user's ID
+        userId: 1,
         entityType: "question",
-        entityId: 2, // Replace with another existing question's ID
+        entityId: 2,
       },
-      // Add more likes as needed
     ]);
   },
 

@@ -5,6 +5,7 @@ const {
   UserFollows,
   Like,
   Answer,
+  Dislike,
 } = require("../../../models");
 
 // -------------------------------------------Create answer-------------------------------------------------
@@ -87,9 +88,9 @@ exports.deleteAnswer = async (req, res) => {
   }
 };
 
-//------------------------------------------------Like/Dislike an answer ------------------------------------------------
+//------------------------------------------------Like an answer ------------------------------------------------
 
-exports.LikeDislikeAnswer = async (req, res) => {
+exports.LikeAnswer = async (req, res) => {
   try {
     const userId = req.user.id;
     const answerId = req.params.id;
@@ -104,14 +105,46 @@ exports.LikeDislikeAnswer = async (req, res) => {
 
     if (existingLike) {
       await existingLike.destroy();
-      return res.status(200).json({ message: "You disliked an answer." });
+      return res.status(200).json({ message: "Like Removed." });
     } else {
       await Like.create({
         userId: userId,
         entityId: answerId,
         entityType: "answer",
       });
-      return res.status(201).json({ message: "You liked a answer." });
+      return res.status(201).json({ message: "Like Added." });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to like answer." });
+  }
+};
+
+//------------------------------------------------Dislike an answer ------------------------------------------------
+
+exports.DislikeAnswer = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const answerId = req.params.id;
+
+    const answer = await Answer.findByPk(answerId);
+    if (!answer) {
+      return res.status(404).json({ message: "Answer not found." });
+    }
+    const existingLike = await Dislike.findOne({
+      where: { userId: userId, entityId: answerId, entityType: "answer" },
+    });
+
+    if (existingLike) {
+      await existingLike.destroy();
+      return res.status(200).json({ message: "Dislike Removed." });
+    } else {
+      await Dislike.create({
+        userId: userId,
+        entityId: answerId,
+        entityType: "answer",
+      });
+      return res.status(201).json({ message: "Dislike Added." });
     }
   } catch (error) {
     console.error(error);
