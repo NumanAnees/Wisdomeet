@@ -100,7 +100,7 @@ exports.LikeAnswer = async (req, res) => {
       return res.status(404).json({ message: "Answer not found." });
     }
     const existingLike = await Like.findOne({
-      where: { userId: userId, entityId: answerId, entityType: "answer" },
+      where: { userId: userId, answerId: answerId, entityType: "answer" },
     });
 
     if (existingLike) {
@@ -109,7 +109,7 @@ exports.LikeAnswer = async (req, res) => {
     } else {
       await Like.create({
         userId: userId,
-        entityId: answerId,
+        answerId: answerId,
         entityType: "answer",
       });
       return res.status(201).json({ message: "Like Added." });
@@ -132,7 +132,7 @@ exports.DislikeAnswer = async (req, res) => {
       return res.status(404).json({ message: "Answer not found." });
     }
     const existingLike = await Dislike.findOne({
-      where: { userId: userId, entityId: answerId, entityType: "answer" },
+      where: { userId: userId, answerId: answerId, entityType: "answer" },
     });
 
     if (existingLike) {
@@ -141,7 +141,7 @@ exports.DislikeAnswer = async (req, res) => {
     } else {
       await Dislike.create({
         userId: userId,
-        entityId: answerId,
+        answerId: answerId,
         entityType: "answer",
       });
       return res.status(201).json({ message: "Dislike Added." });

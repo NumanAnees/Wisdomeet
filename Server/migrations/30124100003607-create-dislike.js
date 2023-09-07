@@ -20,12 +20,23 @@ module.exports = {
       entityType: {
         type: Sequelize.STRING,
         allowNull: false,
+        validate: {
+          isIn: [["question", "answer"]],
+        },
       },
-      entityId: {
+      questionId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: "Questions",
+          key: "id",
+        },
+      },
+      answerId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "Answers",
           key: "id",
         },
       },
