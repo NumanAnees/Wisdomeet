@@ -72,10 +72,11 @@ const QuestionModal = ({ getTopic }) => {
             <Form>
               <div className="mb-3">
                 <Field
-                  type="text"
+                  as="textarea"
                   name="text"
                   className="form-control"
-                  placeholder="Text"
+                  placeholder="Your Answer"
+                  rows={6} // number of rows needed to display
                 />
                 <ErrorMessage
                   name="text"

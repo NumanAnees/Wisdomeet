@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Dropdown, Menu } from "antd";
-import TopicModalComponent from "./TopicModal";
 
 //import styles
 import "./layout.css";
@@ -74,9 +73,7 @@ function Layout({ children }) {
           <Navbar.Brand href="/" className="logo-main">
             Quora
           </Navbar.Brand>
-          <Nav>
-            <TopicModalComponent />
-          </Nav>
+
           {isLoggedIn ? (
             <div className="nav-item pointer p-1">
               <Dropdown overlay={childs} className="nav-component">
