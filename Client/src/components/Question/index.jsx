@@ -8,43 +8,118 @@ import {
 import Answer from "../Answer";
 import "./Question.css";
 import { useNavigate } from "react-router-dom";
+import { getToken } from "../../helpers/auth";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const Question = ({ question, answers, AnswerBtn }) => {
   const Navigate = useNavigate();
   const [likes, setLikes] = useState(question.likes);
   const [dislikes, setDislikes] = useState(question.dislikes);
-  const [userLiked, setUserLiked] = useState(false);
-  const [userDisliked, setUserDisliked] = useState(false);
+  const [userLiked, setUserLiked] = useState(question.isLiked);
+  const [userDisliked, setUserDisliked] = useState(question.isDisliked);
+  const authToken = getToken();
 
   //show all answers
   const showAnswers = () => {
     Navigate(`/question/${question.id}`);
   };
 
-  const handleLike = () => {
-    if (userLiked) {
-      setLikes(likes - 1);
-      setUserLiked(false);
-    } else {
-      setLikes(likes + 1);
-      setUserLiked(true);
-      if (userDisliked) {
-        setDislikes(dislikes - 1);
-        setUserDisliked(false);
-      }
-    }
-  };
-
-  const handleDislike = () => {
-    if (userDisliked) {
-      setDislikes(dislikes - 1);
-      setUserDisliked(false);
-    } else {
-      setDislikes(dislikes + 1);
-      setUserDisliked(true);
+  const handleLike = async () => {
+    try {
       if (userLiked) {
         setLikes(likes - 1);
         setUserLiked(false);
+        // call like api to remove like...
+        const like = await axios.post(
+          `http://localhost:8000/api/questions/${question.id}/like`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+        console.log(like.data);
+      } else {
+        setLikes(likes + 1);
+        setUserLiked(true);
+        // call like api to add like...
+        const like = await axios.post(
+          `http://localhost:8000/api/questions/${question.id}/like`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+        console.log(like.data);
+        if (userDisliked) {
+          setDislikes(dislikes - 1);
+          setUserDisliked(false);
+          // if disliked already, remove that dislike
+          const dislike = await axios.post(
+            `http://localhost:8000/api/questions/${question.id}/dislike`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+              },
+            }
+          );
+          console.log(dislike.data);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error("An error occurred");
+    }
+  };
+
+  const handleDislike = async () => {
+    if (userDisliked) {
+      setDislikes(dislikes - 1);
+      setUserDisliked(false);
+      // call like api to remove dislike...
+      const dislike = await axios.post(
+        `http://localhost:8000/api/questions/${question.id}/dislike`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      console.log(dislike.data);
+    } else {
+      setDislikes(dislikes + 1);
+      setUserDisliked(true);
+      // call like api to add duslike...
+      const dislike = await axios.post(
+        `http://localhost:8000/api/questions/${question.id}/dislike`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      console.log(dislike.data);
+      if (userLiked) {
+        setLikes(likes - 1);
+        setUserLiked(false);
+        // if liked already, remove that like...
+        const like = await axios.post(
+          `http://localhost:8000/api/questions/${question.id}/like`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+        console.log(like.data);
       }
     }
   };
@@ -79,6 +154,7 @@ const Question = ({ question, answers, AnswerBtn }) => {
             type={userDisliked ? "primary" : "default"}
             onClick={handleDislike}
             className="btn-style"
+            danger
           >
             {dislikes}
           </Button>
