@@ -6,7 +6,7 @@ module.exports = {
       "Users",
       [
         {
-          email: "user@example.com",
+          email: "user2@example.com",
           password: "hashedpassword",
           name: "John Doe",
           age: 25,

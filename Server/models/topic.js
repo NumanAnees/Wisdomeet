@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
     // associations can be defined here
     Topic.belongsTo(models.User, {
       foreignKey: "createdBy",
+      as: "user",
       onDelete: "CASCADE",
     });
     Topic.belongsToMany(models.User, {
@@ -38,6 +39,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     Topic.hasMany(models.Question, {
       foreignKey: "topicId",
+      as: "questions",
     });
   };
   return Topic;
