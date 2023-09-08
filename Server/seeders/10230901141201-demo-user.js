@@ -6,15 +6,14 @@ module.exports = {
       "Users",
       [
         {
-          email: "user@example.com",
-          password: "hashedpassword", // Replace with actual hashed password
+          email: "user2@example.com",
+          password: "hashedpassword",
           name: "John Doe",
           age: 25,
           gender: "male",
-          profilePic: "profile-pic.jpg", // Replace with actual file name
+          profilePic: "profile-pic.jpg",
           role: "user",
         },
-        // Add more users as needed
       ],
       {}
     );

@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = function (sequelize, Sequelize) {
-  const Like = sequelize.define(
-    "Like",
+  const Dislike = sequelize.define(
+    "Dislike",
     {
       id: {
         type: DataTypes.INTEGER,
@@ -34,23 +34,23 @@ module.exports = function (sequelize, Sequelize) {
     { timestamps: false }
   );
 
-  Like.associate = (models) => {
-    Like.belongsTo(models.User, {
+  Dislike.associate = (models) => {
+    Dislike.belongsTo(models.User, {
       foreignKey: "userId",
       as: "user",
     });
 
-    Like.belongsTo(models.Question, {
+    Dislike.belongsTo(models.Question, {
       foreignKey: "questionId",
       constraints: false,
       scope: { entityType: "question" },
     });
-    Like.belongsTo(models.Answer, {
+    Dislike.belongsTo(models.Answer, {
       foreignKey: "answerId",
       constraints: false,
       scope: { entityType: "answer" },
     });
   };
 
-  return Like;
+  return Dislike;
 };

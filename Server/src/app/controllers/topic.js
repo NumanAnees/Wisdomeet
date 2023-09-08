@@ -7,6 +7,7 @@ const {
   UserFollows,
   Like,
   Answer,
+  Dislike,
 } = require("../../../models");
 
 //------------------------------Create a new topic ------------------------------
@@ -163,19 +164,113 @@ exports.getFollowCount = async (req, res) => {
   }
 };
 
-//-------------------------------------------Get All topics-----------------------------------
+//-------------------------------------------Get All topics user not following-----------------------------------
 
 exports.getAllTopics = async (req, res) => {
   try {
-    const topics = await Topic.findAll();
-    res.status(200).json({ topics: topics });
+    const userId = req.user.id;
+    const allTopics = await Topic.findAll();
+    const followedTopics = await UserFollows.findAll({
+      where: {
+        userId: userId,
+      },
+    });
+
+    // Extract the IDs of followed topics in an array[]
+    const followedTopicIds = followedTopics.map(
+      (followedTopic) => followedTopic.topicId
+    );
+
+    const topicsNotFollowedByUser = allTopics.filter((topic) => {
+      return !followedTopicIds.includes(topic.id); //if included in array ignore otherwise add
+    });
+
+    res.json(topicsNotFollowedByUser);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to retrieve topics." });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
 //-------------------------------------Get a single topic--------------------------------
+
+// exports.getTopic = async (req, res) => {
+//   try {
+//     const topicId = req.params.id;
+
+//     const topic = await Topic.findByPk(topicId);
+
+//     if (!topic) {
+//       return res.status(404).json({ message: "Topic not found." });
+//     }
+
+//     // Check if the user followed the topic
+//     const isUserFollowed = await UserFollows.findOne({
+//       where: { userId: req.user.id, topicId: topicId },
+//     });
+
+//     const isFollowed = !!isUserFollowed;
+
+//     const questions = await Question.findAll({
+//       where: { topicId: topicId },
+//       include: [
+//         {
+//           model: Like,
+//           as: "likes",
+//           attributes: ["id", "questionId", "userId"],
+//         },
+//         {
+//           model: Answer,
+//           as: "answers", // Include answers
+//           include: [
+//             {
+//               model: Like,
+//               as: "likes",
+//               attributes: ["id", "answerId", "userId"],
+//             },
+//           ],
+//           attributes: ["id", "text"],
+//         },
+//       ],
+//       attributes: ["id", "text"],
+//     });
+
+//     const formattedQuestions = questions.map((question) => {
+//       const sortedAnswers = question.answers.map((answer) => {
+//         return {
+//           id: answer.id,
+//           name: "", // You can populate user data here
+//           picture: "", // You can populate user data here
+//           text: answer.text,
+//           likes: answer.likes.length,
+//           dislikes: 0, // Initialize dislikes count to 0
+//         };
+//       });
+
+//       sortedAnswers.sort((a, b) => b.likes - a.likes); // Sort answers by likes
+
+//       return {
+//         question: {
+//           id: question.id,
+//           name: "John Doe", // You can populate user data here
+//           picture: "profile-pic.jpg", // You can populate user data here
+//           text: question.text,
+//           likes: question.likes.length,
+//           dislikes: 0, // Initialize dislikes count to 0
+//         },
+//         answers: sortedAnswers.slice(0, 2), // Get the top 2 answers
+//       };
+//     });
+
+//     res
+//       .status(200)
+//       .json({ Topic: topic, Questions: formattedQuestions, isFollowed });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Something went wrong." });
+//   }
+// };
+
 exports.getTopic = async (req, res) => {
   try {
     const topicId = req.params.id;
@@ -186,24 +281,108 @@ exports.getTopic = async (req, res) => {
       return res.status(404).json({ message: "Topic not found." });
     }
 
+    // Check if the user followed the topic
+    const isUserFollowed = await UserFollows.findOne({
+      where: { userId: req.user.id, topicId: topicId },
+    });
+
+    const isFollowed = !!isUserFollowed;
+
     const questions = await Question.findAll({
       where: { topicId: topicId },
       include: [
         {
           model: Like,
-          attributes: ["id", "entityId", "userId"],
+          as: "likes",
+          attributes: ["id", "questionId", "userId"],
+        },
+        {
+          model: User, // Include the user who posted the question
+          as: "user",
+          attributes: ["id", "name", "profilePic"], // Include user information
+        },
+        {
+          model: Answer,
+          as: "answers", // Include answers
+          include: [
+            {
+              model: Like,
+              as: "likes",
+              attributes: ["id", "answerId", "userId"],
+            },
+            {
+              model: User, // Include the user who posted the answer
+              as: "user",
+              attributes: ["id", "name", "profilePic"], // Include user information
+            },
+          ],
+          attributes: ["id", "text"],
         },
       ],
       attributes: ["id", "text"],
     });
-    const sortedQuestion = questions.sort(
-      (a, b) => b.Likes.length - a.Likes.length
-    );
 
-    res.status(200).json({ Topic: topic, Questions: sortedQuestion });
+    const formattedQuestions = questions.map((question) => {
+      const sortedAnswers = question.answers.map((answer) => {
+        return {
+          id: answer.id,
+          name: answer.user ? answer.user.name : "", // User who posted the answer
+          picture: answer.user ? answer.user.profilePic : "", // User who posted the answer
+          text: answer.text,
+          likes: answer.likes.length,
+          dislikes: 0, // Initialize dislikes count to 0
+        };
+      });
+
+      sortedAnswers.sort((a, b) => b.likes - a.likes); // Sort answers by likes
+
+      return {
+        question: {
+          id: question.id,
+          name: question.user ? question.user.name : "", // User who posted the question
+          picture: question.user ? question.user.profilePic : "", // User who posted the question
+          text: question.text,
+          likes: question.likes.length,
+          dislikes: 0, // Initialize dislikes count to 0
+        },
+        answers: sortedAnswers.slice(0, 2), // Get the top 2 answers
+      };
+    });
+
+    res
+      .status(200)
+      .json({ Topic: topic, Questions: formattedQuestions, isFollowed });
   } catch (error) {
     console.error(error);
-
     res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+//------------------------------------_All topics logged in user following--------------------------------
+exports.getFollowedTopics = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findByPk(userId, {
+      attributes: ["name", "email"],
+      include: [
+        {
+          model: Topic,
+          as: "followedTopics",
+          attributes: ["id", "title", "topicPicture"],
+        },
+      ],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const followedTopics = user.followedTopics;
+    return res.status(200).json(followedTopics);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: "Internal server error, Cannot find topics" });
   }
 };

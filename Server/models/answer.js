@@ -27,13 +27,26 @@ module.exports = function (sequelize, Sequelize) {
     }
   );
   Answer.associate = (models) => {
-    Answer.belongsTo(models.User, { foreignKey: "userId" });
-    Answer.belongsTo(models.Question, { foreignKey: "questionId" });
+    Answer.belongsTo(models.User, {
+      foreignKey: "userId",
+      as: "user", // Add this alias
+    });
+    Answer.belongsTo(models.Question, {
+      foreignKey: "questionId",
+      as: "question", // Add this alias
+    });
 
     Answer.hasMany(models.Like, {
-      foreignKey: "entityId",
+      foreignKey: "answerId",
       constraints: false,
       scope: { entityType: "answer" },
+      as: "likes", // Add alias "likes" here
+    });
+    Answer.hasMany(models.Dislike, {
+      foreignKey: "answerId",
+      constraints: false,
+      scope: { entityType: "answer" },
+      as: "dislikes", // Add alias "dislikes" here
     });
   };
 

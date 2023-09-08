@@ -5,20 +5,18 @@ module.exports = {
     await queryInterface.bulkInsert("Answers", [
       {
         text: "Sample Answer 1",
-        userId: 2, // Change this to the appropriate user ID
-        questionId: 1, // Change this to the appropriate question ID
+        userId: 2,
+        questionId: 1,
       },
       {
         text: "Sample Answer 2",
-        userId: 2, // Change this to the appropriate user ID
-        questionId: 2, // Change this to the appropriate question ID
+        userId: 2,
+        questionId: 2,
       },
-      // Add more sample answers as needed
     ]);
   },
 
   down: async (queryInterface, Sequelize) => {
-    // Remove the seeded data
     await queryInterface.bulkDelete("Answers", null, {});
   },
 };

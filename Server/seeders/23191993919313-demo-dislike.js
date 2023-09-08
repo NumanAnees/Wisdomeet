@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     // Seed some example data into the Likes table
-    await queryInterface.bulkInsert("Likes", [
+    await queryInterface.bulkInsert("Dislikes", [
       {
         userId: 1,
         entityType: "question",
@@ -22,6 +22,6 @@ module.exports = {
 
   down: async (queryInterface, Sequelize) => {
     // Remove the seeded data from the Likes table
-    await queryInterface.bulkDelete("Likes", null, {});
+    await queryInterface.bulkDelete("Dislikes", null, {});
   },
 };

@@ -11,6 +11,7 @@ const {
   UserFollows,
   Like,
   Answer,
+  Dislike,
 } = require("../../../models");
 
 //-----------------------------Register--------------------------------
@@ -152,27 +153,20 @@ exports.about = async (req, res) => {
         {
           model: Topic,
           as: "followedTopics",
-          through: "UserFollows",
+          attributes: ["id", "title"],
+          through: {
+            attributes: [],
+          },
         },
         {
           model: Question,
+          as: "questions",
           attributes: ["id", "text"],
-          include: [
-            {
-              model: Like,
-              where: { entityType: "question" },
-            },
-          ],
         },
         {
           model: Answer,
+          as: "answers",
           attributes: ["id", "text"],
-          include: [
-            {
-              model: Like,
-              where: { entityType: "answer" },
-            },
-          ],
         },
       ],
     });
@@ -203,6 +197,7 @@ exports.viewProfile = async (req, res) => {
       include: [
         {
           model: Answer,
+          as: "answers",
           where: { userId },
         },
       ],
@@ -216,6 +211,7 @@ exports.viewProfile = async (req, res) => {
 };
 
 //------------------------------------------Search Topic --------------------------------
+
 exports.search = async (req, res) => {
   try {
     const keyword = req.query.keyword;
@@ -226,16 +222,87 @@ exports.search = async (req, res) => {
           [Op.like]: `%${keyword}%`,
         },
       },
+      attributes: ["id", "text"],
       include: [
         {
           model: Like,
-          attributes: ["id", "entityId", "userId"],
+          as: "likes",
+          attributes: [],
+        },
+        {
+          model: Dislike,
+          as: "dislikes",
+          attributes: [],
+        },
+        {
+          model: Answer,
+          as: "answers",
+          attributes: ["id", "text"],
+          include: [
+            {
+              model: Like,
+              as: "likes",
+              attributes: [],
+            },
+            {
+              model: Dislike,
+              as: "dislikes",
+              attributes: [],
+            },
+            {
+              model: User,
+              as: "user",
+              attributes: ["id", "name", "profilePic"],
+            },
+          ],
+        },
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "name", "profilePic"],
         },
       ],
-      attributes: ["id", "text"],
     });
 
-    res.status(200).json({ questions: questions });
+    // Process the questions and answers to include IDs, likes, dislikes, and top 2 answers
+    const formattedQuestions = questions.map((question) => {
+      const formattedQuestion = {
+        id: question.id,
+        name: question.user ? question.user.name : "Unknown User",
+        picture: question.user
+          ? question.user.profilePic
+          : "https://example.com/default-avatar.jpg",
+        text: question.text,
+        likes: question.likes ? question.likes.length : 0,
+        dislikes: question.dislikes ? question.dislikes.length : 0,
+      };
+
+      // Sort answers by likes and get the top 2 answers
+      if (question.answers && question.answers.length > 0) {
+        const sortedAnswers = question.answers.sort(
+          (a, b) =>
+            (b.likes ? b.likes.length : 0) - (a.likes ? a.likes.length : 0)
+        );
+        const topAnswers = sortedAnswers.slice(0, 2).map((answer) => ({
+          id: answer.id,
+          name: answer.user ? answer.user.name : "Unknown User",
+          picture: answer.user
+            ? answer.user.profilePic
+            : "https://example.com/default-avatar.jpg",
+          text: answer.text,
+          likes: answer.likes ? answer.likes.length : 0,
+          dislikes: answer.dislikes ? answer.dislikes.length : 0,
+        }));
+
+        formattedQuestion.answers = topAnswers;
+      } else {
+        formattedQuestion.answers = [];
+      }
+
+      return formattedQuestion;
+    });
+
+    res.status(200).json({ questions: formattedQuestions });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Something went wrong." });

@@ -31,7 +31,7 @@ module.exports = function (sequelize, Sequelize) {
         allowNull: false,
         validate: {
           notEmpty: true,
-          len: [3, 255], // Minimum length of 3 characters
+          len: [3, 255],
         },
       },
       age: {
@@ -39,8 +39,8 @@ module.exports = function (sequelize, Sequelize) {
         allowNull: false,
         validate: {
           isInt: true,
-          min: 1, // Minimum age of 1
-          max: 149, // Maximum age of 149
+          min: 1,
+          max: 149,
         },
       },
       gender: {
@@ -73,6 +73,7 @@ module.exports = function (sequelize, Sequelize) {
   User.associate = (models) => {
     User.hasOne(models.Topic, {
       foreignKey: "createdBy",
+      as: "createdTopics", // Add this alias
     });
     User.belongsToMany(models.Topic, {
       through: models.UserFollows,
@@ -81,12 +82,19 @@ module.exports = function (sequelize, Sequelize) {
     });
     User.hasMany(models.Question, {
       foreignKey: "userId",
+      as: "questions", // Add this alias
     });
     User.hasMany(models.Like, {
       foreignKey: "userId",
+      as: "likes", // Add this alias
     });
     User.hasMany(models.Answer, {
       foreignKey: "userId",
+      as: "answers", // Add this alias
+    });
+    User.hasMany(models.Dislike, {
+      foreignKey: "userId",
+      as: "dislikes", // Add this alias
     });
   };
 
