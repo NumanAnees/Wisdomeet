@@ -38,3 +38,7 @@
 .custom-modal .ant-modal-header .ant-modal-title {
   color: #ff0000;
 }
+.no-link-style {
+  text-decoration: none !important;
+  outline: none !important;
+}
