@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = function (sequelize, Sequelize) {
-  const Question = sequelize.define(
-    "Question",
+  const Answer = sequelize.define(
+    "Answer",
     {
       id: {
         type: DataTypes.INTEGER,
@@ -10,34 +10,32 @@ module.exports = function (sequelize, Sequelize) {
         autoIncrement: true,
       },
       text: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         allowNull: false,
       },
       userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      topicId: {
+      questionId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
     },
-    { timestamps: false }
+    {
+      timestamps: false,
+    }
   );
+  Answer.associate = (models) => {
+    Answer.belongsTo(models.User, { foreignKey: "userId" });
+    Answer.belongsTo(models.Question, { foreignKey: "questionId" });
 
-  Question.associate = (models) => {
-    Question.belongsTo(models.User, { foreignKey: "userId" });
-    Question.belongsTo(models.Topic, { foreignKey: "topicId" });
-
-    Question.hasMany(models.Answer, {
-      foreignKey: "questionId",
-    });
-    Question.hasMany(models.Like, {
+    Answer.hasMany(models.Like, {
       foreignKey: "entityId",
       constraints: false,
-      scope: { entityType: "question" },
+      scope: { entityType: "answer" },
     });
   };
 
-  return Question;
+  return Answer;
 };

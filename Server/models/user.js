@@ -1,5 +1,4 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../src/db/db");
 const bcrypt = require("bcrypt");
 
 module.exports = function (sequelize, Sequelize) {
@@ -86,17 +85,9 @@ module.exports = function (sequelize, Sequelize) {
     User.hasMany(models.Like, {
       foreignKey: "userId",
     });
-
-    // User.hasMany(models.Answer);
-    // User.belongsToMany(models.Topic, { through: models.UserTopic });
-
-    // User.hasMany(models.Dislike, {
-    //   foreignKey: "userId",
-    //   constraints: false,
-    //   scope: {
-    //     entityType: "user",
-    //   },
-    // });
+    User.hasMany(models.Answer, {
+      foreignKey: "userId",
+    });
   };
 
   // Hook to hash the password before saving

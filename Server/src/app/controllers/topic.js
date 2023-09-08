@@ -1,7 +1,13 @@
-const sequelize = require("../../db/db");
 const cloudinary = require("../helpers/cloudinary.js");
 
-const { User, Topic, Question, UserFollows, Like } = require("../../../models");
+const {
+  User,
+  Topic,
+  Question,
+  UserFollows,
+  Like,
+  Answer,
+} = require("../../../models");
 
 //------------------------------Create a new topic ------------------------------
 exports.create = async (req, res) => {
@@ -9,7 +15,6 @@ exports.create = async (req, res) => {
   try {
     const { title, description } = req.body;
 
-    //check if the topic is already existing
     const existingTopic = await Topic.findOne({
       where: { title: title },
     });
@@ -52,15 +57,12 @@ exports.update = async (req, res) => {
     const { title, description } = req.body;
     const topicId = req.params.id;
 
-    // Find the topic by ID
     const topicToUpdate = await Topic.findByPk(topicId);
 
-    // Check if the topic exists
     if (!topicToUpdate) {
       return res.status(404).json({ message: "Topic not found." });
     }
 
-    // Check if the user making the request is the creator of the topic
     if (topicToUpdate.createdBy !== req.user.id) {
       return res
         .status(403)
@@ -87,15 +89,12 @@ exports.deleteTopic = async (req, res) => {
   try {
     const topicId = req.params.id;
 
-    // Find the topic by ID
     const topicToDelete = await Topic.findByPk(topicId);
 
-    // Check if the topic exists
     if (!topicToDelete) {
       return res.status(404).json({ message: "Topic not found." });
     }
 
-    // Check if the user making the request is the creator of the topic
     if (topicToDelete.createdBy !== req.user.id) {
       return res
         .status(403)
@@ -119,25 +118,21 @@ exports.followOrUnfollowTopic = async (req, res) => {
     const userId = req.user.id;
     const topicId = req.params.id;
 
-    // Check if the topic exists
     const topic = await Topic.findByPk(topicId);
     if (!topic) {
       return res.status(404).json({ message: "Topic not found." });
     }
 
-    // Check if the user is already following the topic
     const existingFollow = await UserFollows.findOne({
       where: { userId: userId, topicId: topicId },
     });
 
     if (existingFollow) {
-      // If already following, unfollow the topic
       await existingFollow.destroy();
       return res
         .status(200)
         .json({ message: "You have unfollowed this topic." });
     } else {
-      // If not following, follow the topic
       await UserFollows.create({
         userId: userId,
         topicId: topicId,
@@ -157,7 +152,6 @@ exports.getFollowCount = async (req, res) => {
   try {
     const topicId = req.params.id;
 
-    // Count the number of users following the topic
     const followersCount = await UserFollows.count({
       where: { topicId: topicId },
     });
@@ -196,13 +190,12 @@ exports.getTopic = async (req, res) => {
       where: { topicId: topicId },
       include: [
         {
-          model: Like, // Include the Like model
-          attributes: ["id", "entityId", "userId"], // Add the attributes you need
+          model: Like,
+          attributes: ["id", "entityId", "userId"],
         },
       ],
       attributes: ["id", "text"],
     });
-    // Sort the questions array by the number of likes in descending order
     const sortedQuestion = questions.sort(
       (a, b) => b.Likes.length - a.Likes.length
     );

@@ -1,5 +1,4 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../src/db/db");
 
 module.exports = function (sequelize, Sequelize) {
   const Like = sequelize.define(
@@ -37,18 +36,11 @@ module.exports = function (sequelize, Sequelize) {
       constraints: false,
       scope: { entityType: "question" },
     });
-    // Like.belongsTo(models.Answer, {
-    //   foreignKey: "likedEntityId",
-    //   constraints: false,
-    //   as: "answerLike",
-    //   scope: { likedEntityType: "answer" },
-    // });
-
-    // Like.belongsTo(models.Question, {
-    //   foreignKey: "entityId",
-    //   constraints: false,
-    //   scope: { entityType: "question" },
-    // });
+    Like.belongsTo(models.Answer, {
+      foreignKey: "entityId",
+      constraints: false,
+      scope: { entityType: "answer" },
+    });
   };
 
   return Like;
