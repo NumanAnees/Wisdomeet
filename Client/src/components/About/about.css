@@ -1,0 +1,51 @@
+.profile-update-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  text-align: center;
+}
+
+.profile-update-form {
+  max-width: 400px;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.ant-input,
+.ant-select-selector {
+  width: 100%;
+  padding: 10px;
+}
+
+.text-danger {
+  color: #ff4d4f;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.ant-btn-primary {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.form-control {
+  display: flex !important;
+}
