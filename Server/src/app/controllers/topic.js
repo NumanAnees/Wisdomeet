@@ -1,9 +1,7 @@
 const sequelize = require("../../db/db");
-const { DataTypes } = require("sequelize");
-const Topic = require("../models/topic")(sequelize, DataTypes);
-const User = require("../models/user")(sequelize, DataTypes);
-const UserFollows = require("../models/userFollows")(sequelize, DataTypes);
 const cloudinary = require("../helpers/cloudinary.js");
+
+const { User, Topic, Question, UserFollows, Like } = require("../../../models");
 
 //------------------------------Create a new topic ------------------------------
 exports.create = async (req, res) => {
@@ -183,18 +181,36 @@ exports.getAllTopics = async (req, res) => {
   }
 };
 
-//---------------------------------------------Get a single topic--------------------------------
+//-------------------------------------Get a single topic--------------------------------
 exports.getTopic = async (req, res) => {
   try {
     const topicId = req.params.id;
+
     const topic = await Topic.findByPk(topicId);
+
     if (!topic) {
       return res.status(404).json({ message: "Topic not found." });
     }
 
-    res.status(200).json({ topic: topic });
+    const questions = await Question.findAll({
+      where: { topicId: topicId },
+      include: [
+        {
+          model: Like, // Include the Like model
+          attributes: ["id", "entityId", "userId"], // Add the attributes you need
+        },
+      ],
+      attributes: ["id", "text"],
+    });
+    // Sort the questions array by the number of likes in descending order
+    const sortedQuestion = questions.sort(
+      (a, b) => b.Likes.length - a.Likes.length
+    );
+
+    res.status(200).json({ Topic: topic, Questions: sortedQuestion });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to retrieve topic." });
+
+    res.status(500).json({ message: "Something went wrong." });
   }
 };

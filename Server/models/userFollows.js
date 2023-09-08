@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../../db/db");
+const sequelize = require("../src/db/db");
 
 module.exports = function (sequelize, Sequelize) {
   const UserFollows = sequelize.define(
@@ -19,9 +19,7 @@ module.exports = function (sequelize, Sequelize) {
         allowNull: false,
       },
     },
-    {
-      timestamps: false,
-    }
+    { timestamps: false }
   );
 
   UserFollows.associate = (models) => {
