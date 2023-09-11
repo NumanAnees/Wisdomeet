@@ -8,8 +8,8 @@ import UpdateProfile from "./components/Update Profile";
 import PrivateRoute from "./helpers/PrivateRoute";
 import Error from "./components/Error";
 import Topic from "./components/Topic";
-import Question from "./components/Question";
 import AllAnswers from "./components/AllAnswers";
+import Profile from "./components/Profile";
 
 //css imports
 import "react-toastify/dist/ReactToastify.css";
@@ -42,6 +42,8 @@ const App = () => {
               <Route path="/:id" element={<Topic />} exact />
               <Route path="/" element={<Home />} exact />
               <Route path="/update/profile" element={<UpdateProfile />} exact />
+              <Route path="/profile/:id" element={<Profile />} exact />
+              <Route path="/profile" element={<Profile />} exact />
               <Route path="/question/:id" element={<AllAnswers />} exact />
             </Route>
             <Route path="/login" exact element={<Login />} />

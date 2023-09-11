@@ -143,15 +143,16 @@ exports.getQuestionWithAnswers = async (req, res) => {
     }
 
     const isLikedQuestion = question.likes.some(
-      (like) => like.userId === req.user.id
+      (like) => like.userId == req.user.id
     );
 
     const isDislikedQuestion = question.dislikes.some(
-      (dislike) => dislike.userId === req.user.id
+      (dislike) => dislike.userId == req.user.id
     );
 
     const formattedQuestion = {
       id: question.id,
+      userId: question.user ? question.user.id : "",
       name: question.user ? question.user.name : "",
       picture: question.user ? question.user.profilePic : "",
       text: question.text,
@@ -163,15 +164,16 @@ exports.getQuestionWithAnswers = async (req, res) => {
 
     const sortedAnswers = question.answers.map((answer) => {
       const isLikedAnswer = answer.likes.some(
-        (like) => like.userId === req.user.id
+        (like) => like.userId == req.user.id
       );
 
       const isDislikedAnswer = answer.dislikes.some(
-        (dislike) => dislike.userId === req.user.id
+        (dislike) => dislike.userId == req.user.id
       );
 
       return {
         id: answer.id,
+        userId: answer.user ? answer.user.id : "",
         name: answer.user ? answer.user.name : "",
         picture: answer.user ? answer.user.profilePic : "",
         text: answer.text,
@@ -259,129 +261,6 @@ exports.DislikeQuestion = async (req, res) => {
 };
 
 //--------------------------------------Questions of topics followings--------------------------------
-
-// exports.getQuestionsByFollowedTopics = async (req, res) => {
-//   try {
-//     const userId = req.user.id;
-
-//     const user = await User.findByPk(userId, {
-//       attributes: ["id", "name", "profilePic"],
-//     });
-
-//     if (!user) {
-//       return res.status(404).json({ error: "User not found" });
-//     }
-
-//     const followedTopics = await Topic.findAll({
-//       include: [
-//         {
-//           model: User,
-//           as: "followedTopics",
-//           where: {
-//             id: userId,
-//           },
-//         },
-//       ],
-//     });
-
-//     const followedTopicIds = followedTopics.map((topic) => topic.id);
-
-//     const questions = await Question.findAll({
-//       where: { topicId: followedTopicIds },
-//       include: [
-//         {
-//           model: Answer,
-//           as: "answers",
-//           include: [
-//             {
-//               model: User,
-//               as: "user",
-//               attributes: ["id", "name", "profilePic"],
-//             },
-//             {
-//               model: Like,
-//               as: "likes",
-//             },
-//             {
-//               model: Dislike,
-//               as: "dislikes",
-//             },
-//           ],
-//         },
-//         {
-//           model: User,
-//           as: "user",
-//           attributes: ["id", "name", "profilePic"],
-//         },
-//         {
-//           model: Like,
-//           as: "likes",
-//           required: false,
-//         },
-//         {
-//           model: Dislike,
-//           as: "dislikes",
-//           required: false,
-//         },
-//       ],
-//     });
-
-//     const formattedQuestions = questions.map((question) => {
-//       const sortedAnswers = question.answers.sort(
-//         (a, b) => b.likes.length - a.likes.length
-//       );
-
-//       const isLikedQuestion = question.likes.length > 0;
-
-//       const isDislikedQuestion = question.dislikes.length > 0;
-
-//       const formattedQuestion = {
-//         id: question.id,
-//         name: question.user ? question.user.name : "",
-//         picture: question.user ? question.user.profilePic : "",
-//         text: question.text,
-//         likes: question.likes.length,
-//         dislikes: question.dislikes.length,
-//         isLiked: isLikedQuestion,
-//         isDisliked: isDislikedQuestion,
-//       };
-
-//       const formattedAnswers = sortedAnswers.slice(0, 2).map((answer) => {
-//         const isLikedAnswer = answer.likes.some(
-//           (like) => like.userId === userId
-//         );
-
-//         const isDislikedAnswer = answer.dislikes.some(
-//           (dislike) => dislike.userId === userId
-//         );
-
-//         return {
-//           id: answer.id,
-//           name: answer.user ? answer.user.name : "",
-//           picture: answer.user ? answer.user.profilePic : "",
-//           text: answer.text,
-//           likes: answer.likes.length,
-//           dislikes: answer.dislikes.length,
-//           isLiked: isLikedAnswer,
-//           isDisliked: isDislikedAnswer,
-//         };
-//       });
-
-//       return {
-//         question: formattedQuestion,
-//         answers: formattedAnswers,
-//       };
-//     });
-
-//     res.status(200).json(formattedQuestions);
-//   } catch (error) {
-//     console.error(error);
-//     res
-//       .status(500)
-//       .json({ error: "Unable to fetch questions from followed topics" });
-//   }
-// };
-
 exports.getQuestionsByFollowedTopics = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -459,14 +338,15 @@ exports.getQuestionsByFollowedTopics = async (req, res) => {
 
           return {
             id: answer.id,
+            userId: answer.user ? answer.user.id : "",
             name: answer.user ? answer.user.name : "",
             picture: answer.user ? answer.user.profilePic : "",
             text: answer.text,
             likes: totalAnswerLikes,
             dislikes: totalAnswerDislikes,
-            isLiked: !!answer.likes.find((like) => like.userId === userId),
+            isLiked: !!answer.likes.find((like) => like.userId == userId),
             isDisliked: !!answer.dislikes.find(
-              (dislike) => dislike.userId === userId
+              (dislike) => dislike.userId == userId
             ),
           };
         })
@@ -476,14 +356,15 @@ exports.getQuestionsByFollowedTopics = async (req, res) => {
       return {
         question: {
           id: question.id,
+          userId: question.user ? question.user.id : "",
           name: question.user ? question.user.name : "",
           picture: question.user ? question.user.profilePic : "",
           text: question.text,
           likes: totalQuestionLikes,
           dislikes: totalQuestionDislikes,
-          isLiked: !!question.likes.find((like) => like.userId === userId),
+          isLiked: !!question.likes.find((like) => like.userId == userId),
           isDisliked: !!question.dislikes.find(
-            (dislike) => dislike.userId === userId
+            (dislike) => dislike.userId == userId
           ),
         },
         answers: sortedAnswers,

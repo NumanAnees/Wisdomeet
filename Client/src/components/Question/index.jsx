@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons";
 import Answer from "../Answer";
 import "./Question.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getToken } from "../../helpers/auth";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -135,7 +135,9 @@ const Question = ({ question, answers, AnswerBtn }) => {
             className="question-card-avatar"
           />
           <div>
-            <h3 className="question-card-username">{question.name}</h3>
+            <Link className="username-link" to={`/profile/${question.userId}`}>
+              <h3 className="question-card-username">{question.name}</h3>
+            </Link>
             <span className="question-card-info">asked:</span>
           </div>
         </div>

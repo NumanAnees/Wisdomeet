@@ -5,6 +5,7 @@ import "./Answer.css";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { getToken } from "../../helpers/auth";
+import { Link } from "react-router-dom";
 
 const Answer = ({ answer }) => {
   const [likes, setLikes] = useState(answer.likes);
@@ -122,7 +123,9 @@ const Answer = ({ answer }) => {
           className="answer-card-avatar"
         />
         <div>
-          <h4 className="answer-card-name">{answer.name}</h4>
+          <Link className="username-link" to={`/profile/${answer.userId}`}>
+            <h4 className="answer-card-name">{answer.name}</h4>
+          </Link>
           <span className="answer-card-info">answered:</span>
         </div>
       </div>
