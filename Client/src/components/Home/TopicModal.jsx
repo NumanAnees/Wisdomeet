@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 const TopicModalComponent = ({ getTopics }) => {
   const [open, setOpen] = useState(false);
-  const BASE_URL = process.env.BASE_API;
+  const BASE_URL = process.env.REACT_APP_BASE_API;
 
   //validation...
   const validationSchema = Yup.object().shape({

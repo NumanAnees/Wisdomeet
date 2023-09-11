@@ -1,14 +1,14 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import Layout from "./Layout";
-import { toast } from "react-toastify";
-import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import Layout from "./Layout";
 
 const Login = () => {
   const Navigate = useNavigate();
-  const BASE_URL = process.env.BASE_API;
+  const BASE_URL = process.env.REACT_APP_BASE_API;
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -24,16 +24,13 @@ const Login = () => {
       if (response.status === 200) {
         const { user, token } = response.data;
 
-        // Save the token in browser cookies
         document.cookie = `token=${token}`;
 
-        // Save the user object in localStorage
         localStorage.setItem("currentUser", JSON.stringify(user));
 
         toast.info("Welcome Back!");
         Navigate("/");
       } else {
-        console.log("Invalid email or password");
         toast.error("Invalid email or password");
       }
     } catch (err) {

@@ -12,6 +12,5 @@ export const getUser = () => {
 
 export const getToken = () => {
   const token = Cookies.get("token");
-  console.log(token);
   return token;
 };

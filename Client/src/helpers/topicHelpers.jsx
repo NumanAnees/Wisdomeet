@@ -3,7 +3,7 @@ import { getToken } from "./auth";
 
 export const handleFollowUnfollow = async (id) => {
   const authToken = getToken();
-  const BASE_URL = process.env.BASE_API;
+  const BASE_URL = process.env.REACT_APP_BASE_API;
 
   try {
     await axios.put(

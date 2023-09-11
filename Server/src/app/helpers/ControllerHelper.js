@@ -2,15 +2,7 @@
 const cloudinary = require("../helpers/cloudinary.js");
 const { Op } = require("sequelize");
 
-const {
-  User,
-  Topic,
-  Question,
-  UserFollows,
-  Like,
-  Answer,
-  Dislike,
-} = require("../../../models");
+const { User, Question, Like, Dislike } = require("../../../models");
 
 exports.QuestionHelper = async (QuestionId, userId) => {
   const question = await Question.findByPk(QuestionId, {

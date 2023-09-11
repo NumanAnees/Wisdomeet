@@ -1,6 +1,7 @@
 import React from "react";
-import "./home.css";
 import { Link } from "react-router-dom";
+
+import "./home.css";
 
 const TopicCard = (props) => {
   const { topic, left, handleFollowUnfollowBtn } = props;

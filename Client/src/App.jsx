@@ -20,7 +20,6 @@ export const ThemeContext = React.createContext();
 
 const App = () => {
   const [currentUser, setCurrentUser] = useState();
-  //simple useEffect...
   useEffect(() => {
     SetUser();
   }, []);

@@ -1,16 +1,17 @@
 import React, { useState } from "react";
-import { Modal } from "antd";
-import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
+import { Modal } from "antd";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import { getToken } from "../../helpers/auth";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 
 const QuestionModal = ({ getTopic }) => {
   const { id } = useParams();
-  const BASE_URL = process.env.BASE_API;
   const [open, setOpen] = useState(false);
+  const BASE_URL = process.env.REACT_APP_BASE_API;
+
   //validation...
   const validationSchema = Yup.object().shape({
     text: Yup.string()

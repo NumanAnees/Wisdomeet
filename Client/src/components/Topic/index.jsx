@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Layout from "../Layout";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from "axios";
 import { getToken } from "../../helpers/auth";
+import { Pagination } from "antd";
 import { handleFollowUnfollow } from "../../helpers/topicHelpers";
 import Question from "../Question";
 import QuestionModal from "./QuestionModal";
-import { Pagination } from "antd";
 
 //import css
 import "./topic.css";
 
 const Topic = () => {
   const { id } = useParams();
-  const BASE_URL = process.env.BASE_API;
   const [topic, setTopic] = useState();
   const [Questions, setQuestions] = useState();
   const [followersCount, setFollowersCount] = useState();
@@ -23,16 +22,14 @@ const Topic = () => {
   const questionsPerPage = 2;
   const startIndex = (currentPage - 1) * questionsPerPage;
   const endIndex = startIndex + questionsPerPage;
-  let currentQuestions;
+  const currentQuestions = Questions && Questions.slice(startIndex, endIndex);
+  const BASE_URL = process.env.REACT_APP_BASE_API;
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
   useEffect(() => {
     getTopic();
-    if (Questions) {
-      currentQuestions = Questions.slice(startIndex, endIndex);
-    }
   }, [isFollowed]);
 
   const handleFollowUnfollowBtn = async (id) => {
@@ -57,7 +54,6 @@ const Topic = () => {
       const followers = await axios.get(`${BASE_URL}/topics/${id}/followers`);
       setFollowersCount(followers.data.followersCount);
     } catch (error) {
-      console.log(error);
       toast.error(error.message);
     }
   };
