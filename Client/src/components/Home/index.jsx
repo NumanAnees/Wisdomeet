@@ -18,26 +18,24 @@ const Home = () => {
   const [notFollowing, setNotFollowing] = useState();
   const [Questions, setQuestions] = useState();
   const [IsSearchOpen, setIsSearchOpen] = useState();
+  const BASE_URL = process.env.BASE_API;
 
   const getTopics = async () => {
     const authToken = getToken();
     try {
       //request for all topics excluding the following ones
-      const AllTopics = await axios.get("http://localhost:8000/api/topics", {
+      const AllTopics = await axios.get(`${BASE_URL}/topics`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
       });
       setNotFollowing(AllTopics.data);
       //request for topics following
-      const Topics = await axios.get(
-        "http://localhost:8000/api/topics/followed",
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
+      const Topics = await axios.get(`${BASE_URL}/topics/followed`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
       setFollowing(Topics.data);
     } catch (error) {
       toast.error("Something went wrong!");
@@ -60,14 +58,11 @@ const Home = () => {
     const authToken = getToken();
 
     try {
-      const questions = await axios.get(
-        "http://localhost:8000/api/questions/",
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
+      const questions = await axios.get(`${BASE_URL}/questions/`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
       // console.log(questions.data);
       setQuestions(questions.data);
     } catch (err) {

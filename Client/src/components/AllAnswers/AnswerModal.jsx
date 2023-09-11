@@ -10,6 +10,8 @@ import { useParams } from "react-router-dom";
 const AnswerModal = ({ getAnswers }) => {
   const { id } = useParams();
   const [open, setOpen] = useState(false);
+  const BASE_URL = process.env.BASE_API;
+
   //validation...
   const validationSchema = Yup.object().shape({
     text: Yup.string()
@@ -23,16 +25,12 @@ const AnswerModal = ({ getAnswers }) => {
       const formData = new FormData();
       formData.append("text", values.text);
 
-      const response = await axios.post(
-        `http://localhost:8000/api/answers/${id}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(`${BASE_URL}/answers/${id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (response.status === 201 || response.status === 200) {
         resetForm();

@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 
 const QuestionModal = ({ getTopic }) => {
   const { id } = useParams();
+  const BASE_URL = process.env.BASE_API;
   const [open, setOpen] = useState(false);
   //validation...
   const validationSchema = Yup.object().shape({
@@ -24,7 +25,7 @@ const QuestionModal = ({ getTopic }) => {
       formData.append("text", values.text);
 
       const response = await axios.post(
-        `http://localhost:8000/api/questions/${id}`,
+        `${BASE_URL}/questions/${id}`,
         formData,
         {
           headers: {

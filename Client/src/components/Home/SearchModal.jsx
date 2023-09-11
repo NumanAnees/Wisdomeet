@@ -9,11 +9,12 @@ import { getToken } from "../../helpers/auth";
 const SearchModal = ({ setQuestions, setIsSearchOpen }) => {
   const [open, setOpen] = useState(false);
   const authToken = getToken();
+  const BASE_URL = process.env.BASE_API;
 
   const handleSubmit = async (values, { resetForm }) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/user/?keyword=${values.text}`,
+        `${BASE_URL}/user/?keyword=${values.text}`,
         {
           headers: {
             Authorization: `Bearer ${authToken}`,

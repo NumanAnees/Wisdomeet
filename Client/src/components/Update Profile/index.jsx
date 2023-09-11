@@ -15,6 +15,7 @@ const { Title } = Typography;
 const About = () => {
   // Get user data from local storage
   const currentUser = getUser();
+  const BASE_URL = process.env.BASE_API;
   const { name, age, gender } = currentUser;
 
   // Define validation schema using Yup
@@ -39,15 +40,11 @@ const About = () => {
   const handleUpdateProfile = async (values, { setFieldError }) => {
     const authToken = getToken();
     try {
-      const response = await axios.put(
-        "http://localhost:8000/api/user",
-        values,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
+      const response = await axios.put(`${BASE_URL}/user`, values, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
       const updatedUser = response.data.user;
 
       // Update user data in local storage

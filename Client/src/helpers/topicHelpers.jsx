@@ -3,9 +3,11 @@ import { getToken } from "./auth";
 
 export const handleFollowUnfollow = async (id) => {
   const authToken = getToken();
+  const BASE_URL = process.env.BASE_API;
+
   try {
     await axios.put(
-      `http://localhost:8000/api/topics/${id}/follow`,
+      `${BASE_URL}/topics/${id}/follow`,
       {},
       {
         headers: {

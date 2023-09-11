@@ -17,8 +17,7 @@ const Profile = () => {
   const [Questions, setQuestions] = useState();
   const [Answers, setAnswers] = useState();
   const [topics, setTopics] = useState();
-
-  console.log("working", id);
+  const BASE_URL = process.env.BASE_API;
 
   useEffect(() => {
     getUser();
@@ -29,20 +28,17 @@ const Profile = () => {
     try {
       let request;
       if (!id) {
-        request = await axios.get("http://localhost:8000/api/user/about", {
+        request = await axios.get(`${BASE_URL}/user/about`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
         });
       } else {
-        request = await axios.get(
-          `http://localhost:8000/api/user/about/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          }
-        );
+        request = await axios.get(`${BASE_URL}/user/about/${id}`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
       }
       console.log(request.data);
       const user = {
