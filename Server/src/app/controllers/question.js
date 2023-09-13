@@ -12,23 +12,26 @@ const sequelize = require("sequelize");
 exports.createQuestion = async (req, res) => {
   try {
     const { text } = req.body;
-    const topicId = req.params.id;
+    const topicIds = req.body["topicIds[]"];
+    const createQuestions = [];
+    // const topicId = req.params.id;
+    for (let i = 0; i < topicIds.length; i++) {
+      const topic = await Topic.findByPk(topicIds[i]);
+      if (!topic) {
+        return res.status(404).json({ message: "Topic not found." });
+      }
 
-    const topic = await Topic.findByPk(topicId);
-    if (!topic) {
-      return res.status(404).json({ message: "Topic not found." });
+      // Create a new question
+      const newQuestion = await Question.create({
+        text: text,
+        userId: req.user.id,
+        topicId: topic.id,
+      });
+      createQuestions.push(newQuestion);
     }
-
-    // Create a new question
-    const newQuestion = await Question.create({
-      text: text,
-      userId: req.user.id,
-      topicId: topic.id,
-    });
-
     res.status(201).json({
       message: "Question created successfully.",
-      question: newQuestion,
+      question: createQuestions,
     });
   } catch (error) {
     console.error(error);

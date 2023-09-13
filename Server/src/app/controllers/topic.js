@@ -339,3 +339,16 @@ exports.getFollowedTopics = async (req, res) => {
       .json({ error: "Internal server error, Cannot find topics" });
   }
 };
+
+//-----------------------------------------------------All topics --------------------------------
+exports.getEveryTopic = async (req, res) => {
+  try {
+    const allTopics = await Topic.findAll({
+      attributes: ["id", "title"],
+    });
+    res.status(200).json(allTopics);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong." });
+  }
+};
