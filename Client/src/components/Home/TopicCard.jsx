@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import "./home.css";
 
 const TopicCard = (props) => {
-  const { topic, left, handleFollowUnfollowBtn } = props;
+  const { topic, left, handleFollowUnfollowBtn, NoFollowButton } = props;
   return (
     <li className="topic-card">
       <Link to={`/${topic.id}`} className="topic-link">
@@ -18,23 +18,25 @@ const TopicCard = (props) => {
         </div>
       </Link>
 
-      <div>
-        {left ? (
-          <button
-            className=" btn btn-primary topic-card-btn"
-            onClick={() => handleFollowUnfollowBtn(topic.id)}
-          >
-            Follow
-          </button>
-        ) : (
-          <button
-            className=" btn btn-danger topic-card-btn"
-            onClick={() => handleFollowUnfollowBtn(topic.id)}
-          >
-            Unfollow
-          </button>
-        )}
-      </div>
+      {NoFollowButton && (
+        <div>
+          {left ? (
+            <button
+              className=" btn btn-primary topic-card-btn"
+              onClick={() => handleFollowUnfollowBtn(topic.id)}
+            >
+              Follow
+            </button>
+          ) : (
+            <button
+              className=" btn btn-danger topic-card-btn"
+              onClick={() => handleFollowUnfollowBtn(topic.id)}
+            >
+              Unfollow
+            </button>
+          )}
+        </div>
+      )}
     </li>
   );
 };
