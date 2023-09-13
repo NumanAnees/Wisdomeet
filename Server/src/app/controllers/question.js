@@ -14,7 +14,6 @@ exports.createQuestion = async (req, res) => {
     const { text } = req.body;
     const topicIds = req.body["topicIds[]"];
     const createQuestions = [];
-    // const topicId = req.params.id;
     for (let i = 0; i < topicIds.length; i++) {
       const topic = await Topic.findByPk(topicIds[i]);
       if (!topic) {
@@ -96,7 +95,6 @@ exports.getQuestionWithAnswers = async (req, res) => {
   try {
     const questionId = req.params.id;
 
-    // Retrieve the question and its associated answers
     const question = await Question.findByPk(questionId, {
       include: [
         {

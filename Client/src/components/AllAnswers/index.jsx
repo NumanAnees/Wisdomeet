@@ -39,7 +39,7 @@ const AllAnswers = () => {
       <div className="container">
         <div className="topic-questions">
           <div className="topic-questions-title">
-            <h4>Question</h4>
+            <h4 className="question-title">Question</h4>
             <div className="topic-questions-btn">
               <AnswerModal getAnswers={getAnswers} />
             </div>

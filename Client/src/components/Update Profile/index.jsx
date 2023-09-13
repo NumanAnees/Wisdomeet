@@ -7,7 +7,6 @@ import { Input, Button, Typography } from "antd";
 import { getToken, getUser } from "../../helpers/auth";
 import Layout from "../Layout";
 
-//css imports
 import "./about.css";
 
 const { Title } = Typography;
@@ -18,7 +17,6 @@ const About = () => {
   const BASE_URL = process.env.REACT_APP_BASE_API;
   const { name, age, gender } = currentUser;
 
-  // Define validation schema using Yup
   const validationSchema = Yup.object().shape({
     name: Yup.string()
       .min(3, "Name must be at least 3 characters")
@@ -36,7 +34,6 @@ const About = () => {
       .required("Password is required"),
   });
 
-  // Handle profile update
   const handleUpdateProfile = async (values, { setFieldError }) => {
     const authToken = getToken();
     try {

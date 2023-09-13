@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Dropdown, Menu } from "antd";
+import cookie from "js-cookie";
 
 //import styles
 import "./layout.css";
@@ -28,6 +29,7 @@ function Layout({ children }) {
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    cookie.remove("token");
 
     toast.info("See You Again!");
     Navigate("/login");
