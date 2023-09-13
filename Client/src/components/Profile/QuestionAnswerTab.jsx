@@ -13,6 +13,7 @@ const QuestionAnswerTab = ({ Questions }) => {
                 question={item.question}
                 answers={item.answers}
                 AnswerBtn={true}
+                disabled={true}
               />
             );
           })}

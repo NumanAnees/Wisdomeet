@@ -12,7 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getToken } from "../../helpers/auth";
 import { toast } from "react-toastify";
 
-const Question = ({ question, answers, AnswerBtn }) => {
+const Question = ({ question, answers, AnswerBtn, disabled }) => {
   const Navigate = useNavigate();
   const [likes, setLikes] = useState(question.likes);
   const [dislikes, setDislikes] = useState(question.dislikes);
@@ -141,6 +141,7 @@ const Question = ({ question, answers, AnswerBtn }) => {
             type={userLiked ? "primary" : "default"}
             onClick={handleLike}
             className="btn-style"
+            disabled={disabled}
           >
             {likes}
           </Button>
@@ -150,6 +151,7 @@ const Question = ({ question, answers, AnswerBtn }) => {
             onClick={handleDislike}
             className="btn-style"
             danger
+            disabled={disabled}
           >
             {dislikes}
           </Button>
@@ -169,7 +171,7 @@ const Question = ({ question, answers, AnswerBtn }) => {
           dataSource={answers}
           renderItem={(answer) => (
             <List.Item>
-              <Answer answer={answer} />
+              <Answer answer={answer} disabled={disabled || false} />
             </List.Item>
           )}
         />

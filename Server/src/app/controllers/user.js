@@ -13,6 +13,7 @@ const {
   Dislike,
 } = require("../../../models");
 const { QuestionHelper } = require("../helpers/ControllerHelper.js");
+const { emailHelper } = require("../helpers/emailHelper.js");
 
 //-----------------------------Register--------------------------------
 exports.register = async (req, res) => {
@@ -48,6 +49,7 @@ exports.register = async (req, res) => {
             expiresIn: "7d",
           });
 
+          await emailHelper(newUser);
           // Return user object and token
           res.status(201).json({ user: newUser, token: token });
         }
@@ -498,6 +500,18 @@ exports.search = async (req, res) => {
     });
 
     res.status(200).json(formattedQuestions);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+//get all users from database
+exports.getAllUsers = async (req, res) => {
+  try {
+    console.log("hello");
+    const users = await User.findAll();
+    res.status(200).json(users);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Something went wrong." });

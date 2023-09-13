@@ -8,7 +8,7 @@ import axios from "axios";
 
 import "./Answer.css";
 
-const Answer = ({ answer }) => {
+const Answer = ({ answer, disabled }) => {
   const [likes, setLikes] = useState(answer.likes);
   const [dislikes, setDislikes] = useState(answer.dislikes);
   const [userLiked, setUserLiked] = useState(answer.isLiked);
@@ -131,6 +131,7 @@ const Answer = ({ answer }) => {
           type={userLiked ? "primary" : "default"}
           onClick={handleLike}
           className="btn-style"
+          disabled={disabled}
         >
           {likes}
         </Button>
@@ -140,6 +141,7 @@ const Answer = ({ answer }) => {
           onClick={handleDislike}
           className="btn-style"
           danger
+          disabled={disabled}
         >
           {dislikes}
         </Button>
