@@ -74,6 +74,7 @@ const UpdateQuestionModal = ({ data, loadData }) => {
             text: data ? data.text : "",
           }}
           validationSchema={validationSchema}
+          enableReinitialize={true}
           onSubmit={handleSubmit}
         >
           {({ setFieldValue }) => (

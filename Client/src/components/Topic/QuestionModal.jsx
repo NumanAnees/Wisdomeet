@@ -13,6 +13,7 @@ const QuestionModal = ({ getTopic }) => {
   const { id } = useParams();
   const [open, setOpen] = useState(false);
   const [topics, setTopics] = useState([]);
+  const [selectedTopics, setSelectedTopics] = useState([]);
   const BASE_URL = process.env.REACT_APP_BASE_API;
 
   useEffect(() => {
@@ -60,6 +61,7 @@ const QuestionModal = ({ getTopic }) => {
 
       if (response.status === 201 || response.status === 200) {
         resetForm();
+        resetFormFields();
         setOpen(false);
         getTopic();
         toast.success("Question added successfully!");
@@ -69,7 +71,9 @@ const QuestionModal = ({ getTopic }) => {
       toast.error("Failed to add question!");
     }
   };
-
+  const resetFormFields = () => {
+    setSelectedTopics([]); // Clear selected topics
+  };
   return (
     <>
       <button className="nav-btn" onClick={() => setOpen(true)}>
@@ -83,7 +87,10 @@ const QuestionModal = ({ getTopic }) => {
         footer={null}
         className="custom-modal"
         width={1300}
-        onCancel={() => setOpen(false)}
+        onCancel={() => {
+          resetFormFields();
+          setOpen(false);
+        }}
       >
         <Formik
           initialValues={{
@@ -100,10 +107,12 @@ const QuestionModal = ({ getTopic }) => {
                   name="topicIds"
                   placeholder="Select Topics"
                   mode="multiple"
-                  onChange={(selectedValues) =>
-                    setFieldValue("topicIds", selectedValues)
-                  }
+                  onChange={(selectedValues) => {
+                    setFieldValue("topicIds", selectedValues);
+                    setSelectedTopics(selectedValues);
+                  }}
                   className="w-100"
+                  value={selectedTopics}
                 >
                   {topics.map((topic) => (
                     <Option key={topic.id} value={topic.id}>

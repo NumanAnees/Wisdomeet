@@ -20,7 +20,6 @@ const Login = () => {
   const handleLogin = async (values) => {
     try {
       const response = await axios.post(`${BASE_URL}/user/login`, values);
-      console.log("sasd", response);
       if (response.status === 200) {
         const { user, token } = response.data;
 

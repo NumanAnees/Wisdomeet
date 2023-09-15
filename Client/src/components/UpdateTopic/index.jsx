@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal } from "antd";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -10,12 +10,31 @@ import { EditOutlined } from "@ant-design/icons";
 
 const TopicModalComponent = ({ data, loadData }) => {
   const [open, setOpen] = useState(false);
+  const [topic, setTopic] = useState();
+  const authToken = getToken();
   const BASE_URL = process.env.REACT_APP_BASE_API;
 
   const initialValues = {
-    title: data ? data.title : "",
-    description: data ? data.description : "",
-    picture: data ? data.picture : null,
+    title: topic?.title ?? "",
+    description: topic?.description ?? "",
+    picture: null,
+  };
+  useEffect(() => {
+    getTopic();
+  }, []);
+
+  const getTopic = async () => {
+    try {
+      //get topic...
+      const topic = await axios.get(`${BASE_URL}/topics/${data.id}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      setTopic(topic.data.Topic);
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   const validationSchema = Yup.object().shape({
@@ -27,7 +46,6 @@ const TopicModalComponent = ({ data, loadData }) => {
       .min(3, "Description must be at least 3 characters long")
       .max(100, "Description must be at most 100 characters long")
       .required("Description is required"),
-    picture: Yup.mixed().required("Picture is required"),
   });
 
   const handleSubmit = async (values, { resetForm }) => {
@@ -54,6 +72,7 @@ const TopicModalComponent = ({ data, loadData }) => {
         setOpen(false);
         toast.success("Topic updated successfully!");
         loadData();
+        getTopic();
       }
     } catch (error) {
       console.error(error);
@@ -81,6 +100,7 @@ const TopicModalComponent = ({ data, loadData }) => {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
+          enableReinitialize={true}
           onSubmit={handleSubmit}
         >
           {({ setFieldValue }) => (
@@ -114,10 +134,19 @@ const TopicModalComponent = ({ data, loadData }) => {
                 />
               </div>
               <div className="mb-3">
+                <img
+                  src={data.topicPicture}
+                  alt="topic picture"
+                  height="100px"
+                  width="100px"
+                />
+              </div>
+              <div className="mb-3">
                 <input
                   type="file"
                   name="picture"
                   className="form-control"
+                  placeholder="Choose picture if you want to update the topic picture"
                   onChange={(event) => {
                     setFieldValue("picture", event.currentTarget.files[0]);
                   }}
