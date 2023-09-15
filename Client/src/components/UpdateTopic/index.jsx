@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { Button } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 
-const TopicModalComponent = ({ data }) => {
+const TopicModalComponent = ({ data, loadData }) => {
   const [open, setOpen] = useState(false);
   const BASE_URL = process.env.REACT_APP_BASE_API;
 
@@ -53,7 +53,7 @@ const TopicModalComponent = ({ data }) => {
         resetForm();
         setOpen(false);
         toast.success("Topic updated successfully!");
-        window.location.reload();
+        loadData();
       }
     } catch (error) {
       console.error(error);

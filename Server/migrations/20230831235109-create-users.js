@@ -22,7 +22,7 @@ module.exports = {
         required: true,
         validate: {
           notEmpty: true,
-          len: [6, 255],
+          len: [6, 20],
         },
       },
       name: {
@@ -31,7 +31,7 @@ module.exports = {
         required: true,
         validate: {
           notEmpty: true,
-          len: [3, 255],
+          len: [3, 20],
         },
       },
       isVerified: {

@@ -31,7 +31,10 @@ const emailHelper = async (savedUser) => {
     await transporter.sendMail({
       to: savedUser.email,
       subject: "Confirm Your Email Address",
-      html: `Please click this link to confirm your email: <a href="${url}">${url}</a>`,
+      html: `<p>Please click the button below to confirm your email:</p>
+      <a href="${url}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; cursor: pointer;">Confirm Email</a>
+      <p>If the button above doesn't work, you can also click on the following link:</p>
+      <a href="${url}">${url}</a>`,
     });
   } catch (e) {
     console.log(e);
