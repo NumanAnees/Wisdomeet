@@ -11,17 +11,22 @@ module.exports = {
       title: {
         type: Sequelize.STRING,
         allowNull: false,
+        required: true,
       },
       description: {
         type: Sequelize.STRING,
         allowNull: false,
+        required: true,
       },
       topicPicture: {
         type: Sequelize.STRING,
+        required: true,
+        allowNull: false,
       },
       createdBy: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        onDelete: "CASCADE",
         references: {
           model: "Users",
           key: "id",

@@ -69,15 +69,26 @@ exports.update = async (req, res) => {
         .json({ message: "You are not authorized to update this topic." });
     }
 
-    // Update the topic
-    await topicToUpdate.update({
-      title: title,
-      description: description,
-    });
+    const imagePath = req.files.picture; //name on postman
+    cloudinary.uploader.upload(
+      imagePath.tempFilePath,
+      async (error, result) => {
+        if (error) {
+          console.error(error);
+        } else {
+          //if everything is ok
+          const topicPicture = result.url;
+          // Create a new topic
+          topicToUpdate.topicPicture = topicPicture;
+          topicToUpdate.title = title;
+          topicToUpdate.description = description;
 
-    res
-      .status(200)
-      .json({ message: "Topic updated successfully.", topic: topicToUpdate });
+          await topicToUpdate.save();
+          // Return topic object and token
+          res.status(201).json({ message: "Success", topic: topicToUpdate });
+        }
+      }
+    );
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Topic update failed." });
@@ -195,7 +206,15 @@ exports.getTopic = async (req, res) => {
   try {
     const topicId = req.params.id;
 
-    const topic = await Topic.findByPk(topicId);
+    const topic = await Topic.findByPk(topicId, {
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "name", "profilePic"],
+        },
+      ],
+    });
 
     if (!topic) {
       return res.status(404).json({ message: "Topic not found." });
@@ -301,10 +320,12 @@ exports.getTopic = async (req, res) => {
         answers: sortedAnswers,
       };
     });
-
-    res
-      .status(200)
-      .json({ Topic: topic, Questions: formattedQuestions, isFollowed });
+    res.status(200).json({
+      Topic: topic,
+      Questions: formattedQuestions,
+      isFollowed,
+      isOwner: topic && topic?.user.id == req.user.id,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Something went wrong." });

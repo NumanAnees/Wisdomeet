@@ -17,6 +17,7 @@ const {
   viewProfile,
   search,
   getAllUsers,
+  confirmation,
 } = require("../controllers/user");
 // import validator
 const {
@@ -42,6 +43,8 @@ router.put(
   runValidation,
   update
 );
+//User Confirmation
+router.get("/confirmation/:token", confirmation);
 
 // User Deletion by admin
 router.delete("/:id", requireSignin, adminMiddleware, deleteUser);

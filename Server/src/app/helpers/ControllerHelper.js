@@ -44,6 +44,7 @@ exports.QuestionHelper = async (QuestionId, userId) => {
   return {
     id,
     name: userName ?? "No name",
+    userId: question.user ? question.user.id : "",
     picture: userPic ?? "default-profile-pic.jpg",
     text,
     likes: likes.length,

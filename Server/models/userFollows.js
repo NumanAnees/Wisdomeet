@@ -12,18 +12,26 @@ module.exports = function (sequelize, Sequelize) {
       userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        required: true,
       },
       topicId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        required: true,
       },
     },
     { timestamps: false }
   );
 
   UserFollows.associate = (models) => {
-    UserFollows.belongsTo(models.User, { foreignKey: "userId" });
-    UserFollows.belongsTo(models.Topic, { foreignKey: "topicId" });
+    UserFollows.belongsTo(models.User, {
+      foreignKey: "userId",
+      onDelete: "CASCADE",
+    });
+    UserFollows.belongsTo(models.Topic, {
+      foreignKey: "topicId",
+      onDelete: "CASCADE",
+    });
   };
 
   return UserFollows;
