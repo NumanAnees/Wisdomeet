@@ -9,6 +9,7 @@ import { handleFollowUnfollow } from "../../helpers/topicHelpers";
 import Question from "../Question";
 import TopicModalComponent from "./TopicModal";
 import SearchModal from "./SearchModal";
+import NoDataMessage from "../NoDataMessage";
 
 //css imports
 import "./home.css";
@@ -86,7 +87,7 @@ const Home = () => {
               <h2 className="heading-main">All Topics</h2>
               <TopicModalComponent getTopics={getTopics} />
             </div>
-            {notFollowing &&
+            {notFollowing?.length > 0 ? (
               notFollowing.map((topic) => {
                 return (
                   <TopicCard
@@ -94,9 +95,13 @@ const Home = () => {
                     topic={topic}
                     handleFollowUnfollowBtn={handleFollowUnfollowBtn}
                     left={true}
+                    NoFollowButton={true}
                   />
                 );
-              })}
+              })
+            ) : (
+              <NoDataMessage text="Topic" />
+            )}
           </Col>
           <Col xs={6} className="center-column">
             <div className="mt-2 mb-2 d-flex justify-content-between sticky-header">
@@ -113,7 +118,7 @@ const Home = () => {
               )}
             </div>
             <div style={{ height: "1000px" }}>
-              {Questions &&
+              {Questions?.length > 0 ? (
                 Questions.map((item) => {
                   return (
                     <Question
@@ -123,12 +128,15 @@ const Home = () => {
                       AnswerBtn={true}
                     />
                   );
-                })}
+                })
+              ) : (
+                <NoDataMessage text="Question to show..." />
+              )}
             </div>
           </Col>
           <Col xs={3} className="right-column">
             <h2 className="heading-main">Followed Topics</h2>
-            {following &&
+            {following?.length > 0 ? (
               following.map((topic) => {
                 return (
                   <TopicCard
@@ -136,9 +144,13 @@ const Home = () => {
                     topic={topic}
                     handleFollowUnfollowBtn={handleFollowUnfollowBtn}
                     left={false}
+                    NoFollowButton={true}
                   />
                 );
-              })}
+              })
+            ) : (
+              <NoDataMessage text="Followed Topics" />
+            )}
           </Col>
         </Row>
       </Container>

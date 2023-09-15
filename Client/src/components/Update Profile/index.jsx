@@ -20,6 +20,7 @@ const About = () => {
   const validationSchema = Yup.object().shape({
     name: Yup.string()
       .min(3, "Name must be at least 3 characters")
+      .max(20, "Name must be at most 20 characters long")
       .required("Name is required"),
     age: Yup.number()
       .integer("Age must be an integer")
@@ -31,6 +32,7 @@ const About = () => {
       .required("Gender is required"),
     password: Yup.string()
       .min(6, "Password must be at least 6 characters")
+      .max(20, "Password must be at most 20 characters long")
       .required("Password is required"),
   });
 

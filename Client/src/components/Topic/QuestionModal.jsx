@@ -33,6 +33,7 @@ const QuestionModal = ({ getTopic }) => {
   const validationSchema = Yup.object().shape({
     text: Yup.string()
       .min(3, "Question must be at least 3 characters long")
+      .max(100, "Question must be at most 100 characters long")
       .required("Title is required"),
     topicIds: Yup.array()
       .of(Yup.number())

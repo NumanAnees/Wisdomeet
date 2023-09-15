@@ -1,14 +1,20 @@
 import React, { useState } from "react";
 import { Avatar, Button } from "antd";
-import { LikeOutlined, DislikeOutlined } from "@ant-design/icons";
+import {
+  LikeOutlined,
+  DislikeOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { getToken } from "../../helpers/auth";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import UpdateAnswerModal from "../UpdateAnswer";
 
 import "./Answer.css";
 
-const Answer = ({ answer, disabled }) => {
+const Answer = ({ answer, disabled, isAnswerOwner, loadData }) => {
   const [likes, setLikes] = useState(answer.likes);
   const [dislikes, setDislikes] = useState(answer.dislikes);
   const [userLiked, setUserLiked] = useState(answer.isLiked);
@@ -108,8 +114,36 @@ const Answer = ({ answer, disabled }) => {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      const request = await axios.delete(`${BASE_URL}/answers/${answer.id}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      if (request.status == 200 || request.status == 201) {
+        toast.success("Answer deleted successfully");
+        loadData();
+      }
+    } catch (err) {
+      toast.error("Error deleting");
+      console.log(err);
+    }
+  };
   return (
     <div className="answer-card-main">
+      {isAnswerOwner && (
+        <div className="question-card-buttons">
+          <UpdateAnswerModal data={answer} loadData={loadData} />
+
+          <Button
+            icon={<DeleteOutlined />}
+            onClick={handleDelete}
+            className="delete-button"
+            size="large"
+          />
+        </div>
+      )}
       <div className="answer-card-container">
         <Avatar
           src={answer.picture}
@@ -118,7 +152,7 @@ const Answer = ({ answer, disabled }) => {
           className="answer-card-avatar"
         />
         <div>
-          <Link className="username-link" to={`/profile/${answer.userId}`}>
+          <Link className="username-link" to={`/about/${answer.userId}`}>
             <h4 className="answer-card-name">{answer.name}</h4>
           </Link>
           <span className="answer-card-info">answered:</span>

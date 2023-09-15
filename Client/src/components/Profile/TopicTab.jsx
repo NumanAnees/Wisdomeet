@@ -1,6 +1,7 @@
 import React from "react";
 import TopicCard from "../Home/TopicCard";
 import { handleFollowUnfollow } from "../../helpers/topicHelpers";
+import NoDataMessage from "../NoDataMessage";
 
 const TopicTab = ({ topics, getUser }) => {
   const handleFollowUnfollowBtn = async (id) => {
@@ -14,17 +15,20 @@ const TopicTab = ({ topics, getUser }) => {
   };
   return (
     <>
-      {topics &&
+      {topics?.length > 0 ? (
         topics.map((topic) => {
           return (
             <TopicCard
               key={topic.id}
               topic={topic}
               handleFollowUnfollowBtn={handleFollowUnfollowBtn}
-              followButton={false}
+              NoFollowButton={false}
             />
           );
-        })}
+        })
+      ) : (
+        <NoDataMessage text="Followed Topics..." />
+      )}
     </>
   );
 };

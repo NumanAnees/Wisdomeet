@@ -7,7 +7,7 @@ const TopicCard = (props) => {
   const { topic, left, handleFollowUnfollowBtn, NoFollowButton } = props;
   return (
     <li className="topic-card">
-      <Link to={`/${topic.id}`} className="topic-link">
+      <Link to={`/topic/${topic.id}`} className="topic-link">
         <div className="topic-card-main">
           <img
             alt="Topic"

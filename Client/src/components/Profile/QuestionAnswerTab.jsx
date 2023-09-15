@@ -1,11 +1,17 @@
 import React from "react";
 import Question from "../Question";
+import NoDataMessage from "../NoDataMessage";
 
-const QuestionAnswerTab = ({ Questions }) => {
+const QuestionAnswerTab = ({
+  Questions,
+  isQuestionOwner,
+  isAnswerOwner,
+  loadData,
+}) => {
   return (
     <div className="user-questions">
       <div className="user-questions-content">
-        {Questions &&
+        {Questions?.length > 0 ? (
           Questions.map((item) => {
             return (
               <Question
@@ -14,9 +20,15 @@ const QuestionAnswerTab = ({ Questions }) => {
                 answers={item.answers}
                 AnswerBtn={true}
                 disabled={true}
+                isQuestionOwner={isQuestionOwner}
+                isAnswerOwner={isAnswerOwner}
+                loadData={loadData}
               />
             );
-          })}
+          })
+        ) : (
+          <NoDataMessage text="data to show..." />
+        )}
       </div>
     </div>
   );

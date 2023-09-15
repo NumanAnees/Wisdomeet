@@ -1,30 +1,37 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Layout from "../Layout";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { getToken } from "../../helpers/auth";
+import { getToken, getUser as CurrentUser } from "../../helpers/auth";
 import { Tabs } from "antd";
-import QuestionAnswerTab from "./QuestionAnswerTab";
-import TopicTab from "./TopicTab";
+import QuestionAnswerTab from "../Profile/QuestionAnswerTab";
+import TopicTab from "../Profile/TopicTab";
+import { useNavigate } from "react-router-dom";
 
 //import css
-import "./Profile.css";
+import "./About.css";
 
-const Profile = () => {
+const About = () => {
+  const { id } = useParams();
   const [user, setUser] = useState();
   const [Questions, setQuestions] = useState();
   const [Answers, setAnswers] = useState();
   const [topics, setTopics] = useState();
+  const Navigate = useNavigate();
   const BASE_URL = process.env.REACT_APP_BASE_API;
 
   useEffect(() => {
+    if (CurrentUser().id == id) {
+      Navigate("/profile");
+    }
     getUser();
-  }, []);
+  }, [id]);
 
   const getUser = async () => {
     const authToken = getToken();
     try {
-      const request = await axios.get(`${BASE_URL}/user/about`, {
+      const request = await axios.get(`${BASE_URL}/user/about/${id}`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -64,14 +71,7 @@ const Profile = () => {
           <h5>Asked Questions</h5>
         </div>
       ),
-      children: (
-        <QuestionAnswerTab
-          isOwner={true}
-          isQuestionOwner={true}
-          Questions={Questions}
-          loadData={getUser}
-        />
-      ),
+      children: <QuestionAnswerTab Questions={Questions} />,
     },
     {
       key: "3",
@@ -80,13 +80,7 @@ const Profile = () => {
           <h5>Posted Answers</h5>
         </div>
       ),
-      children: (
-        <QuestionAnswerTab
-          isAnswerOwner={true}
-          Questions={Answers}
-          loadData={getUser}
-        />
-      ),
+      children: <QuestionAnswerTab Questions={Answers} />, //will use the same component...
     },
   ];
 
@@ -131,4 +125,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default About;
