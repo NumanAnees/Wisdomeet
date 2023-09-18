@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import Layout from "../Layout";
 import { toast } from "react-toastify";
-import { getToken } from "../../helpers/auth";
 import { Tabs } from "antd";
+
+import { get } from "../../helpers/axiosHelper";
 import QuestionAnswerTab from "./QuestionAnswerTab";
 import TopicTab from "./TopicTab";
+import Layout from "../Layout";
 
-//import css
 import "./Profile.css";
 
 const Profile = () => {
@@ -22,13 +21,8 @@ const Profile = () => {
   }, []);
 
   const getUser = async () => {
-    const authToken = getToken();
     try {
-      const request = await axios.get(`${BASE_URL}/user/about`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      const request = await get(`${BASE_URL}/user/about`);
 
       const user = {
         id: request.data.id,
@@ -64,14 +58,7 @@ const Profile = () => {
           <h5>Asked Questions</h5>
         </div>
       ),
-      children: (
-        <QuestionAnswerTab
-          isOwner={true}
-          isQuestionOwner={true}
-          Questions={Questions}
-          loadData={getUser}
-        />
-      ),
+      children: <QuestionAnswerTab isOwner={true} isQuestionOwner={true} Questions={Questions} loadData={getUser} />,
     },
     {
       key: "3",
@@ -80,55 +67,43 @@ const Profile = () => {
           <h5>Posted Answers</h5>
         </div>
       ),
-      children: (
-        <QuestionAnswerTab
-          isAnswerOwner={true}
-          Questions={Answers}
-          loadData={getUser}
-        />
-      ),
+      children: <QuestionAnswerTab isAnswerOwner={true} Questions={Answers} loadData={getUser} />,
     },
   ];
 
-  return (
-    <Layout>
-      <div className="container">
-        <div className="user-main">
-          <div className="user-image">
-            <img
-              src={user?.profilePic}
-              alt={user?.name}
-              className="user-image"
-            />
-          </div>
-          <div className="user-content">
-            <div className="user-title">
-              <h4>{user?.name}</h4>
-            </div>
-            <div className="user-information">
-              <p>
-                <span className="user-span">Email:</span> {user?.email}
-              </p>
-            </div>
-            <div className="user-information">
-              <p>
-                <span className="user-span">Age: </span>
-                {user?.age}
-              </p>
-            </div>
-            <div className="user-information">
-              <p>
-                <span className="user-span">Gender:</span> {user?.gender}
-              </p>
-            </div>
-          </div>
+  <Layout>
+    <div className="container">
+      <div className="user-main">
+        <div className="user-image">
+          <img src={user?.profilePic} alt={user?.name} className="user-image" />
         </div>
-        <div className="tabs">
-          <Tabs type="card" items={items} tabBarStyle={{ color: "gray" }} />
+        <div className="user-content">
+          <div className="user-title">
+            <h4>{user?.name}</h4>
+          </div>
+          <div className="user-information">
+            <p>
+              <span className="user-span">Email:</span> {user?.email}
+            </p>
+          </div>
+          <div className="user-information">
+            <p>
+              <span className="user-span">Age: </span>
+              {user?.age}
+            </p>
+          </div>
+          <div className="user-information">
+            <p>
+              <span className="user-span">Gender:</span> {user?.gender}
+            </p>
+          </div>
         </div>
       </div>
-    </Layout>
-  );
+      <div className="tabs">
+        <Tabs type="card" items={items} tabBarStyle={{ color: "gray" }} />
+      </div>
+    </div>
+  </Layout>;
 };
 
 export default Profile;

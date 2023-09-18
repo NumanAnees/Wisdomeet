@@ -1,26 +1,26 @@
 import React from "react";
 import * as Yup from "yup";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+
 import Layout from "./Layout";
+import { post } from "../helpers/axiosHelper";
+import { HTTP_STATUS_OK, HTTP_STATUS_FORBIDDEN } from "../helpers/constants.js";
 
 const Login = () => {
   const Navigate = useNavigate();
   const BASE_URL = process.env.REACT_APP_BASE_API;
 
   const validationSchema = Yup.object().shape({
-    email: Yup.string()
-      .email("Invalid email format")
-      .required("Email is required"),
+    email: Yup.string().email("Invalid email format").required("Email is required"),
     password: Yup.string().required("Password is required"),
   });
 
-  const handleLogin = async (values) => {
+  const handleLogin = async values => {
     try {
-      const response = await axios.post(`${BASE_URL}/user/login`, values);
-      if (response.status === 200) {
+      const response = await post(`${BASE_URL}/user/login`, values);
+      if (response.status === HTTP_STATUS_OK) {
         const { user, token } = response.data;
 
         document.cookie = `token=${token}`;
@@ -29,7 +29,7 @@ const Login = () => {
 
         toast.info("Welcome Back!");
         Navigate("/");
-      } else if (response.status === 203) {
+      } else if (response.status === HTTP_STATUS_FORBIDDEN) {
         toast.error("Please confirm your email address first");
       } else {
         toast.error("Invalid email or password");
@@ -39,57 +39,36 @@ const Login = () => {
       toast.error("Unable to login");
     }
   };
-
-  return (
-    <Layout>
-      <div className="login-section d-flex justify-content-center align-items-center">
-        <div className="card p-4">
-          <h2 className="mb-4">Login</h2>
-          <Formik
-            initialValues={{
-              email: "",
-              password: "",
-            }}
-            validationSchema={validationSchema}
-            onSubmit={handleLogin}
-          >
-            <Form>
-              <div className="mb-3">
-                <Field
-                  type="email"
-                  name="email"
-                  className="form-control"
-                  placeholder="Email"
-                />
-                <ErrorMessage
-                  name="email"
-                  component="div"
-                  className="text-danger"
-                />
-              </div>
-              <div className="mb-3">
-                <Field
-                  type="password"
-                  name="password"
-                  className="form-control"
-                  placeholder="Password"
-                />
-                <ErrorMessage
-                  name="password"
-                  component="div"
-                  className="text-danger"
-                />
-              </div>
-              <button type="submit" className="btn btn-success w-100">
-                Login
-              </button>
-              <Link to="/signup">Create an account</Link>
-            </Form>
-          </Formik>
-        </div>
+  <Layout>
+    <div className="login-section d-flex justify-content-center align-items-center">
+      <div className="card p-4">
+        <h2 className="mb-4">Login</h2>
+        <Formik
+          initialValues={{
+            email: "",
+            password: "",
+          }}
+          validationSchema={validationSchema}
+          onSubmit={handleLogin}
+        >
+          <Form>
+            <div className="mb-3">
+              <Field type="email" name="email" className="form-control" placeholder="Email" />
+              <ErrorMessage name="email" component="div" className="text-danger" />
+            </div>
+            <div className="mb-3">
+              <Field type="password" name="password" className="form-control" placeholder="Password" />
+              <ErrorMessage name="password" component="div" className="text-danger" />
+            </div>
+            <button type="submit" className="btn btn-success w-100">
+              Login
+            </button>
+            <Link to="/signup">Create an account</Link>
+          </Form>
+        </Formik>
       </div>
-    </Layout>
-  );
+    </div>
+  </Layout>;
 };
 
 export default Login;

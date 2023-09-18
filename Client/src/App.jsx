@@ -12,32 +12,29 @@ import AllAnswers from "./components/AllAnswers";
 import Profile from "./components/Profile";
 import About from "./components/About";
 
-//css imports
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-const App = () => {
-  return (
-    <>
-      <ToastContainer />
-      <BrowserRouter>
-        <Routes>
-          <Route element={<PrivateRoute />}>
-            <Route path="/" element={<Home />} exact />
-            <Route path="/topic/:id" element={<Topic />} exact />
-            <Route path="/update/profile" element={<UpdateProfile />} exact />
-            <Route path="/about/:id" element={<About />} exact />
-            <Route path="/profile" element={<Profile />} exact />
-            <Route path="/question/:id" element={<AllAnswers />} exact />
-          </Route>
-          <Route path="/login" exact element={<Login />} />
-          <Route path="/signup" exact element={<Signup />} />
-          <Route path="*" element={<Error />} />
-        </Routes>
-      </BrowserRouter>
-    </>
-  );
-};
+const App = () => (
+  <>
+    <ToastContainer />
+    <BrowserRouter>
+      <Routes>
+        <Route element={<PrivateRoute />}>
+          <Route path="/" element={<Home />} exact />
+          <Route path="/topic/:id" element={<Topic />} exact />
+          <Route path="/update/profile" element={<UpdateProfile />} exact />
+          <Route path="/about/:id" element={<About />} exact />
+          <Route path="/profile" element={<Profile />} exact />
+          <Route path="/question/:id" element={<AllAnswers />} exact />
+        </Route>
+        <Route path="/login" exact element={<Login />} />
+        <Route path="/signup" exact element={<Signup />} />
+        <Route path="*" element={<Error />} />
+      </Routes>
+    </BrowserRouter>
+  </>
+);
 
 export default App;

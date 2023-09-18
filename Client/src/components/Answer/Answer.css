@@ -1,4 +1,3 @@
-/* Answer.css */
 .answer-card-main {
   border-left: 4px solid #e2e2e2;
   padding-left: 24px;
@@ -17,7 +16,6 @@
 }
 .answer-card-info {
   color: gray;
-  /* margin-left: 10px; */
 }
 .answer-card-body {
   display: flex;
