@@ -1,14 +1,13 @@
+import { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { isAuth, getUser } from "../../helpers/auth";
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import cookie from "js-cookie";
 import { toast } from "react-toastify";
 import { Dropdown, Menu } from "antd";
-import cookie from "js-cookie";
+import { Link, useNavigate } from "react-router-dom";
+import { isAuth, getUser } from "../../helpers/auth";
 
-//import styles
 import "./layout.css";
 
 function Layout({ children }) {
@@ -57,9 +56,7 @@ function Layout({ children }) {
               <Link to="/update/profile" className="no-link-style">
                 <div className="nav-link text-dark text-center text-top">
                   {" "}
-                  <span className="text-span4 no-link-style">
-                    Update Profile
-                  </span>
+                  <span className="text-span4 no-link-style">Update Profile</span>
                 </div>
               </Link>
             </li>
@@ -70,10 +67,7 @@ function Layout({ children }) {
           danger: true,
           label: (
             <li className="nav-item pointer p-1">
-              <div
-                onClick={handleLogout}
-                className="nav-link text-dark  text-center text-top"
-              >
+              <div onClick={handleLogout} className="nav-link text-dark  text-center text-top">
                 <span className="text-span4">Logout</span>
               </div>
             </li>
@@ -94,11 +88,7 @@ function Layout({ children }) {
             <div className="nav-item pointer p-1">
               <Dropdown overlay={childs} className="nav-component">
                 <Nav className="image-container">
-                  <img
-                    src={user.profilePic}
-                    alt="profile"
-                    className="nav-image"
-                  ></img>
+                  <img src={user.profilePic} alt="profile" className="nav-image"></img>
                 </Nav>
               </Dropdown>
             </div>

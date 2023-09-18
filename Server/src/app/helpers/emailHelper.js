@@ -23,9 +23,7 @@ const emailHelper = async (savedUser) => {
     );
 
     const url = `${
-      process.env.ENVIRONMENT === "development"
-        ? "http://localhost:8000"
-        : "http://localhost:8000"
+      process.env.ENVIRONMENT === "development" ? "http://localhost:8000" : "http://localhost:8000"
     }/api/user/confirmation/${emailToken}`;
 
     await transporter.sendMail({

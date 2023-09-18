@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import Layout from "../Layout";
-import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import { getToken, getUser as CurrentUser } from "../../helpers/auth";
 import { Tabs } from "antd";
+import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
+import { getUser as CurrentUser } from "../../helpers/auth";
+import { get } from "../../helpers/axiosHelper";
+import Layout from "../Layout";
 import QuestionAnswerTab from "../Profile/QuestionAnswerTab";
 import TopicTab from "../Profile/TopicTab";
-import { useNavigate } from "react-router-dom";
 
-//import css
 import "./About.css";
 
 const About = () => {
@@ -29,13 +28,8 @@ const About = () => {
   }, [id]);
 
   const getUser = async () => {
-    const authToken = getToken();
     try {
-      const request = await axios.get(`${BASE_URL}/user/about/${id}`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      const request = await get(`${BASE_URL}/user/about/${id}`);
 
       const user = {
         id: request.data.id,
@@ -80,20 +74,15 @@ const About = () => {
           <h5>Posted Answers</h5>
         </div>
       ),
-      children: <QuestionAnswerTab Questions={Answers} />, //will use the same component...
+      children: <QuestionAnswerTab Questions={Answers} />,
     },
   ];
-
   return (
     <Layout>
       <div className="container">
         <div className="user-main">
           <div className="user-image">
-            <img
-              src={user?.profilePic}
-              alt={user?.name}
-              className="user-image"
-            />
+            <img src={user?.profilePic} alt={user?.name} className="user-image" />
           </div>
           <div className="user-content">
             <div className="user-title">

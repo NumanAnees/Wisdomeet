@@ -39,7 +39,6 @@ module.exports = (sequelize, DataTypes) => {
     { timestamps: false }
   );
   Topic.associate = function (models) {
-    // associations can be defined here
     Topic.belongsTo(models.User, {
       foreignKey: "createdBy",
       as: "user",

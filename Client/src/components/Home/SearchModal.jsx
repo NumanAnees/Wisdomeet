@@ -1,26 +1,19 @@
 import React, { useState } from "react";
 import { Modal } from "antd";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import axios from "axios";
 import { toast } from "react-toastify";
-import { getToken } from "../../helpers/auth";
+
+import { get } from "../../helpers/axiosHelper";
+import { HTTP_STATUS_OK, HTTP_STATUS_CREATED } from "../../helpers/constants.js";
 
 const SearchModal = ({ setQuestions, setIsSearchOpen }) => {
   const [open, setOpen] = useState(false);
-  const authToken = getToken();
   const BASE_URL = process.env.REACT_APP_BASE_API;
 
   const handleSubmit = async (values, { resetForm }) => {
     try {
-      const response = await axios.get(
-        `${BASE_URL}/user/?keyword=${values.text}`,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
-      if (response.status === 201 || response.status === 200) {
+      const response = await get(`${BASE_URL}/user/?keyword=${values.text}`);
+      if (response.status === HTTP_STATUS_CREATED || response.status === HTTP_STATUS_OK) {
         resetForm();
         setQuestions(response.data);
         setIsSearchOpen(true);
@@ -57,16 +50,8 @@ const SearchModal = ({ setQuestions, setIsSearchOpen }) => {
           {({}) => (
             <Form className="d-flex justify-content-between">
               <div className="mb-3 w-100">
-                <Field
-                  name="text"
-                  className="form-control"
-                  placeholder="Search..."
-                />
-                <ErrorMessage
-                  name="text"
-                  component="div"
-                  className="text-danger"
-                />
+                <Field name="text" className="form-control" placeholder="Search..." />
+                <ErrorMessage name="text" component="div" className="text-danger" />
               </div>
               <button type="submit" className="btn btn-danger custom-btn">
                 Search

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import Layout from "../Layout";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from "axios";
-import { getToken } from "../../helpers/auth";
+
 import Question from "../Question";
 import AnswerModal from "./AnswerModal";
+import Layout from "../Layout";
+import { get } from "../../helpers/axiosHelper";
 
-//import css
 import "./AllAnswers.css";
 
 const AllAnswers = () => {
@@ -20,14 +19,8 @@ const AllAnswers = () => {
   }, []);
 
   const getAnswers = async () => {
-    const authToken = getToken();
     try {
-      //get topic...
-      const answers = await axios.get(`${BASE_URL}/questions/${id}`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      const answers = await get(`${BASE_URL}/questions/${id}`);
       setQuestion(answers.data);
     } catch (error) {
       toast.error(error.message);
@@ -45,13 +38,7 @@ const AllAnswers = () => {
             </div>
           </div>
           <div className="topic-questions-content">
-            {question && (
-              <Question
-                key={question.question.id}
-                question={question.question}
-                answers={question.answers}
-              />
-            )}
+            {question && <Question key={question.question.id} question={question.question} answers={question.answers} />}
           </div>
         </div>
       </div>

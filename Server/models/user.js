@@ -25,7 +25,6 @@ module.exports = function (sequelize, Sequelize) {
         required: true,
         validate: {
           notEmpty: true,
-          len: [6, 20], // Minimum length of 6 characters
         },
       },
       name: {
@@ -81,7 +80,7 @@ module.exports = function (sequelize, Sequelize) {
     }
   );
 
-  User.associate = (models) => {
+  User.associate = models => {
     User.hasOne(models.Topic, {
       foreignKey: "createdBy",
       as: "createdTopics",
@@ -118,12 +117,11 @@ module.exports = function (sequelize, Sequelize) {
     });
   };
 
-  // Hook to hash the password before saving
-  User.beforeCreate(async (user) => {
+  User.beforeCreate(async user => {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     user.password = hashedPassword;
   });
-  User.beforeUpdate(async (user) => {
+  User.beforeUpdate(async user => {
     if (user.changed("password")) {
       const hashedPassword = await bcrypt.hash(user.password, 10);
       user.password = hashedPassword;

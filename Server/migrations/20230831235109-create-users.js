@@ -22,7 +22,6 @@ module.exports = {
         required: true,
         validate: {
           notEmpty: true,
-          len: [6, 20],
         },
       },
       name: {
