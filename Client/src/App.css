@@ -14,3 +14,6 @@ body {
 .pointer {
   cursor: pointer;
 }
+.quora-span {
+  color: #b92b27 !important;
+}

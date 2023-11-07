@@ -40,10 +40,10 @@ function Layout({ children }) {
           key: "1",
           label: (
             <li className="nav-item p-1">
-              <Link to="/profile">
+              <Link to="/about">
                 <div className="nav-link text-dark text-center text-top">
                   {" "}
-                  <span className="text-span4">Profile</span>
+                  <span className="text-span4">About</span>
                 </div>
               </Link>
             </li>
