@@ -8,6 +8,8 @@ import { getToken } from "../../helpers/auth";
 import { handleFollowUnfollow } from "../../helpers/topicHelpers";
 import Question from "../Question";
 import TopicModalComponent from "./TopicModal";
+import SearchModal from "./SearchModal";
+
 //css imports
 import "./home.css";
 
@@ -15,6 +17,7 @@ const Home = () => {
   const [following, setFollowing] = useState();
   const [notFollowing, setNotFollowing] = useState();
   const [Questions, setQuestions] = useState();
+  const [IsSearchOpen, setIsSearchOpen] = useState();
 
   const getTopics = async () => {
     const authToken = getToken();
@@ -73,42 +76,10 @@ const Home = () => {
     }
   };
 
-  //delete this...................
-  // const dummyQuestion = {
-  //   id: 1,
-  //   name: "John Doe",
-  //   picture: "https://example.com/johndoe-avatar.jpg",
-  //   text: "What is the capital of France?",
-  //   likes: 5,
-  //   dislikes: 1,
-  // };
-
-  // const dummyAnswers = [
-  //   {
-  //     id: 1,
-  //     name: "Alice Smith",
-  //     picture: "https://example.com/alicesmith-avatar.jpg",
-  //     text: "The capital of France is Paris.",
-  //     likes: 5,
-  //     dislikes: 1,
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Bob Johnson",
-  //     picture: "https://example.com/bobjohnson-avatar.jpg",
-  //     text: "Yes, it's Paris.",
-  //     likes: 3,
-  //     dislikes: 0,
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Eva Williams",
-  //     picture: "https://example.com/evawilliams-avatar.jpg",
-  //     text: "I think it's Paris too.",
-  //     likes: 2,
-  //     dislikes: 0,
-  //   },
-  // ];
+  const handleClear = () => {
+    setIsSearchOpen(false);
+    getQuestions();
+  };
 
   useEffect(() => {
     getTopics();
@@ -121,7 +92,7 @@ const Home = () => {
         <Row>
           <Col xs={3} className="left-column">
             <div className="d-flex justify-content-between">
-              <h2>All Topics</h2>
+              <h2 className="heading-main">All Topics</h2>
               <TopicModalComponent getTopics={getTopics} />
             </div>
             {notFollowing &&
@@ -137,7 +108,19 @@ const Home = () => {
               })}
           </Col>
           <Col xs={6} className="center-column">
-            <h2 className="mt-2">All Questions:</h2>
+            <div className="mt-2 mb-2 d-flex justify-content-between sticky-header">
+              <h2 className="heading-main">All Questions:</h2>
+              {IsSearchOpen ? (
+                <button className="nav-btn" onClick={handleClear}>
+                  Clear
+                </button>
+              ) : (
+                <SearchModal
+                  setQuestions={setQuestions}
+                  setIsSearchOpen={setIsSearchOpen}
+                />
+              )}
+            </div>
             <div style={{ height: "1000px" }}>
               {Questions &&
                 Questions.map((item) => {
@@ -153,7 +136,7 @@ const Home = () => {
             </div>
           </Col>
           <Col xs={3} className="right-column">
-            <h2>Followed Topics</h2>
+            <h2 className="heading-main">Followed Topics</h2>
             {following &&
               following.map((topic) => {
                 return (

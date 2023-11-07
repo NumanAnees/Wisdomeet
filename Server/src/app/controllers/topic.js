@@ -176,13 +176,12 @@ exports.getAllTopics = async (req, res) => {
       },
     });
 
-    // Extract the IDs of followed topics in an array[]
     const followedTopicIds = followedTopics.map(
       (followedTopic) => followedTopic.topicId
     );
 
     const topicsNotFollowedByUser = allTopics.filter((topic) => {
-      return !followedTopicIds.includes(topic.id); //if included in array ignore otherwise add
+      return !followedTopicIds.includes(topic.id);
     });
 
     res.json(topicsNotFollowedByUser);
@@ -203,7 +202,6 @@ exports.getTopic = async (req, res) => {
       return res.status(404).json({ message: "Topic not found." });
     }
 
-    // Check if the user followed the topic
     const isUserFollowed = await UserFollows.findOne({
       where: { userId: req.user.id, topicId: topicId },
     });
@@ -219,18 +217,18 @@ exports.getTopic = async (req, res) => {
           attributes: ["id", "questionId", "userId"],
         },
         {
-          model: Dislike, // Include dislikes
+          model: Dislike,
           as: "dislikes",
           attributes: ["id", "questionId", "userId"],
         },
         {
-          model: User, // Include the user who posted the question
+          model: User,
           as: "user",
-          attributes: ["id", "name", "profilePic"], // Include user information
+          attributes: ["id", "name", "profilePic"],
         },
         {
           model: Answer,
-          as: "answers", // Include answers
+          as: "answers",
           include: [
             {
               model: Like,
@@ -238,14 +236,14 @@ exports.getTopic = async (req, res) => {
               attributes: ["id", "answerId", "userId"],
             },
             {
-              model: Dislike, // Include dislikes for answers
+              model: Dislike,
               as: "dislikes",
               attributes: ["id", "answerId", "userId"],
             },
             {
-              model: User, // Include the user who posted the answer
+              model: User,
               as: "user",
-              attributes: ["id", "name", "profilePic"], // Include user information
+              attributes: ["id", "name", "profilePic"],
             },
           ],
           attributes: ["id", "text"],
@@ -257,36 +255,32 @@ exports.getTopic = async (req, res) => {
     const formattedQuestions = questions.map((question) => {
       const sortedAnswers = question.answers
         .map((answer) => {
-          // Check if the user liked the answer
           const isLikedAnswer = answer.likes.some(
             (like) => like.userId === req.user.id
           );
 
-          // Check if the user disliked the answer
           const isDislikedAnswer = answer.dislikes.some(
             (dislike) => dislike.userId === req.user.id
           );
 
           return {
             id: answer.id,
-            name: answer.user ? answer.user.name : "", // User who posted the answer
-            picture: answer.user ? answer.user.profilePic : "", // User who posted the answer
+            name: answer.user ? answer.user.name : "",
+            picture: answer.user ? answer.user.profilePic : "",
             text: answer.text,
             likes: answer.likes.length,
-            dislikes: answer.dislikes.length, // Include actual dislikes count
+            dislikes: answer.dislikes.length,
             isLiked: isLikedAnswer,
             isDisliked: isDislikedAnswer,
           };
         })
-        .sort((a, b) => b.likes - a.likes) // Sort answers by likes in descending order
-        .slice(0, 2); // Get the top 2 answers
+        .sort((a, b) => b.likes - a.likes)
+        .slice(0, 2);
 
-      // Check if the user liked the question
       const isLikedQuestion = question.likes.some(
         (like) => like.userId === req.user.id
       );
 
-      // Check if the user disliked the question
       const isDislikedQuestion = question.dislikes.some(
         (dislike) => dislike.userId === req.user.id
       );
@@ -294,11 +288,11 @@ exports.getTopic = async (req, res) => {
       return {
         question: {
           id: question.id,
-          name: question.user ? question.user.name : "", // User who posted the question
-          picture: question.user ? question.user.profilePic : "", // User who posted the question
+          name: question.user ? question.user.name : "",
+          picture: question.user ? question.user.profilePic : "",
           text: question.text,
           likes: question.likes.length,
-          dislikes: question.dislikes.length, // Include actual dislikes count
+          dislikes: question.dislikes.length,
           isLiked: isLikedQuestion,
           isDisliked: isDislikedQuestion,
         },

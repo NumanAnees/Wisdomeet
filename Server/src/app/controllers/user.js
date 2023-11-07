@@ -218,41 +218,35 @@ exports.search = async (req, res) => {
 
     const questions = await Question.findAll({
       where: {
-        text: {
-          [Op.like]: `%${keyword}%`,
-        },
+        [Op.and]: [
+          {
+            text: {
+              [Op.iLike]: `%${keyword}%`, // Use Op.iLike for case-insensitive search
+            },
+          },
+        ],
       },
       attributes: ["id", "text"],
       include: [
-        {
-          model: Like,
-          as: "likes",
-          attributes: [],
-        },
-        {
-          model: Dislike,
-          as: "dislikes",
-          attributes: [],
-        },
         {
           model: Answer,
           as: "answers",
           attributes: ["id", "text"],
           include: [
             {
+              model: User,
+              as: "user",
+              attributes: ["id", "name", "profilePic"],
+            },
+            {
               model: Like,
               as: "likes",
-              attributes: [],
+              attributes: ["id", "userId"],
             },
             {
               model: Dislike,
               as: "dislikes",
-              attributes: [],
-            },
-            {
-              model: User,
-              as: "user",
-              attributes: ["id", "name", "profilePic"],
+              attributes: ["id", "userId"],
             },
           ],
         },
@@ -261,48 +255,66 @@ exports.search = async (req, res) => {
           as: "user",
           attributes: ["id", "name", "profilePic"],
         },
+        {
+          model: Like,
+          as: "likes",
+          attributes: ["id", "userId"],
+        },
+        {
+          model: Dislike,
+          as: "dislikes",
+          attributes: ["id", "userId"],
+        },
       ],
     });
 
-    // Process the questions and answers to include IDs, likes, dislikes, and top 2 answers
     const formattedQuestions = questions.map((question) => {
-      const formattedQuestion = {
-        id: question.id,
-        name: question.user ? question.user.name : "Unknown User",
-        picture: question.user
-          ? question.user.profilePic
-          : "https://example.com/default-avatar.jpg",
-        text: question.text,
-        likes: question.likes ? question.likes.length : 0,
-        dislikes: question.dislikes ? question.dislikes.length : 0,
-      };
+      const formattedAnswers = [];
 
-      // Sort answers by likes and get the top 2 answers
       if (question.answers && question.answers.length > 0) {
         const sortedAnswers = question.answers.sort(
           (a, b) =>
             (b.likes ? b.likes.length : 0) - (a.likes ? a.likes.length : 0)
         );
-        const topAnswers = sortedAnswers.slice(0, 2).map((answer) => ({
-          id: answer.id,
-          name: answer.user ? answer.user.name : "Unknown User",
-          picture: answer.user
-            ? answer.user.profilePic
-            : "https://example.com/default-avatar.jpg",
-          text: answer.text,
-          likes: answer.likes ? answer.likes.length : 0,
-          dislikes: answer.dislikes ? answer.dislikes.length : 0,
-        }));
 
-        formattedQuestion.answers = topAnswers;
-      } else {
-        formattedQuestion.answers = [];
+        sortedAnswers.slice(0, 2).forEach((answer) => {
+          formattedAnswers.push({
+            id: answer.id,
+            name: answer.user ? answer.user.name : "Unknown User",
+            picture: answer.user
+              ? answer.user.profilePic
+              : "https://example.com/default-avatar.jpg",
+            text: answer.text,
+            likes: answer.likes.length,
+            dislikes: answer.dislikes.length,
+            isLiked: answer.likes.some((like) => like.userId === req.user.id),
+            isDisliked: answer.dislikes.some(
+              (dislike) => dislike.userId === req.user.id
+            ),
+          });
+        });
       }
 
-      return formattedQuestion;
+      return {
+        question: {
+          id: question.id,
+          name: question.user ? question.user.name : "Unknown User",
+          picture: question.user
+            ? question.user.profilePic
+            : "https://example.com/default-avatar.jpg",
+          text: question.text,
+          likes: question.likes.length,
+          dislikes: question.dislikes.length,
+          isLiked: question.likes.some((like) => like.userId === req.user.id),
+          isDisliked: question.dislikes.some(
+            (dislike) => dislike.userId === req.user.id
+          ),
+        },
+        answers: formattedAnswers,
+      };
     });
 
-    res.status(200).json({ questions: formattedQuestions });
+    res.status(200).json(formattedQuestions);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Something went wrong." });
