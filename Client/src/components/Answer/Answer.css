@@ -1,0 +1,36 @@
+/* Answer.css */
+.answer-card-main {
+  border-left: 4px solid #e2e2e2;
+  padding-left: 24px;
+}
+
+.answer-card-container {
+  display: flex;
+  align-items: center;
+}
+.answer-card-avatar {
+  margin-right: 10px;
+}
+.answer-card-name {
+  margin: 0px;
+  font-size: 16px;
+}
+.answer-card-info {
+  color: gray;
+  /* margin-left: 10px; */
+}
+.answer-card-body {
+  display: flex;
+  align-items: center;
+}
+.answer-card-parra {
+  margin-top: 10px;
+}
+.ant-btn-primary {
+  margin: 0px !important;
+  width: max-content !important;
+  margin-right: 6px !important;
+}
+.btn-style {
+  margin-right: 6px;
+}
