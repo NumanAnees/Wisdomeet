@@ -1,3 +1,7 @@
+body {
+  background-color: #e5e5e58a !important;
+  margin-top: 6rem !important;
+}
 .login-section {
   height: 90vh;
 }
@@ -6,4 +10,7 @@
 }
 .margin-top {
   margin-top: 4rem;
+}
+.pointer {
+  cursor: pointer;
 }
