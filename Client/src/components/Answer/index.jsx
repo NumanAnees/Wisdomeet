@@ -13,6 +13,7 @@ const Answer = ({ answer }) => {
   const [userLiked, setUserLiked] = useState(answer.isLiked);
   const [userDisliked, setUserDisliked] = useState(answer.isDisliked);
   const authToken = getToken();
+  const BASE_URL = process.env.BASE_API;
 
   const handleLike = async () => {
     try {
@@ -21,7 +22,7 @@ const Answer = ({ answer }) => {
         setUserLiked(false);
         // call like api to remove like...
         const like = await axios.post(
-          `http://localhost:8000/api/answers/${answer.id}/like`,
+          `${BASE_URL}/answers/${answer.id}/like`,
           {},
           {
             headers: {
@@ -35,7 +36,7 @@ const Answer = ({ answer }) => {
         setUserLiked(true);
         // call like api to add like...
         const like = await axios.post(
-          `http://localhost:8000/api/answers/${answer.id}/like`,
+          `${BASE_URL}/api/answers/${answer.id}/like`,
           {},
           {
             headers: {
@@ -49,7 +50,7 @@ const Answer = ({ answer }) => {
           setUserDisliked(false);
           // if disliked already, remove that dislike
           const dislike = await axios.post(
-            `http://localhost:8000/api/answers/${answer.id}/dislike`,
+            `${BASE_URL}/answers/${answer.id}/dislike`,
             {},
             {
               headers: {
@@ -72,7 +73,7 @@ const Answer = ({ answer }) => {
       setUserDisliked(false);
       // call like api to remove dislike...
       const dislike = await axios.post(
-        `http://localhost:8000/api/answers/${answer.id}/dislike`,
+        `${BASE_URL}/answers/${answer.id}/dislike`,
         {},
         {
           headers: {
@@ -86,7 +87,7 @@ const Answer = ({ answer }) => {
       setUserDisliked(true);
       // call like api to add duslike...
       const dislike = await axios.post(
-        `http://localhost:8000/api/answers/${answer.id}/dislike`,
+        `${BASE_URL}/answers/${answer.id}/dislike`,
         {},
         {
           headers: {
@@ -100,7 +101,7 @@ const Answer = ({ answer }) => {
         setUserLiked(false);
         // if liked already, remove that like...
         const like = await axios.post(
-          `http://localhost:8000/api/answers/${answer.id}/like`,
+          `${BASE_URL}/api/answers/${answer.id}/like`,
           {},
           {
             headers: {

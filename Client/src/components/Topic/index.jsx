@@ -7,18 +7,32 @@ import { getToken } from "../../helpers/auth";
 import { handleFollowUnfollow } from "../../helpers/topicHelpers";
 import Question from "../Question";
 import QuestionModal from "./QuestionModal";
+import { Pagination } from "antd";
+
 //import css
 import "./topic.css";
 
 const Topic = () => {
   const { id } = useParams();
+  const BASE_URL = process.env.BASE_API;
   const [topic, setTopic] = useState();
   const [Questions, setQuestions] = useState();
   const [followersCount, setFollowersCount] = useState();
   const [isFollowed, setIsFollowed] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
+  const questionsPerPage = 2;
+  const startIndex = (currentPage - 1) * questionsPerPage;
+  const endIndex = startIndex + questionsPerPage;
+  let currentQuestions;
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
   useEffect(() => {
     getTopic();
+    if (Questions) {
+      currentQuestions = Questions.slice(startIndex, endIndex);
+    }
   }, [isFollowed]);
 
   const handleFollowUnfollowBtn = async (id) => {
@@ -31,7 +45,7 @@ const Topic = () => {
     const authToken = getToken();
     try {
       //get topic...
-      const topic = await axios.get(`http://localhost:8000/api/topics/${id}`, {
+      const topic = await axios.get(`${BASE_URL}/topics/${id}`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -40,9 +54,7 @@ const Topic = () => {
       setQuestions(topic.data.Questions);
       setIsFollowed(topic.data.isFollowed);
       //get followers count...
-      const followers = await axios.get(
-        `http://localhost:8000/api/topics/${id}/followers`
-      );
+      const followers = await axios.get(`${BASE_URL}/topics/${id}/followers`);
       setFollowersCount(followers.data.followersCount);
     } catch (error) {
       console.log(error);
@@ -100,17 +112,24 @@ const Topic = () => {
             </div>
           </div>
           <div className="topic-questions-content">
-            {Questions &&
-              Questions.map((item) => {
+            {currentQuestions &&
+              currentQuestions.map((item, index) => {
                 return (
                   <Question
-                    key={item.question.id}
+                    key={index}
                     question={item.question}
                     answers={item.answers}
                     AnswerBtn={true}
                   />
                 );
               })}
+
+            <Pagination
+              current={currentPage}
+              pageSize={questionsPerPage}
+              total={Questions && Questions.length}
+              onChange={handlePageChange}
+            />
           </div>
         </div>
       </div>

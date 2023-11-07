@@ -8,6 +8,7 @@ import axios from "axios";
 
 const Login = () => {
   const Navigate = useNavigate();
+  const BASE_URL = process.env.BASE_API;
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -18,10 +19,7 @@ const Login = () => {
 
   const handleLogin = async (values) => {
     try {
-      const response = await axios.post(
-        "http://localhost:8000/api/user/login",
-        values
-      );
+      const response = await axios.post(`${BASE_URL}/user/login`, values);
 
       if (response.status === 200) {
         const { user, token } = response.data;

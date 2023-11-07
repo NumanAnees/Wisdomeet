@@ -8,6 +8,7 @@ import axios from "axios";
 
 const Signup = () => {
   const Navigate = useNavigate();
+  const BASE_URL = process.env.BASE_API;
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -39,15 +40,11 @@ const Signup = () => {
       formData.append("gender", values.gender);
       formData.append("picture", values.picture);
 
-      const response = await axios.post(
-        "http://localhost:8000/api/user/register",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(`${BASE_URL}/user/register`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (response.status === 201) {
         toast.info("User created successfully!");

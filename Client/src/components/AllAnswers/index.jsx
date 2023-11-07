@@ -13,6 +13,7 @@ import "./AllAnswers.css";
 const AllAnswers = () => {
   const { id } = useParams();
   const [question, setQuestion] = useState();
+  const BASE_URL = process.env.BASE_API;
 
   useEffect(() => {
     getAnswers();
@@ -22,14 +23,11 @@ const AllAnswers = () => {
     const authToken = getToken();
     try {
       //get topic...
-      const answers = await axios.get(
-        `http://localhost:8000/api/questions/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
+      const answers = await axios.get(`${BASE_URL}/questions/${id}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
       console.log(answers.data);
       setQuestion(answers.data);
     } catch (error) {
@@ -45,7 +43,6 @@ const AllAnswers = () => {
           <div className="topic-questions-title">
             <h4>Question</h4>
             <div className="topic-questions-btn">
-              {/* <QuestionModal getTopic={getTopic} /> */}
               <AnswerModal getAnswers={getAnswers} />
             </div>
           </div>

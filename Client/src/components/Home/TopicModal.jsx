@@ -8,6 +8,8 @@ import { toast } from "react-toastify";
 
 const TopicModalComponent = ({ getTopics }) => {
   const [open, setOpen] = useState(false);
+  const BASE_URL = process.env.BASE_API;
+
   //validation...
   const validationSchema = Yup.object().shape({
     title: Yup.string()
@@ -26,16 +28,12 @@ const TopicModalComponent = ({ getTopics }) => {
       formData.append("description", values.description);
       formData.append("picture", values.picture);
 
-      const response = await axios.post(
-        "http://localhost:8000/api/topics",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(`${BASE_URL}/topics`, formData, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (response.status === 201 || response.status === 200) {
         resetForm();

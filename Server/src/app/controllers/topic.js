@@ -251,6 +251,7 @@ exports.getTopic = async (req, res) => {
       ],
       attributes: ["id", "text"],
     });
+    questions.sort((a, b) => b.likes.length - a.likes.length);
 
     const formattedQuestions = questions.map((question) => {
       const sortedAnswers = question.answers
