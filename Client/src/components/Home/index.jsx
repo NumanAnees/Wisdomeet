@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { getToken } from "../../helpers/auth";
 import { handleFollowUnfollow } from "../../helpers/topicHelpers";
 import Question from "../Question";
-
+import TopicModalComponent from "./TopicModal";
 //css imports
 import "./home.css";
 
@@ -35,7 +35,6 @@ const Home = () => {
           },
         }
       );
-      //   console.log(Topics.data);
       setFollowing(Topics.data);
     } catch (error) {
       toast.error("Something went wrong!");
@@ -121,7 +120,10 @@ const Home = () => {
       <Container fluid>
         <Row>
           <Col xs={3} className="left-column">
-            <h2>All Topics</h2>
+            <div className="d-flex justify-content-between">
+              <h2>All Topics</h2>
+              <TopicModalComponent getTopics={getTopics} />
+            </div>
             {notFollowing &&
               notFollowing.map((topic) => {
                 return (

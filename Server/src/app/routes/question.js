@@ -35,7 +35,7 @@ router.put(
   updateQuestion
 );
 router.delete("/:id", requireSignin, authMiddleware, deleteQuestion);
-router.get("/:id", getQuestionWithAnswers);
+router.get("/:id", requireSignin, authMiddleware, getQuestionWithAnswers);
 router.post("/:id/like", requireSignin, authMiddleware, LikeQuestion);
 router.post("/:id/dislike", requireSignin, authMiddleware, DislikeQuestion);
 router.get("/", requireSignin, authMiddleware, getQuestionsByFollowedTopics);
