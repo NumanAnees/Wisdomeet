@@ -4,6 +4,7 @@ const Topic = require("../models/topic")(sequelize, DataTypes);
 const User = require("../models/user")(sequelize, DataTypes);
 const Question = require("../models/question")(sequelize, DataTypes);
 const UserFollows = require("../models/userFollows")(sequelize, DataTypes);
+const Like = require("../models/like")(sequelize, DataTypes);
 const cloudinary = require("../helpers/cloudinary.js");
 
 //----------------------------------------Create Question --------------------------------
@@ -88,5 +89,41 @@ exports.deleteQuestion = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error deleting question." });
+  }
+};
+
+//------------------------------------------------Like/Dislike a question ------------------------------------------------
+
+exports.LikeDislikeQuestion = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const questionId = req.params.id;
+
+    // Check if the question exists
+    const question = await Question.findByPk(questionId);
+    if (!question) {
+      return res.status(404).json({ message: "Question not found." });
+    }
+    // Check if the user is already liked the question
+    const existingLike = await Like.findOne({
+      where: { userId: userId, entityId: questionId, entityType: "question" },
+    });
+
+    if (existingLike) {
+      // If already following, dislike the question
+      await existingLike.destroy();
+      return res.status(200).json({ message: "You disliked a question." });
+    } else {
+      // If not following, like the question
+      await Like.create({
+        userId: userId,
+        entityId: questionId,
+        entityType: "question",
+      });
+      return res.status(201).json({ message: "You liked a question." });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to like question." });
   }
 };

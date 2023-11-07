@@ -4,6 +4,8 @@ const Topic = require("../models/topic")(sequelize, DataTypes);
 const User = require("../models/user")(sequelize, DataTypes);
 const UserFollows = require("../models/userFollows")(sequelize, DataTypes);
 const cloudinary = require("../helpers/cloudinary.js");
+const Question = require("../models/question")(sequelize, DataTypes);
+const Like = require("../models/like")(sequelize, DataTypes);
 
 //------------------------------Create a new topic ------------------------------
 exports.create = async (req, res) => {
@@ -184,17 +186,74 @@ exports.getAllTopics = async (req, res) => {
 };
 
 //-------------------------------------Get a single topic--------------------------------
+// exports.getTopic = async (req, res) => {
+//   try {
+//     const topicId = req.params.id;
+
+//     const topic = await Topic.findByPk(topicId);
+
+//     if (!topic) {
+//       return res.status(404).json({ message: "Topic not found." });
+//     }
+
+//     const questions = await Question.findAll({
+//       where: { topicId: topicId },
+//       include: [
+//         {
+//           model: Like, // Include the Like model
+//           attributes: ["id", "entityId", "userId"], // Add the attributes you need
+//         },
+//       ],
+//       attributes: ["id", "text", "createdAt", "updatedAt"],
+//     });
+
+//     res.status(200).json({ topic: topic, questions: questions });
+//   } catch (error) {
+//     console.error(error);
+
+//     res.status(500).json({ message: "Something went wrong." });
+//   }
+// };
+
+// topicController.js
 exports.getTopic = async (req, res) => {
   try {
     const topicId = req.params.id;
+
     const topic = await Topic.findByPk(topicId);
+
     if (!topic) {
       return res.status(404).json({ message: "Topic not found." });
     }
 
-    res.status(200).json({ topic: topic });
+    const questions = await sequelize.query(
+      `
+      SELECT
+        q.id,
+        q.text,
+        q."createdAt",
+        q."updatedAt",
+        COUNT(l.id) AS "likeCount"
+      FROM
+        "Questions" q
+      LEFT JOIN
+        "Likes" l ON q.id = l."entityId" AND l."entityType" = 'question'
+      WHERE
+        q."topicId" = :topicId
+      GROUP BY
+        q.id
+      ORDER BY
+        "likeCount" DESC
+    `,
+      {
+        replacements: { topicId },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    res.status(200).json({ topic: topic, questions: questions });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to retrieve topic." });
+    res.status(500).json({ message: "Something went wrong." });
   }
 };

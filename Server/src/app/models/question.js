@@ -29,8 +29,8 @@ module.exports = function (sequelize, Sequelize) {
   );
 
   Question.associate = (models) => {
-    Question.belongsTo(models.User, { foreignKey: "userId" }); // Establishes relationship with User model
-    Question.belongsTo(models.Topic, { foreignKey: "topicId" }); // Establishes relationship with Topic model
+    Question.belongsTo(models.User, { foreignKey: "userId" });
+    Question.belongsTo(models.Topic, { foreignKey: "topicId" });
     Question.hasMany(models.Like, {
       foreignKey: "entityId",
       constraints: false,
