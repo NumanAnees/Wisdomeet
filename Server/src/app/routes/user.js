@@ -16,6 +16,7 @@ const {
   about,
   viewProfile,
   search,
+  getAllUsers,
 } = require("../controllers/user");
 // import validator
 const {
@@ -56,5 +57,8 @@ router.get("/about/:id", viewProfile);
 
 // Search Users
 router.get("/", requireSignin, authMiddleware, search);
+
+// All Users
+router.get("/allusers", getAllUsers);
 
 module.exports = router;

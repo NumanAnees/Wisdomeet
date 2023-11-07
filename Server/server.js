@@ -27,7 +27,7 @@ app.use("/api", AppRoutes);
 
 //Testing route
 app.get("/", (req, res) => {
-  res.send({ message: "Hello World" });
+  res.send({ message: "Hello World!" });
 });
 
 app.listen(process.env.PORT, async () => {
