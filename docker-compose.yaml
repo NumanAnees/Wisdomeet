@@ -1,0 +1,45 @@
+version: "3"
+services:
+  client:
+    build:
+      context: ./Client
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_BASE_API: http://localhost:8000/api
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ./Server
+    ports:
+      - "8000:8000"
+    environment:
+      PORT: 8000
+      DB_HOST: localhost
+      DB_NAME: final
+      DB_PORT: 5432
+      DB_DIALECT: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: AVQAHE3qQHEHGEQEEQGQEQEQEADNNAELOAD
+      CLOUD_NAME: dhghdtteg
+      CLOUDINARY_KEY: 523389569168828
+      CLOUDINARY_SECRET: c_SYdsF1M5IauIZrA3PASXbdVl0
+      GMAIL_USER: numananees44@gmail.com
+      GMAIL_PASS: rjaumbtkqiebtppp
+      EMAIL_SECRET: A54682513E9659277DB3461E25D46BBB6E08B2355A730AF769DAB3D3EC23EF24
+    depends_on:
+      - postgres
+    links:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: final
+    ports:
+      - "5432:5432"
