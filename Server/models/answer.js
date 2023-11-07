@@ -34,7 +34,7 @@ module.exports = function (sequelize, Sequelize) {
     Answer.hasMany(models.Like, {
       foreignKey: "entityId",
       constraints: false,
-      scope: { entityType: "question" },
+      scope: { entityType: "answer" },
     });
   };
 

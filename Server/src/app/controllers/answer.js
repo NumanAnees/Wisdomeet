@@ -94,3 +94,39 @@ exports.deleteAnswer = async (req, res) => {
     res.status(500).json({ error: "Unable to delete the answer" });
   }
 };
+
+//------------------------------------------------Like/Dislike an answer ------------------------------------------------
+
+exports.LikeDislikeAnswer = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const answerId = req.params.id;
+
+    // Check if the answer exists
+    const answer = await Answer.findByPk(answerId);
+    if (!answer) {
+      return res.status(404).json({ message: "Answer not found." });
+    }
+    // Check if the user is already liked the answer
+    const existingLike = await Like.findOne({
+      where: { userId: userId, entityId: answerId, entityType: "answer" },
+    });
+
+    if (existingLike) {
+      // If already following, dislike the answer
+      await existingLike.destroy();
+      return res.status(200).json({ message: "You disliked an answer." });
+    } else {
+      // If not following, like the answer
+      await Like.create({
+        userId: userId,
+        entityId: answerId,
+        entityType: "answer",
+      });
+      return res.status(201).json({ message: "You liked a answer." });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to like answer." });
+  }
+};
