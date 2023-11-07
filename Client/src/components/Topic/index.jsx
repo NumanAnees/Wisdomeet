@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Layout from "../Layout";
 import { useNavigate, useParams } from "react-router-dom";
@@ -17,7 +17,6 @@ import "./topic.css";
 
 const Topic = () => {
   const { id } = useParams();
-  const editButtonRef = useRef(null);
   const Navigate = useNavigate();
   const [topic, setTopic] = useState();
   const [Questions, setQuestions] = useState();
@@ -123,8 +122,7 @@ const Topic = () => {
               </button>
               {isOwner && (
                 <div className="topic-card-buttons">
-                  <UpdateTopic data={topic} ref={editButtonRef} />
-
+                  <UpdateTopic data={topic} loadData={getTopic} />
                   <Button
                     icon={<DeleteOutlined />}
                     onClick={handleDelete}

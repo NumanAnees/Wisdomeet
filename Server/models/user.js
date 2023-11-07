@@ -25,7 +25,7 @@ module.exports = function (sequelize, Sequelize) {
         required: true,
         validate: {
           notEmpty: true,
-          len: [6, 255], // Minimum length of 6 characters
+          len: [6, 20], // Minimum length of 6 characters
         },
       },
       name: {
@@ -34,7 +34,7 @@ module.exports = function (sequelize, Sequelize) {
         required: true,
         validate: {
           notEmpty: true,
-          len: [3, 255],
+          len: [3, 20],
         },
       },
       age: {
