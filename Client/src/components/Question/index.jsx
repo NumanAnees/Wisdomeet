@@ -5,14 +5,25 @@ import {
   LikeOutlined,
   DislikeOutlined,
   CommentOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import Answer from "../Answer";
-import "./Question.css";
 import { Link, useNavigate } from "react-router-dom";
 import { getToken } from "../../helpers/auth";
 import { toast } from "react-toastify";
+import UpdateQuestionModal from "../UpdateQuestion";
 
-const Question = ({ question, answers, AnswerBtn, disabled }) => {
+import "./Question.css";
+
+const Question = ({
+  question,
+  answers,
+  AnswerBtn,
+  disabled,
+  isQuestionOwner,
+  isAnswerOwner,
+  loadData,
+}) => {
   const Navigate = useNavigate();
   const [likes, setLikes] = useState(question.likes);
   const [dislikes, setDislikes] = useState(question.dislikes);
@@ -117,8 +128,39 @@ const Question = ({ question, answers, AnswerBtn, disabled }) => {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      const request = await axios.delete(
+        `${BASE_URL}/questions/${question.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      if (request.status == 200 || request.status == 201) {
+        toast.success("Question deleted successfully");
+        loadData();
+      }
+    } catch (err) {
+      toast.error("Error deleting");
+      console.log(err);
+    }
+  };
   return (
     <Card className="question-card">
+      {isQuestionOwner && (
+        <div className="question-card-buttons">
+          <UpdateQuestionModal data={question} loadData={loadData} />
+
+          <Button
+            icon={<DeleteOutlined />}
+            onClick={handleDelete}
+            className="delete-button"
+            size="large"
+          />
+        </div>
+      )}
       <div className="question">
         <div className="question-card-main">
           <Avatar
@@ -128,7 +170,7 @@ const Question = ({ question, answers, AnswerBtn, disabled }) => {
             className="question-card-avatar"
           />
           <div>
-            <Link className="username-link" to={`/profile/${question.userId}`}>
+            <Link className="username-link" to={`/about/${question.userId}`}>
               <h3 className="question-card-username">{question.name}</h3>
             </Link>
             <span className="question-card-info">asked:</span>
@@ -171,9 +213,21 @@ const Question = ({ question, answers, AnswerBtn, disabled }) => {
           dataSource={answers}
           renderItem={(answer) => (
             <List.Item>
-              <Answer answer={answer} disabled={disabled || false} />
+              <Answer
+                answer={answer}
+                isAnswerOwner={isAnswerOwner}
+                disabled={disabled || false}
+                loadData={loadData}
+              />
             </List.Item>
           )}
+          locale={{
+            emptyText: (
+              <span style={{ margin: "2rem 0", display: "block" }}>
+                This Question has no Answers
+              </span>
+            ),
+          }}
         />
       </div>
     </Card>

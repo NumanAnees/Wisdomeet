@@ -20,7 +20,7 @@ const Login = () => {
   const handleLogin = async (values) => {
     try {
       const response = await axios.post(`${BASE_URL}/user/login`, values);
-
+      console.log("sasd", response);
       if (response.status === 200) {
         const { user, token } = response.data;
 
@@ -30,6 +30,8 @@ const Login = () => {
 
         toast.info("Welcome Back!");
         Navigate("/");
+      } else if (response.status === 203) {
+        toast.error("Please confirm your email address first");
       } else {
         toast.error("Invalid email or password");
       }

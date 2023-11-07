@@ -1,29 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Layout from "../Layout";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { Button } from "antd";
 import { toast } from "react-toastify";
 import { getToken } from "../../helpers/auth";
+import { DeleteOutlined } from "@ant-design/icons";
 import { Pagination } from "antd";
 import { handleFollowUnfollow } from "../../helpers/topicHelpers";
 import Question from "../Question";
 import QuestionModal from "./QuestionModal";
-
+import NoDataMessage from "../NoDataMessage";
+import UpdateTopic from "../UpdateTopic/index.jsx";
 //import css
 import "./topic.css";
 
 const Topic = () => {
   const { id } = useParams();
+  const editButtonRef = useRef(null);
+  const Navigate = useNavigate();
   const [topic, setTopic] = useState();
   const [Questions, setQuestions] = useState();
   const [followersCount, setFollowersCount] = useState();
   const [isFollowed, setIsFollowed] = useState();
   const [currentPage, setCurrentPage] = useState(1);
+  const [isOwner, setIsOwner] = useState();
   const questionsPerPage = 2;
   const startIndex = (currentPage - 1) * questionsPerPage;
   const endIndex = startIndex + questionsPerPage;
   const currentQuestions = Questions && Questions.slice(startIndex, endIndex);
   const BASE_URL = process.env.REACT_APP_BASE_API;
+  const authToken = getToken();
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -38,8 +45,24 @@ const Topic = () => {
     getTopic();
   };
 
+  const handleDelete = async () => {
+    try {
+      const request = await axios.delete(`${BASE_URL}/topics/${topic.id}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      if (request.status == 200 || request.status == 201) {
+        toast.success("Topic deleted successfully");
+        Navigate("/");
+      }
+    } catch (err) {
+      toast.error("Error deleting");
+      console.log(err);
+    }
+  };
+
   const getTopic = async () => {
-    const authToken = getToken();
     try {
       //get topic...
       const topic = await axios.get(`${BASE_URL}/topics/${id}`, {
@@ -50,6 +73,7 @@ const Topic = () => {
       setTopic(topic.data.Topic);
       setQuestions(topic.data.Questions);
       setIsFollowed(topic.data.isFollowed);
+      setIsOwner(topic.data.isOwner);
       //get followers count...
       const followers = await axios.get(`${BASE_URL}/topics/${id}/followers`);
       setFollowersCount(followers.data.followersCount);
@@ -97,6 +121,18 @@ const Topic = () => {
               <button className="btn btn-secondary m-2">
                 {followersCount} Followers
               </button>
+              {isOwner && (
+                <div className="topic-card-buttons">
+                  <UpdateTopic data={topic} ref={editButtonRef} />
+
+                  <Button
+                    icon={<DeleteOutlined />}
+                    onClick={handleDelete}
+                    className="delete-button"
+                    size="large"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -108,7 +144,7 @@ const Topic = () => {
             </div>
           </div>
           <div className="topic-questions-content">
-            {currentQuestions &&
+            {currentQuestions?.length > 0 ? (
               currentQuestions.map((item, index) => {
                 return (
                   <Question
@@ -119,14 +155,18 @@ const Topic = () => {
                     disabled={true}
                   />
                 );
-              })}
-
-            <Pagination
-              current={currentPage}
-              pageSize={questionsPerPage}
-              total={Questions && Questions.length}
-              onChange={handlePageChange}
-            />
+              })
+            ) : (
+              <NoDataMessage text="Question to show..." />
+            )}
+            {currentQuestions?.length > 0 && (
+              <Pagination
+                current={currentPage}
+                pageSize={questionsPerPage}
+                total={Questions && Questions.length}
+                onChange={handlePageChange}
+              />
+            )}
           </div>
         </div>
       </div>

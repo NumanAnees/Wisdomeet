@@ -38,3 +38,19 @@
   margin-top: 0.7rem;
   margin-left: 1.5rem;
 }
+.edit-button {
+  color: white;
+  background-color: rgb(107, 157, 26);
+  margin: 2px;
+}
+.delete-button {
+  color: white;
+  background-color: #b92b27;
+  margin: 2px;
+}
+.edit-button:hover {
+  color: white !important;
+}
+.delete-button:hover {
+  color: white !important;
+}

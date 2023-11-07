@@ -30,6 +30,8 @@
 .topic-link {
   outline: none;
   text-decoration: none !important;
+  overflow-x: hidden;
+  word-break: break-word;
 }
 .topic-card:hover {
   background-color: #c4acac78;

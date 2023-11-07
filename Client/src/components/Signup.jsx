@@ -16,9 +16,11 @@ const Signup = () => {
       .required("Email is required"),
     password: Yup.string()
       .min(6, "Password must be at least 6 characters long")
+      .max(20, "password must be at most 20 characters long")
       .required("Password is required"),
     name: Yup.string()
       .min(3, "Name must be at least 3 characters long")
+      .max(20, "Name must be at most 20 characters long")
       .required("Name is required"),
     age: Yup.number()
       .integer("Age must be an integer")
@@ -28,6 +30,17 @@ const Signup = () => {
     gender: Yup.string()
       .oneOf(["male", "female"], "Invalid gender")
       .required("Gender is required"),
+    picture: Yup.mixed()
+      .required("Picture is required")
+      .test(
+        "fileType",
+        "Invalid file format. Only JPG, JPEG, or PNG allowed.",
+        (value) => {
+          if (!value) return true;
+          const supportedFormats = ["image/jpeg", "image/jpg", "image/png"];
+          return supportedFormats.includes(value.type);
+        }
+      ),
   });
 
   const handleSignup = async (values, { resetForm }) => {

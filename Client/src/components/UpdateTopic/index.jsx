@@ -5,32 +5,29 @@ import * as Yup from "yup";
 import axios from "axios";
 import { getToken } from "../../helpers/auth";
 import { toast } from "react-toastify";
+import { Button } from "antd";
+import { EditOutlined } from "@ant-design/icons";
 
-const TopicModalComponent = ({ getTopics }) => {
+const TopicModalComponent = ({ data }) => {
   const [open, setOpen] = useState(false);
   const BASE_URL = process.env.REACT_APP_BASE_API;
 
-  //validation...
+  const initialValues = {
+    title: data ? data.title : "",
+    description: data ? data.description : "",
+    picture: data ? data.picture : null,
+  };
+
   const validationSchema = Yup.object().shape({
     title: Yup.string()
-      .min(3, "title must be at least 3 characters long")
-      .max(100, "title must be at most 100 characters long")
+      .min(3, "Title must be at least 3 characters long")
+      .max(100, "Title must be at most 100 characters long")
       .required("Title is required"),
     description: Yup.string()
-      .min(3, "description must be at least 3 characters long")
-      .max(100, "description must be at most 100 characters long")
+      .min(3, "Description must be at least 3 characters long")
+      .max(100, "Description must be at most 100 characters long")
       .required("Description is required"),
-    picture: Yup.mixed()
-      .required("Picture is required")
-      .test(
-        "fileType",
-        "Invalid file format. Only JPG, JPEG, or PNG allowed.",
-        (value) => {
-          if (!value) return true;
-          const supportedFormats = ["image/jpeg", "image/jpg", "image/png"];
-          return supportedFormats.includes(value.type);
-        }
-      ),
+    picture: Yup.mixed().required("Picture is required"),
   });
 
   const handleSubmit = async (values, { resetForm }) => {
@@ -41,33 +38,39 @@ const TopicModalComponent = ({ getTopics }) => {
       formData.append("description", values.description);
       formData.append("picture", values.picture);
 
-      const response = await axios.post(`${BASE_URL}/topics`, formData, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      let response = await axios.put(
+        `${BASE_URL}/topics/${data.id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (response.status === 201 || response.status === 200) {
         resetForm();
         setOpen(false);
-        getTopics();
-        toast.success("Topic added successfully!");
+        toast.success("Topic updated successfully!");
+        window.location.reload();
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to add topic");
+      toast.error("Failed to update topic");
     }
   };
 
   return (
     <>
-      <button className="nav-btn" onClick={() => setOpen(true)}>
-        Add Topic
-      </button>
-
+      <Button
+        icon={<EditOutlined />}
+        onClick={() => setOpen(true)}
+        className="edit-button"
+        size="large"
+      />
       <Modal
-        title="Add new Topic"
+        title="Edit Topic"
         centered
         open={open}
         footer={null}
@@ -76,17 +79,11 @@ const TopicModalComponent = ({ getTopics }) => {
         onCancel={() => setOpen(false)}
       >
         <Formik
-          initialValues={{
-            title: "",
-            description: "",
-            picture: null,
-          }}
+          initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {(
-            { setFieldValue } // Use setFieldValue to handle file input changes manually
-          ) => (
+          {({ setFieldValue }) => (
             <Form>
               <div className="mb-3">
                 <Field
@@ -122,7 +119,7 @@ const TopicModalComponent = ({ getTopics }) => {
                   name="picture"
                   className="form-control"
                   onChange={(event) => {
-                    setFieldValue("picture", event.currentTarget.files[0]); //imp...
+                    setFieldValue("picture", event.currentTarget.files[0]);
                   }}
                 />
                 <ErrorMessage
@@ -132,7 +129,7 @@ const TopicModalComponent = ({ getTopics }) => {
                 />
               </div>
               <button type="submit" className="btn btn-danger w-100">
-                Add Topic
+                Edit Topic
               </button>
             </Form>
           )}

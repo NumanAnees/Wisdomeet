@@ -2,22 +2,24 @@ import React, { useState } from "react";
 import { Modal } from "antd";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { getToken } from "../../helpers/auth";
+import { Button } from "antd";
+import { EditOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import * as Yup from "yup";
 import axios from "axios";
 
-const AnswerModal = ({ getAnswers }) => {
+const UpdateQuestionModal = ({ data, loadData }) => {
   const { id } = useParams();
   const [open, setOpen] = useState(false);
   const BASE_URL = process.env.REACT_APP_BASE_API;
 
-  //validation...
+  // Validation schema
   const validationSchema = Yup.object().shape({
     text: Yup.string()
-      .min(3, "text must be at least 3 characters long")
-      .max(100, "text must be at most 100 characters long")
-      .required("Title is required"),
+      .min(3, "Text must be at least 3 characters long")
+      .max(100, "Text must be at most 100 characters long")
+      .required("Text is required"),
   });
 
   const handleSubmit = async (values, { resetForm }) => {
@@ -26,33 +28,40 @@ const AnswerModal = ({ getAnswers }) => {
       const formData = new FormData();
       formData.append("text", values.text);
 
-      const response = await axios.post(`${BASE_URL}/answers/${id}`, formData, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.put(
+        `${BASE_URL}/questions/${data.id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-      if (response.status === 201 || response.status === 200) {
+      if (response.status === 200) {
         resetForm();
         setOpen(false);
-        getAnswers();
-        toast.success("Answer added successfully!");
+        loadData();
+        toast.success("Question updated successfully!");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to add answer!");
+      toast.error("Failed to update Question!");
     }
   };
 
   return (
     <>
-      <button className="nav-btn" onClick={() => setOpen(true)}>
-        Post Answer
-      </button>
+      <Button
+        icon={<EditOutlined />}
+        onClick={() => setOpen(true)}
+        className="edit-button"
+        size="large"
+      />
 
       <Modal
-        title="Add new Answer"
+        title="Edit Question"
         centered
         open={open}
         footer={null}
@@ -62,7 +71,7 @@ const AnswerModal = ({ getAnswers }) => {
       >
         <Formik
           initialValues={{
-            text: "",
+            text: data ? data.text : "",
           }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
@@ -74,8 +83,8 @@ const AnswerModal = ({ getAnswers }) => {
                   as="textarea"
                   name="text"
                   className="form-control"
-                  placeholder="Your Answer"
-                  rows={6} // number of rows needed to display
+                  placeholder="Your Question"
+                  rows={6}
                 />
                 <ErrorMessage
                   name="text"
@@ -84,7 +93,7 @@ const AnswerModal = ({ getAnswers }) => {
                 />
               </div>
               <button type="submit" className="btn btn-danger w-100">
-                Add Answer
+                Update Question
               </button>
             </Form>
           )}
@@ -94,4 +103,4 @@ const AnswerModal = ({ getAnswers }) => {
   );
 };
 
-export default AnswerModal;
+export default UpdateQuestionModal;
