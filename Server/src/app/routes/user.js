@@ -59,6 +59,6 @@ router.get("/about/:id", viewProfile);
 router.get("/", requireSignin, authMiddleware, search);
 
 // All Users
-router.get("/allusers", getAllUsers);
+router.get("/users", getAllUsers);
 
 module.exports = router;

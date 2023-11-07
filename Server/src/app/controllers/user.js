@@ -509,7 +509,6 @@ exports.search = async (req, res) => {
 //get all users from database
 exports.getAllUsers = async (req, res) => {
   try {
-    console.log("hello");
     const users = await User.findAll();
     res.status(200).json(users);
   } catch (error) {
