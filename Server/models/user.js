@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../../db/db");
+const sequelize = require("../src/db/db");
 const bcrypt = require("bcrypt");
 
 module.exports = function (sequelize, Sequelize) {
@@ -73,29 +73,29 @@ module.exports = function (sequelize, Sequelize) {
 
   User.associate = (models) => {
     User.hasOne(models.Topic, {
+      foreignKey: "createdBy",
+    });
+    User.belongsToMany(models.Topic, {
+      through: models.UserFollows,
+      as: "followedTopics",
       foreignKey: "userId",
     });
-    // User.hasMany(models.Question);
+    User.hasMany(models.Question, {
+      foreignKey: "userId",
+    });
+    User.hasMany(models.Like, {
+      foreignKey: "userId",
+    });
+
     // User.hasMany(models.Answer);
     // User.belongsToMany(models.Topic, { through: models.UserTopic });
-    // User.hasMany(models.Like, {
-    //   foreignKey: "userId",
-    //   constraints: false,
-    //   scope: {
-    //     entityType: "user",
-    //   },
-    // });
+
     // User.hasMany(models.Dislike, {
     //   foreignKey: "userId",
     //   constraints: false,
     //   scope: {
     //     entityType: "user",
     //   },
-    // });
-    // User.belongsToMany(models.Topic, {
-    //   through: models.UserFollows,
-    //   as: "followedTopics",
-    //   foreignKey: "userId",
     // });
   };
 

@@ -7,7 +7,6 @@ module.exports = {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-        allowNull: false,
       },
       text: {
         type: Sequelize.TEXT,
@@ -28,14 +27,6 @@ module.exports = {
           model: "Topics",
           key: "id",
         },
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
       },
     });
   },
