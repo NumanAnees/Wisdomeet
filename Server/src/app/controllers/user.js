@@ -1,6 +1,5 @@
 //Libraries imports
 const jwt = require("jsonwebtoken");
-const sequelize = require("../../db/db");
 const passport = require("passport");
 const cloudinary = require("../helpers/cloudinary.js");
 const { Op } = require("sequelize");
@@ -19,7 +18,6 @@ exports.register = async (req, res) => {
   try {
     const { email, password, name, age, gender } = req.body;
 
-    // Check if the email is already registered
     const existingUser = await User.findOne({ where: { email: email } });
     if (existingUser) {
       return res.status(409).json({ message: "Email is already registered." });
@@ -85,20 +83,17 @@ exports.update = async (req, res, next) => {
   const userId = req.user.id;
 
   try {
-    // Find the user by ID
     const user = await User.findByPk(userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
 
-    // Update allowed fields: name, age, gender, and password
     user.name = req.body.name;
     user.age = req.body.age;
     user.gender = req.body.gender;
     user.password = req.body.password;
 
-    // Save updated user data
     await user.save();
 
     res.status(201).json({ message: "User information updated successfully." });
@@ -113,14 +108,12 @@ exports.deleteUser = async (req, res, next) => {
   const userId = req.params.id;
 
   try {
-    // Find the user by ID
     const user = await User.findByPk(userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
 
-    // Delete user
     await user.destroy();
 
     res.status(200).json({ message: "User deleted successfully." });
@@ -133,9 +126,8 @@ exports.deleteUser = async (req, res, next) => {
 //------------------------------------------User Questions-------------------------------------------
 exports.getUserQuestions = async (req, res) => {
   try {
-    const userId = req.user.id; // Get the current logged-in user's ID
+    const userId = req.user.id;
 
-    // Retrieve all questions posted by the user
     const userQuestions = await Question.findAll({
       where: {
         userId: userId,
@@ -151,20 +143,18 @@ exports.getUserQuestions = async (req, res) => {
 //--------------------------------------------About me---------------------------------------------
 exports.about = async (req, res) => {
   try {
-    const userId = req.user.id; // Assuming you pass the user ID as a route parameter
+    const userId = req.user.id;
 
-    // Find the user by ID with their followed topics
-    // Find the user by ID with their followed topics, asked questions, and answers
     const user = await User.findByPk(userId, {
       include: [
         {
           model: Topic,
           as: "followedTopics",
-          through: "UserFollows", // Make sure to use the correct through model name
+          through: "UserFollows",
         },
         {
           model: Question,
-          attributes: ["id", "text"], // Include only necessary attributes
+          attributes: ["id", "text"],
           include: [
             {
               model: Like,
@@ -174,7 +164,7 @@ exports.about = async (req, res) => {
         },
         {
           model: Answer,
-          attributes: ["id", "text"], // Include only necessary attributes
+          attributes: ["id", "text"],
           include: [
             {
               model: Like,
@@ -189,7 +179,7 @@ exports.about = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    res.status(200).json(user); // Respond with user info, followed topics, asked questions, and answers
+    res.status(200).json(user);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Unable to fetch user info" });
@@ -201,14 +191,12 @@ exports.viewProfile = async (req, res) => {
   try {
     const userId = req.params.id;
 
-    // Fetch user information
     const user = await User.findByPk(userId);
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Fetch questions answered by the user
     const answeredQuestions = await Question.findAll({
       include: [
         {
@@ -228,13 +216,12 @@ exports.viewProfile = async (req, res) => {
 //------------------------------------------Search Topic --------------------------------
 exports.search = async (req, res) => {
   try {
-    const keyword = req.query.keyword; // Get the keyword from the query parameter
+    const keyword = req.query.keyword;
 
-    // Find questions that contain the keyword in their text
     const questions = await Question.findAll({
       where: {
         text: {
-          [Op.like]: `%${keyword}%`, // Use the "like" operator to search for a partial match
+          [Op.like]: `%${keyword}%`,
         },
       },
       include: [

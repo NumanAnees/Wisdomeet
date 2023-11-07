@@ -1,5 +1,4 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../models");
 
 module.exports = function (sequelize, Sequelize) {
   const Answer = sequelize.define(

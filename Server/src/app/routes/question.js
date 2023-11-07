@@ -15,7 +15,8 @@ const {
 const { questionValidator } = require("../validators/question");
 const { runValidation } = require("../validators");
 
-//Routes
+//----------------------------Routes----------------------------
+
 router.post(
   "/:id",
   requireSignin,
