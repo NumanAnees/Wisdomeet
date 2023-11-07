@@ -1,6 +1,6 @@
 const sequelize = require("../db/db");
 const { DataTypes } = require("sequelize");
-const User = require("../app/models/user")(sequelize, DataTypes);
+const User = require("../../models/user")(sequelize, DataTypes);
 const passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
 
