@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
+import { toast } from "react-toastify";
+
+import { handleFollowUnfollow } from "../../helpers/topicHelpers";
+import { get } from "../../helpers/axiosHelper";
 import Layout from "../Layout";
 import TopicCard from "./TopicCard";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { getToken } from "../../helpers/auth";
-import { handleFollowUnfollow } from "../../helpers/topicHelpers";
 import Question from "../Question";
 import TopicModalComponent from "./TopicModal";
 import SearchModal from "./SearchModal";
 import NoDataMessage from "../NoDataMessage";
 
-//css imports
 import "./home.css";
 
 const Home = () => {
@@ -22,27 +21,18 @@ const Home = () => {
   const BASE_URL = process.env.REACT_APP_BASE_API;
 
   const getTopics = async () => {
-    const authToken = getToken();
     try {
-      const AllTopics = await axios.get(`${BASE_URL}/topics`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      const AllTopics = await get(`${BASE_URL}/topics`);
       setNotFollowing(AllTopics.data);
-      const Topics = await axios.get(`${BASE_URL}/topics/followed`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      const Topics = await get(`${BASE_URL}/topics/followed`);
       setFollowing(Topics.data);
     } catch (error) {
       toast.error("Something went wrong!");
       console.error("There was a problem with the request:", error);
     }
   };
-  //follow unfollow handler
-  const handleFollowUnfollowBtn = async (id) => {
+
+  const handleFollowUnfollowBtn = async id => {
     try {
       await handleFollowUnfollow(id);
       getTopics();
@@ -53,14 +43,8 @@ const Home = () => {
     }
   };
   const getQuestions = async () => {
-    const authToken = getToken();
-
     try {
-      const questions = await axios.get(`${BASE_URL}/questions/`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      const questions = await get(`${BASE_URL}/questions/`);
       setQuestions(questions.data);
     } catch (err) {
       console.error("There was a problem with the request:", err);
@@ -88,16 +72,14 @@ const Home = () => {
               <TopicModalComponent getTopics={getTopics} />
             </div>
             {notFollowing?.length > 0 ? (
-              notFollowing.map((topic) => {
-                return (
-                  <TopicCard
-                    key={topic.id}
-                    topic={topic}
-                    handleFollowUnfollowBtn={handleFollowUnfollowBtn}
-                    left={true}
-                    NoFollowButton={true}
-                  />
-                );
+              notFollowing.map(topic => {
+                <TopicCard
+                  key={topic.id}
+                  topic={topic}
+                  handleFollowUnfollowBtn={handleFollowUnfollowBtn}
+                  left={true}
+                  NoFollowButton={true}
+                />;
               })
             ) : (
               <NoDataMessage text="Topic" />
@@ -111,23 +93,13 @@ const Home = () => {
                   Clear
                 </button>
               ) : (
-                <SearchModal
-                  setQuestions={setQuestions}
-                  setIsSearchOpen={setIsSearchOpen}
-                />
+                <SearchModal setQuestions={setQuestions} setIsSearchOpen={setIsSearchOpen} />
               )}
             </div>
             <div style={{ height: "1000px" }}>
               {Questions?.length > 0 ? (
-                Questions.map((item) => {
-                  return (
-                    <Question
-                      key={item.question.id}
-                      question={item.question}
-                      answers={item.answers}
-                      AnswerBtn={true}
-                    />
-                  );
+                Questions.map(item => {
+                  <Question key={item.question.id} question={item.question} answers={item.answers} AnswerBtn={true} />;
                 })
               ) : (
                 <NoDataMessage text="Question to show..." />
@@ -137,16 +109,14 @@ const Home = () => {
           <Col xs={3} className="right-column">
             <h2 className="heading-main">Followed Topics</h2>
             {following?.length > 0 ? (
-              following.map((topic) => {
-                return (
-                  <TopicCard
-                    key={topic.id}
-                    topic={topic}
-                    handleFollowUnfollowBtn={handleFollowUnfollowBtn}
-                    left={false}
-                    NoFollowButton={true}
-                  />
-                );
+              following.map(topic => {
+                <TopicCard
+                  key={topic.id}
+                  topic={topic}
+                  handleFollowUnfollowBtn={handleFollowUnfollowBtn}
+                  left={false}
+                  NoFollowButton={true}
+                />;
               })
             ) : (
               <NoDataMessage text="Followed Topics" />

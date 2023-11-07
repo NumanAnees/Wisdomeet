@@ -1,14 +1,13 @@
+const { User, Topic, Question, Like, Answer, Dislike } = require("../../../models");
 const {
-  User,
-  Topic,
-  Question,
-  Like,
-  Answer,
-  Dislike,
-} = require("../../../models");
+  HTTP_STATUS_OK,
+  HTTP_STATUS_CREATED,
+  HTTP_STATUS_SERVER_ERROR,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_NOT_ALLOWED,
+} = require("../helpers/constants");
 
 const sequelize = require("sequelize");
-//----------------------------------------Create Question --------------------------------
 exports.createQuestion = async (req, res) => {
   try {
     const { text } = req.body;
@@ -17,10 +16,9 @@ exports.createQuestion = async (req, res) => {
     for (let i = 0; i < topicIds.length; i++) {
       const topic = await Topic.findByPk(topicIds[i]);
       if (!topic) {
-        return res.status(404).json({ message: "Topic not found." });
+        return res.status(HTTP_STATUS_NOT_FOUND).json({ message: "Topic not found." });
       }
 
-      // Create a new question
       const newQuestion = await Question.create({
         text: text,
         userId: req.user.id,
@@ -28,17 +26,15 @@ exports.createQuestion = async (req, res) => {
       });
       createQuestions.push(newQuestion);
     }
-    res.status(201).json({
+    res.status(HTTP_STATUS_CREATED).json({
       message: "Question created successfully.",
       question: createQuestions,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error creating question." });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ message: "Error creating question." });
   }
 };
-
-//-------------------------------------------Update Question --------------------------------
 
 exports.updateQuestion = async (req, res) => {
   try {
@@ -47,25 +43,23 @@ exports.updateQuestion = async (req, res) => {
 
     const question = await Question.findByPk(questionId);
     if (!question) {
-      return res.status(404).json({ message: "Question not found." });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ message: "Question not found." });
     }
 
     if (question.userId !== req.user.id) {
-      return res.status(403).json({
+      return res.status(HTTP_STATUS_NOT_ALLOWED).json({
         message: "You do not have permission to update this question.",
       });
     }
 
     await question.update({ text: text });
 
-    res.status(200).json({ message: "Question updated successfully." });
+    res.status(HTTP_STATUS_OK).json({ message: "Question updated successfully." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error updating question." });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ message: "Error updating question." });
   }
 };
-
-// ---------------------------------------------- Delete Question ----------------------------------------
 
 exports.deleteQuestion = async (req, res) => {
   try {
@@ -73,24 +67,24 @@ exports.deleteQuestion = async (req, res) => {
 
     const question = await Question.findByPk(questionId);
     if (!question) {
-      return res.status(404).json({ message: "Question not found." });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ message: "Question not found." });
     }
 
     if (question.userId !== req.user.id) {
-      return res.status(403).json({
+      return res.status(HTTP_STATUS_NOT_ALLOWED).json({
         message: "You do not have permission to delete this question.",
       });
     }
 
     await question.destroy();
 
-    res.status(200).json({ message: "Question deleted successfully." });
+    res.status(HTTP_STATUS_OK).json({ message: "Question deleted successfully." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error deleting question." });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ message: "Error deleting question." });
   }
 };
-//-----------------------------------------------Get Single Question --------------------------------
+
 exports.getQuestionWithAnswers = async (req, res) => {
   try {
     const questionId = req.params.id;
@@ -139,16 +133,12 @@ exports.getQuestionWithAnswers = async (req, res) => {
     });
 
     if (!question) {
-      return res.status(404).json({ error: "Question not found" });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ error: "Question not found" });
     }
 
-    const isLikedQuestion = question.likes.some(
-      (like) => like.userId == req.user.id
-    );
+    const isLikedQuestion = question.likes.some((like) => like.userId == req.user.id);
 
-    const isDislikedQuestion = question.dislikes.some(
-      (dislike) => dislike.userId == req.user.id
-    );
+    const isDislikedQuestion = question.dislikes.some((dislike) => dislike.userId == req.user.id);
 
     const formattedQuestion = {
       id: question.id,
@@ -163,13 +153,9 @@ exports.getQuestionWithAnswers = async (req, res) => {
     };
 
     const sortedAnswers = question.answers.map((answer) => {
-      const isLikedAnswer = answer.likes.some(
-        (like) => like.userId == req.user.id
-      );
+      const isLikedAnswer = answer.likes.some((like) => like.userId == req.user.id);
 
-      const isDislikedAnswer = answer.dislikes.some(
-        (dislike) => dislike.userId == req.user.id
-      );
+      const isDislikedAnswer = answer.dislikes.some((dislike) => dislike.userId == req.user.id);
 
       return {
         id: answer.id,
@@ -186,16 +172,13 @@ exports.getQuestionWithAnswers = async (req, res) => {
 
     sortedAnswers.sort((a, b) => b.likes - a.likes);
 
-    res
-      .status(200)
-      .json({ question: formattedQuestion, answers: sortedAnswers });
+    res.status(HTTP_STATUS_OK).json({ question: formattedQuestion, answers: sortedAnswers });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Unable to fetch question and answers" });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ error: "Unable to fetch question and answers" });
   }
 };
 
-//---------------------------------------------Like a Question ------------------------------------------------
 exports.LikeQuestion = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -203,7 +186,7 @@ exports.LikeQuestion = async (req, res) => {
 
     const question = await Question.findByPk(questionId);
     if (!question) {
-      return res.status(404).json({ message: "Question not found." });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ message: "Question not found." });
     }
     const existingLike = await Like.findOne({
       where: { userId: userId, questionId: questionId, entityType: "question" },
@@ -211,23 +194,20 @@ exports.LikeQuestion = async (req, res) => {
 
     if (existingLike) {
       await existingLike.destroy();
-      return res.status(200).json({ message: "Like Removed." });
+      return res.status(HTTP_STATUS_OK).json({ message: "Like Removed." });
     } else {
-      // If not Liked the question
       await Like.create({
         userId: userId,
         questionId: questionId,
         entityType: "question",
       });
-      return res.status(201).json({ message: "Like Added." });
+      return res.status(HTTP_STATUS_CREATED).json({ message: "Like Added." });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to like question." });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ message: "Failed to like question." });
   }
 };
-
-//------------------------------------------------Dislike a question ------------------------------------------------
 
 exports.DislikeQuestion = async (req, res) => {
   try {
@@ -236,7 +216,7 @@ exports.DislikeQuestion = async (req, res) => {
 
     const question = await Question.findByPk(questionId);
     if (!question) {
-      return res.status(404).json({ message: "Question not found." });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ message: "Question not found." });
     }
     const existingLike = await Dislike.findOne({
       where: { userId: userId, questionId: questionId, entityType: "question" },
@@ -244,23 +224,21 @@ exports.DislikeQuestion = async (req, res) => {
 
     if (existingLike) {
       await existingLike.destroy();
-      return res.status(200).json({ message: "Dislike Removed." });
+      return res.status(HTTP_STATUS_OK).json({ message: "Dislike Removed." });
     } else {
-      // If not Liked the question
       await Dislike.create({
         userId: userId,
         questionId: questionId,
         entityType: "question",
       });
-      return res.status(201).json({ message: "Dislike Added." });
+      return res.status(HTTP_STATUS_CREATED).json({ message: "Dislike Added." });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to Dislike question." });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ message: "Failed to Dislike question." });
   }
 };
 
-//--------------------------------------Questions of topics followings--------------------------------
 exports.getQuestionsByFollowedTopics = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -270,7 +248,7 @@ exports.getQuestionsByFollowedTopics = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ error: "User not found" });
     }
 
     const followedTopics = await Topic.findAll({
@@ -345,9 +323,7 @@ exports.getQuestionsByFollowedTopics = async (req, res) => {
             likes: totalAnswerLikes,
             dislikes: totalAnswerDislikes,
             isLiked: !!answer.likes.find((like) => like.userId == userId),
-            isDisliked: !!answer.dislikes.find(
-              (dislike) => dislike.userId == userId
-            ),
+            isDisliked: !!answer.dislikes.find((dislike) => dislike.userId == userId),
           };
         })
         .sort((a, b) => b.likes - a.likes)
@@ -363,19 +339,15 @@ exports.getQuestionsByFollowedTopics = async (req, res) => {
           likes: totalQuestionLikes,
           dislikes: totalQuestionDislikes,
           isLiked: !!question.likes.find((like) => like.userId == userId),
-          isDisliked: !!question.dislikes.find(
-            (dislike) => dislike.userId == userId
-          ),
+          isDisliked: !!question.dislikes.find((dislike) => dislike.userId == userId),
         },
         answers: sortedAnswers,
       };
     });
 
-    res.status(200).json(formattedQuestions);
+    res.status(HTTP_STATUS_OK).json(formattedQuestions);
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ error: "Unable to fetch questions from followed topics" });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ error: "Unable to fetch questions from followed topics" });
   }
 };

@@ -1,27 +1,31 @@
 const { Like, Answer, Dislike } = require("../../../models");
+const {
+  HTTP_STATUS_OK,
+  HTTP_STATUS_CREATED,
+  HTTP_STATUS_SERVER_ERROR,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_NOT_ALLOWED,
+} = require("../helpers/constants");
 
-// -------------------------------------------Create answer-------------------------------------------------
 exports.createAnswer = async (req, res) => {
   try {
     const { text } = req.body;
     const questionId = req.params.id;
     const userId = req.user.id;
 
-    // Create the answer
     const newAnswer = await Answer.create({
       text,
       userId,
       questionId,
     });
 
-    res.status(201).json(newAnswer);
+    res.status(HTTP_STATUS_CREATED).json(newAnswer);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Unable to create the answer" });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ error: "Unable to create the answer" });
   }
 };
 
-//---------------------------------------------Update Answer --------------------------------
 exports.updateAnswer = async (req, res) => {
   try {
     const { id } = req.params;
@@ -31,28 +35,24 @@ exports.updateAnswer = async (req, res) => {
     const existingAnswer = await Answer.findByPk(id);
 
     if (!existingAnswer) {
-      return res.status(404).json({ error: "Answer not found" });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ error: "Answer not found" });
     }
 
     if (existingAnswer.userId !== userId) {
-      return res
-        .status(403)
-        .json({ error: "You are not authorized to update this answer" });
+      return res.status(HTTP_STATUS_NOT_ALLOWED).json({ error: "You are not authorized to update this answer" });
     }
 
-    // Update the answer
     await existingAnswer.update({
       text,
     });
 
-    res.status(200).json(existingAnswer);
+    res.status(HTTP_STATUS_OK).json(existingAnswer);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Unable to update the answer" });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ error: "Unable to update the answer" });
   }
 };
 
-//-------------------------------------Delete Answer --------------------------------
 exports.deleteAnswer = async (req, res) => {
   try {
     const { id } = req.params;
@@ -61,26 +61,21 @@ exports.deleteAnswer = async (req, res) => {
     const existingAnswer = await Answer.findByPk(id);
 
     if (!existingAnswer) {
-      return res.status(404).json({ error: "Answer not found" });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ error: "Answer not found" });
     }
 
     if (existingAnswer.userId !== userId) {
-      return res
-        .status(403)
-        .json({ error: "You are not authorized to delete this answer" });
+      return res.status(HTTP_STATUS_NOT_ALLOWED).json({ error: "You are not authorized to delete this answer" });
     }
 
-    // Delete the answer
     await existingAnswer.destroy();
 
-    res.status(200).json({ message: "Answer deleted successfully." });
+    res.status(HTTP_STATUS_OK).json({ message: "Answer deleted successfully." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Unable to delete the answer" });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ error: "Unable to delete the answer" });
   }
 };
-
-//------------------------------------------------Like an answer ------------------------------------------------
 
 exports.LikeAnswer = async (req, res) => {
   try {
@@ -89,7 +84,7 @@ exports.LikeAnswer = async (req, res) => {
 
     const answer = await Answer.findByPk(answerId);
     if (!answer) {
-      return res.status(404).json({ message: "Answer not found." });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ message: "Answer not found." });
     }
     const existingLike = await Like.findOne({
       where: { userId: userId, answerId: answerId, entityType: "answer" },
@@ -97,22 +92,20 @@ exports.LikeAnswer = async (req, res) => {
 
     if (existingLike) {
       await existingLike.destroy();
-      return res.status(200).json({ message: "Like Removed." });
+      return res.status(HTTP_STATUS_OK).json({ message: "Like Removed." });
     } else {
       await Like.create({
         userId: userId,
         answerId: answerId,
         entityType: "answer",
       });
-      return res.status(201).json({ message: "Like Added." });
+      return res.status(HTTP_STATUS_CREATED).json({ message: "Like Added." });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to like answer." });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ message: "Failed to like answer." });
   }
 };
-
-//------------------------------------------------Dislike an answer ------------------------------------------------
 
 exports.DislikeAnswer = async (req, res) => {
   try {
@@ -121,7 +114,7 @@ exports.DislikeAnswer = async (req, res) => {
 
     const answer = await Answer.findByPk(answerId);
     if (!answer) {
-      return res.status(404).json({ message: "Answer not found." });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ message: "Answer not found." });
     }
     const existingLike = await Dislike.findOne({
       where: { userId: userId, answerId: answerId, entityType: "answer" },
@@ -129,17 +122,17 @@ exports.DislikeAnswer = async (req, res) => {
 
     if (existingLike) {
       await existingLike.destroy();
-      return res.status(200).json({ message: "Dislike Removed." });
+      return res.status(HTTP_STATUS_OK).json({ message: "Dislike Removed." });
     } else {
       await Dislike.create({
         userId: userId,
         answerId: answerId,
         entityType: "answer",
       });
-      return res.status(201).json({ message: "Dislike Added." });
+      return res.status(HTTP_STATUS_CREATED).json({ message: "Dislike Added." });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to like answer." });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ message: "Failed to like answer." });
   }
 };
