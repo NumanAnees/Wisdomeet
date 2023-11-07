@@ -24,6 +24,7 @@ module.exports = function (sequelize, Sequelize) {
         allowNull: false,
         validate: {
           notEmpty: true,
+          len: [6, 255], // Minimum length of 6 characters
         },
       },
       name: {
@@ -31,6 +32,7 @@ module.exports = function (sequelize, Sequelize) {
         allowNull: false,
         validate: {
           notEmpty: true,
+          len: [3, 255], // Minimum length of 3 characters
         },
       },
       age: {
@@ -38,7 +40,8 @@ module.exports = function (sequelize, Sequelize) {
         allowNull: false,
         validate: {
           isInt: true,
-          min: 0,
+          min: 1, // Minimum age of 1
+          max: 149, // Maximum age of 149
         },
       },
       gender: {
@@ -53,6 +56,15 @@ module.exports = function (sequelize, Sequelize) {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      role: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "user",
+        validate: {
+          notEmpty: true,
+          isIn: [["admin", "user"]],
+        },
+      },
     },
     {
       timestamps: false,
@@ -65,8 +77,10 @@ module.exports = function (sequelize, Sequelize) {
     user.password = hashedPassword;
   });
   User.beforeUpdate(async (user) => {
-    const hashedPassword = await bcrypt.hash(user.password, 10);
-    user.password = hashedPassword;
+    if (user.changed("password")) {
+      const hashedPassword = await bcrypt.hash(user.password, 10);
+      user.password = hashedPassword;
+    }
   });
 
   User.prototype.validPassword = function (password) {
