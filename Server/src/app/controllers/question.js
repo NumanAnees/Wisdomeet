@@ -158,33 +158,55 @@ exports.LikeDislikeQuestion = async (req, res) => {
 
 //--------------------------------------Questions of topics followings--------------------------------
 exports.getQuestionsByFollowedTopics = async (req, res) => {
-  console.log("Getting");
-};
-
-//------------------------------------------Search Question --------------------------------
-exports.searchQuestions = async (req, res) => {
   try {
-    const keyword = req.query.keyword; // Get the keyword from the query parameter
+    const userId = req.user.id; // Assuming you have authentication middleware
 
-    // Find questions that contain the keyword in their text
-    const questions = await Question.findAll({
-      where: {
-        text: {
-          [Op.like]: `%${keyword}%`, // Use the "like" operator to search for a partial match
-        },
-      },
+    // Fetch topics followed by the user
+    const user = await User.findByPk(userId, {
       include: [
         {
-          model: Like,
-          attributes: ["id", "entityId", "userId"],
+          model: Topic,
+          as: "followedTopics",
         },
       ],
-      attributes: ["id", "text"],
     });
 
-    res.status(200).json({ questions: questions });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Extract followed topic IDs
+    const followedTopicIds = user.followedTopics.map((topic) => topic.id);
+
+    // Fetch questions related to followed topics and include all answers
+    const questions = await Question.findAll({
+      where: { topicId: followedTopicIds },
+      include: [
+        {
+          model: Answer,
+          include: [
+            {
+              model: Like,
+            },
+          ],
+        },
+      ],
+    });
+
+    // Sort answers by the number of likes for each question
+    questions.forEach((question) => {
+      question.Answers.sort((a, b) => {
+        const likeCountA = a.Likes.length;
+        const likeCountB = b.Likes.length;
+        return likeCountB - likeCountA; // Sort in descending order by like count
+      });
+    });
+
+    res.status(200).json({ user, questions });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Something went wrong." });
+    res
+      .status(500)
+      .json({ error: "Unable to fetch followed topics and questions" });
   }
 };

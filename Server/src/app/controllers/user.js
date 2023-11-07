@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const sequelize = require("../../db/db");
 const passport = require("passport");
 const cloudinary = require("../helpers/cloudinary.js");
+const { Op } = require("sequelize");
 
 const {
   User,
@@ -221,5 +222,33 @@ exports.viewProfile = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Unable to fetch user profile" });
+  }
+};
+
+//------------------------------------------Search Topic --------------------------------
+exports.search = async (req, res) => {
+  try {
+    const keyword = req.query.keyword; // Get the keyword from the query parameter
+
+    // Find questions that contain the keyword in their text
+    const questions = await Question.findAll({
+      where: {
+        text: {
+          [Op.like]: `%${keyword}%`, // Use the "like" operator to search for a partial match
+        },
+      },
+      include: [
+        {
+          model: Like,
+          attributes: ["id", "entityId", "userId"],
+        },
+      ],
+      attributes: ["id", "text"],
+    });
+
+    res.status(200).json({ questions: questions });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong." });
   }
 };

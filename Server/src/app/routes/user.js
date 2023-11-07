@@ -15,6 +15,7 @@ const {
   getUserQuestions,
   about,
   viewProfile,
+  search,
 } = require("../controllers/user");
 // import validator
 const {
@@ -39,5 +40,6 @@ router.delete("/:id", requireSignin, adminMiddleware, deleteUser);
 router.get("/questions", requireSignin, authMiddleware, getUserQuestions);
 router.get("/about", requireSignin, authMiddleware, about);
 router.get("/about/:id", viewProfile);
+router.get("/", search);
 
 module.exports = router;
