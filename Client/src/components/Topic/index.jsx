@@ -19,8 +19,8 @@ const Topic = () => {
     getTopic();
   }, [isFollowed]);
 
-  const handleFollowUnfollowBtn = (id) => {
-    handleFollowUnfollow(id);
+  const handleFollowUnfollowBtn = async (id) => {
+    await handleFollowUnfollow(id);
     setIsFollowed(!isFollowed);
     getTopic();
   };

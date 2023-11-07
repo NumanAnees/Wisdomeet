@@ -43,7 +43,7 @@ const Home = () => {
   //follow unfollow handler
   const handleFollowUnfollowBtn = async (id) => {
     try {
-      handleFollowUnfollow(id);
+      await handleFollowUnfollow(id);
       //update the following and notFollowing
       getTopics();
     } catch (err) {
@@ -68,7 +68,7 @@ const Home = () => {
                   <TopicCard
                     key={topic.id}
                     topic={topic}
-                    handleFollowUnfollow={handleFollowUnfollowBtn}
+                    handleFollowUnfollowBtn={handleFollowUnfollowBtn}
                     left={true}
                   />
                 );
@@ -91,7 +91,7 @@ const Home = () => {
                   <TopicCard
                     key={topic.id}
                     topic={topic}
-                    handleFollowUnfollow={handleFollowUnfollowBtn}
+                    handleFollowUnfollowBtn={handleFollowUnfollowBtn}
                     left={false}
                   />
                 );
