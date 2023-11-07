@@ -14,6 +14,7 @@ import "./home.css";
 const Home = () => {
   const [following, setFollowing] = useState();
   const [notFollowing, setNotFollowing] = useState();
+  const [Questions, setQuestions] = useState();
 
   const getTopics = async () => {
     const authToken = getToken();
@@ -47,6 +48,26 @@ const Home = () => {
       await handleFollowUnfollow(id);
       //update the following and notFollowing
       getTopics();
+      getQuestions();
+    } catch (err) {
+      console.error("There was a problem with the request:", err);
+      toast.error("Something went wrong!");
+    }
+  };
+  const getQuestions = async () => {
+    const authToken = getToken();
+
+    try {
+      const questions = await axios.get(
+        "http://localhost:8000/api/questions/",
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      // console.log(questions.data);
+      setQuestions(questions.data);
     } catch (err) {
       console.error("There was a problem with the request:", err);
       toast.error("Something went wrong!");
@@ -54,38 +75,45 @@ const Home = () => {
   };
 
   //delete this...................
-  const dummyQuestion = {
-    name: "John Doe",
-    picture: "https://example.com/johndoe-avatar.jpg",
-    text: "What is the capital of France?",
-  };
+  // const dummyQuestion = {
+  //   id: 1,
+  //   name: "John Doe",
+  //   picture: "https://example.com/johndoe-avatar.jpg",
+  //   text: "What is the capital of France?",
+  //   likes: 5,
+  //   dislikes: 1,
+  // };
 
-  const dummyAnswers = [
-    {
-      name: "Alice Smith",
-      picture: "https://example.com/alicesmith-avatar.jpg",
-      text: "The capital of France is Paris.",
-      likes: 5,
-      dislikes: 1,
-    },
-    {
-      name: "Bob Johnson",
-      picture: "https://example.com/bobjohnson-avatar.jpg",
-      text: "Yes, it's Paris.",
-      likes: 3,
-      dislikes: 0,
-    },
-    {
-      name: "Eva Williams",
-      picture: "https://example.com/evawilliams-avatar.jpg",
-      text: "I think it's Paris too.",
-      likes: 2,
-      dislikes: 0,
-    },
-  ];
+  // const dummyAnswers = [
+  //   {
+  //     id: 1,
+  //     name: "Alice Smith",
+  //     picture: "https://example.com/alicesmith-avatar.jpg",
+  //     text: "The capital of France is Paris.",
+  //     likes: 5,
+  //     dislikes: 1,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Bob Johnson",
+  //     picture: "https://example.com/bobjohnson-avatar.jpg",
+  //     text: "Yes, it's Paris.",
+  //     likes: 3,
+  //     dislikes: 0,
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Eva Williams",
+  //     picture: "https://example.com/evawilliams-avatar.jpg",
+  //     text: "I think it's Paris too.",
+  //     likes: 2,
+  //     dislikes: 0,
+  //   },
+  // ];
 
   useEffect(() => {
     getTopics();
+    getQuestions();
   }, []);
 
   return (
@@ -109,9 +137,17 @@ const Home = () => {
           <Col xs={6} className="center-column">
             <h2 className="mt-2">All Questions:</h2>
             <div style={{ height: "1000px" }}>
-              <Question question={dummyQuestion} answers={dummyAnswers} />
-              <Question question={dummyQuestion} answers={dummyAnswers} />
-              <Question question={dummyQuestion} answers={dummyAnswers} />
+              {Questions &&
+                Questions.map((item) => {
+                  return (
+                    <Question
+                      key={item.question.id}
+                      question={item.question}
+                      answers={item.answers}
+                      AnswerBtn={true}
+                    />
+                  );
+                })}
             </div>
           </Col>
           <Col xs={3} className="right-column">

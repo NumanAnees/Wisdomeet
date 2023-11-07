@@ -73,6 +73,7 @@ module.exports = function (sequelize, Sequelize) {
   User.associate = (models) => {
     User.hasOne(models.Topic, {
       foreignKey: "createdBy",
+      as: "createdTopics", // Add this alias
     });
     User.belongsToMany(models.Topic, {
       through: models.UserFollows,
@@ -81,15 +82,19 @@ module.exports = function (sequelize, Sequelize) {
     });
     User.hasMany(models.Question, {
       foreignKey: "userId",
+      as: "questions", // Add this alias
     });
     User.hasMany(models.Like, {
       foreignKey: "userId",
+      as: "likes", // Add this alias
     });
     User.hasMany(models.Answer, {
       foreignKey: "userId",
+      as: "answers", // Add this alias
     });
     User.hasMany(models.Dislike, {
       foreignKey: "userId",
+      as: "dislikes", // Add this alias
     });
   };
 

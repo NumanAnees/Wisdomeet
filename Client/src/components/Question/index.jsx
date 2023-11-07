@@ -7,12 +7,19 @@ import {
 } from "@ant-design/icons";
 import Answer from "../Answer";
 import "./Question.css";
+import { useNavigate } from "react-router-dom";
 
-const Question = ({ question, answers }) => {
-  const [likes, setLikes] = useState(0);
-  const [dislikes, setDislikes] = useState(0);
+const Question = ({ question, answers, AnswerBtn }) => {
+  const Navigate = useNavigate();
+  const [likes, setLikes] = useState(question.likes);
+  const [dislikes, setDislikes] = useState(question.dislikes);
   const [userLiked, setUserLiked] = useState(false);
   const [userDisliked, setUserDisliked] = useState(false);
+
+  //show all answers
+  const showAnswers = () => {
+    Navigate(`/question/${question.id}`);
+  };
 
   const handleLike = () => {
     if (userLiked) {
@@ -75,9 +82,15 @@ const Question = ({ question, answers }) => {
           >
             {dislikes}
           </Button>
-          <Button className="btn-style" icon={<CommentOutlined />}>
-            Answer
-          </Button>
+          {AnswerBtn && (
+            <Button
+              className="btn-style"
+              onClick={showAnswers}
+              icon={<CommentOutlined />}
+            >
+              Answers
+            </Button>
+          )}
         </div>
       </div>
       <div className="answers">

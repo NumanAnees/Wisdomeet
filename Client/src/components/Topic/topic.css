@@ -22,3 +22,11 @@
 .topic-follow-btn {
   margin-top: 2rem;
 }
+.topic-questions {
+  margin-top: 4rem;
+}
+.topic-questions-title {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+}

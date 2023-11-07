@@ -5,13 +5,15 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { getToken } from "../../helpers/auth";
 import { handleFollowUnfollow } from "../../helpers/topicHelpers";
+import Question from "../Question";
+import QuestionModal from "./QuestionModal";
 //import css
 import "./topic.css";
 
 const Topic = () => {
   const { id } = useParams();
   const [topic, setTopic] = useState();
-  const [questions, setQuestions] = useState();
+  const [Questions, setQuestions] = useState();
   const [followersCount, setFollowersCount] = useState();
   const [isFollowed, setIsFollowed] = useState();
 
@@ -84,6 +86,27 @@ const Topic = () => {
                 </button>
               )}
             </div>
+          </div>
+        </div>
+        <div className="topic-questions">
+          <div className="topic-questions-title">
+            <h4>Questions</h4>
+            <div className="topic-questions-btn">
+              <QuestionModal getTopic={getTopic} />
+            </div>
+          </div>
+          <div className="topic-questions-content">
+            {Questions &&
+              Questions.map((item) => {
+                return (
+                  <Question
+                    key={item.question.id}
+                    question={item.question}
+                    answers={item.answers}
+                    AnswerBtn={true}
+                  />
+                );
+              })}
           </div>
         </div>
       </div>

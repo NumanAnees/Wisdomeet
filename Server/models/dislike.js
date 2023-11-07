@@ -20,24 +20,33 @@ module.exports = function (sequelize, Sequelize) {
           isIn: [["question", "answer"]],
         },
       },
-      entityId: {
+      questionId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        defaultValue: null,
+        allowNull: true,
+      },
+      answerId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null,
       },
     },
     { timestamps: false }
   );
 
   Dislike.associate = (models) => {
-    Dislike.belongsTo(models.User, { foreignKey: "userId" });
-    // Create associations for both questions and answers
+    Dislike.belongsTo(models.User, {
+      foreignKey: "userId",
+      as: "user",
+    });
+
     Dislike.belongsTo(models.Question, {
-      foreignKey: "entityId",
+      foreignKey: "questionId",
       constraints: false,
       scope: { entityType: "question" },
     });
     Dislike.belongsTo(models.Answer, {
-      foreignKey: "entityId",
+      foreignKey: "answerId",
       constraints: false,
       scope: { entityType: "answer" },
     });
