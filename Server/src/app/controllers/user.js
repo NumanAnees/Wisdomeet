@@ -13,6 +13,7 @@ const {
   Answer,
   Dislike,
 } = require("../../../models");
+const { QuestionHelper } = require("../helpers/ControllerHelper.js");
 
 //-----------------------------Register--------------------------------
 exports.register = async (req, res) => {
@@ -153,7 +154,7 @@ exports.about = async (req, res) => {
         {
           model: Topic,
           as: "followedTopics",
-          attributes: ["id", "title"],
+          attributes: ["id", "title", "topicPicture"],
           through: {
             attributes: [],
           },
@@ -162,11 +163,36 @@ exports.about = async (req, res) => {
           model: Question,
           as: "questions",
           attributes: ["id", "text"],
+          include: [
+            {
+              model: Like,
+              as: "likes",
+            },
+            {
+              model: Dislike,
+              as: "dislikes",
+            },
+          ],
         },
         {
           model: Answer,
           as: "answers",
-          attributes: ["id", "text"],
+          attributes: ["id", "text", "questionId"],
+          include: [
+            {
+              model: Like,
+              as: "likes",
+            },
+            {
+              model: Dislike,
+              as: "dislikes",
+            },
+            {
+              model: Question, // Include the Question model for answers
+              as: "question",
+              attributes: ["id", "text"], // You can add more attributes as needed
+            },
+          ],
         },
       ],
     });
@@ -175,7 +201,70 @@ exports.about = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    res.status(200).json(user);
+    // Map followed topics
+    const followedTopics = user.followedTopics.map((topic) => ({
+      id: topic.id,
+      title: topic.title,
+      topicPicture: topic.topicPicture,
+    }));
+
+    // Map questions with empty answers arrays
+    const userQuestions = user.questions.map((question) => ({
+      question: {
+        id: question.id,
+        name: user.name,
+        picture: user.profilePic,
+        text: question.text,
+        likes: question.likes.length,
+        dislikes: question.dislikes.length,
+        isLiked: !!question.likes.find((like) => like.userId === userId),
+        isDisliked: !!question.dislikes.find(
+          (dislike) => dislike.userId === userId
+        ),
+      },
+      answers: [],
+    }));
+
+    // Map answers to questions
+    const userAnswers = await Promise.all(
+      user.answers.map(async (answer) => {
+        const questionId = answer.questionId;
+        // const question = userQuestions.find(
+        //   (q) => q.question.id === questionId
+        // );
+        const question = await QuestionHelper(questionId, req.user.id);
+        return {
+          question: question, // Include the question data
+          answers: [
+            {
+              id: answer.id,
+              name: user.name,
+              picture: user.profilePic,
+              text: answer.text,
+              likes: answer.likes.length,
+              dislikes: answer.dislikes.length,
+              isLiked: !!answer.likes.find((like) => like.userId === userId),
+              isDisliked: !!answer.dislikes.find(
+                (dislike) => dislike.userId === userId
+              ),
+            },
+          ],
+        };
+      })
+    );
+    res.status(200).json({
+      id: user.id,
+      email: user.email,
+      password: user.password,
+      name: user.name,
+      age: user.age,
+      gender: user.gender,
+      profilePic: user.profilePic,
+      role: user.role,
+      followedTopics,
+      questions_posted: userQuestions,
+      answer_posted: userAnswers,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Unable to fetch user info" });
