@@ -31,7 +31,7 @@ module.exports = function (sequelize, Sequelize) {
         allowNull: false,
         validate: {
           notEmpty: true,
-          len: [3, 255], // Minimum length of 3 characters
+          len: [3, 255],
         },
       },
       age: {
@@ -39,8 +39,8 @@ module.exports = function (sequelize, Sequelize) {
         allowNull: false,
         validate: {
           isInt: true,
-          min: 1, // Minimum age of 1
-          max: 149, // Maximum age of 149
+          min: 1,
+          max: 149,
         },
       },
       gender: {
@@ -86,6 +86,9 @@ module.exports = function (sequelize, Sequelize) {
       foreignKey: "userId",
     });
     User.hasMany(models.Answer, {
+      foreignKey: "userId",
+    });
+    User.hasMany(models.Dislike, {
       foreignKey: "userId",
     });
   };

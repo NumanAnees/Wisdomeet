@@ -7,6 +7,7 @@ const {
   UserFollows,
   Like,
   Answer,
+  Dislike,
 } = require("../../../models");
 
 //------------------------------Create a new topic ------------------------------
