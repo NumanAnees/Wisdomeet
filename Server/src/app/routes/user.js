@@ -7,7 +7,13 @@ const {
   adminMiddleware,
 } = require("../helpers/auth");
 //import controllers
-const { register, login, update, deleteUser } = require("../controllers/user");
+const {
+  register,
+  login,
+  update,
+  deleteUser,
+  getUserQuestions,
+} = require("../controllers/user");
 // import validator
 const {
   userUpdateValidator,
@@ -28,5 +34,6 @@ router.put(
   update
 );
 router.delete("/:id", requireSignin, adminMiddleware, deleteUser);
+router.get("/questions", requireSignin, authMiddleware, getUserQuestions);
 
 module.exports = router;

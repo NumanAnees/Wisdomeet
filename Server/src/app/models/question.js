@@ -1,53 +1,51 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../../db/db");
 
-const Question = sequelize.define(
-  "Question",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
+module.exports = function (sequelize, Sequelize) {
+  const Question = sequelize.define(
+    "Question",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      text: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      topicId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
     },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    description: {
-      type: DataTypes.STRING,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-  },
-  {
-    timestamps: false,
-  }
-);
+    {
+      timestamps: true,
+    }
+  );
 
-Question.associate = (models) => {
-  Question.belongsTo(models.Topic);
-  Question.belongsTo(models.User);
-  Question.hasMany(models.Answer);
-  Question.hasMany(models.Like, {
-    foreignKey: "entityId",
-    constraints: false,
-    scope: {
-      entityType: "question",
-    },
-  });
-  Question.hasMany(models.Dislike, {
-    foreignKey: "entityId",
-    constraints: false,
-    scope: {
-      entityType: "question",
-    },
-  });
+  Question.associate = (models) => {
+    Question.belongsTo(models.User, { foreignKey: "userId" }); // Establishes relationship with User model
+    Question.belongsTo(models.Topic, { foreignKey: "topicId" }); // Establishes relationship with Topic model
+    Question.hasMany(models.Like, {
+      foreignKey: "entityId",
+      constraints: false,
+      scope: {
+        entityType: "question",
+      },
+    });
+    Question.hasMany(models.Dislike, {
+      foreignKey: "entityId",
+      constraints: false,
+      scope: {
+        entityType: "question",
+      },
+    });
+  };
+
+  return Question;
 };
-
-module.exports = Question;
