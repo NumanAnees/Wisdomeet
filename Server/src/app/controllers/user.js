@@ -505,8 +505,7 @@ exports.search = async (req, res) => {
     res.status(500).json({ message: "Something went wrong." });
   }
 };
-
-//get all users from database
+//-----------------------------------------------------All useers --------------------------------
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll();

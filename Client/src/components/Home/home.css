@@ -9,7 +9,7 @@
   background-color: #fff;
   overflow-y: auto;
   height: 89vh;
-  position: relative; /* Add this line */
+  position: relative;
 
   scrollbar-width: none;
   /* -ms-overflow-style: none; for Internet Explorer and Microsoft Edge */
@@ -61,7 +61,7 @@
   top: 0;
   background-color: #fff;
   z-index: 1;
-  padding: 1rem 1rem; /* Adjust padding as needed */
+  padding: 1rem 1rem;
   border-bottom: 0.2px solid rgba(187, 183, 183, 0.397);
 }
 .heading-main {
