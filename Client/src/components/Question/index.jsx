@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { Card, Avatar, Button, List } from "antd";
 import {
   LikeOutlined,
@@ -10,7 +11,6 @@ import "./Question.css";
 import { Link, useNavigate } from "react-router-dom";
 import { getToken } from "../../helpers/auth";
 import { toast } from "react-toastify";
-import axios from "axios";
 
 const Question = ({ question, answers, AnswerBtn }) => {
   const Navigate = useNavigate();
@@ -19,9 +19,8 @@ const Question = ({ question, answers, AnswerBtn }) => {
   const [userLiked, setUserLiked] = useState(question.isLiked);
   const [userDisliked, setUserDisliked] = useState(question.isDisliked);
   const authToken = getToken();
-  const BASE_URL = process.env.BASE_API;
+  const BASE_URL = process.env.REACT_APP_BASE_API;
 
-  //show all answers
   const showAnswers = () => {
     Navigate(`/question/${question.id}`);
   };
@@ -41,7 +40,6 @@ const Question = ({ question, answers, AnswerBtn }) => {
             },
           }
         );
-        console.log(like.data);
       } else {
         setLikes(likes + 1);
         setUserLiked(true);
@@ -55,7 +53,6 @@ const Question = ({ question, answers, AnswerBtn }) => {
             },
           }
         );
-        console.log(like.data);
         if (userDisliked) {
           setDislikes(dislikes - 1);
           setUserDisliked(false);
@@ -69,11 +66,9 @@ const Question = ({ question, answers, AnswerBtn }) => {
               },
             }
           );
-          console.log(dislike.data);
         }
       }
     } catch (err) {
-      console.log(err);
       toast.error("An error occurred");
     }
   };
@@ -92,7 +87,6 @@ const Question = ({ question, answers, AnswerBtn }) => {
           },
         }
       );
-      console.log(dislike.data);
     } else {
       setDislikes(dislikes + 1);
       setUserDisliked(true);
@@ -106,7 +100,6 @@ const Question = ({ question, answers, AnswerBtn }) => {
           },
         }
       );
-      console.log(dislike.data);
       if (userLiked) {
         setLikes(likes - 1);
         setUserLiked(false);
@@ -120,7 +113,6 @@ const Question = ({ question, answers, AnswerBtn }) => {
             },
           }
         );
-        console.log(like.data);
       }
     }
   };

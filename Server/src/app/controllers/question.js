@@ -2,7 +2,6 @@ const {
   User,
   Topic,
   Question,
-  UserFollows,
   Like,
   Answer,
   Dislike,

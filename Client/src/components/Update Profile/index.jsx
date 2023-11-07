@@ -1,11 +1,11 @@
 import React from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import Layout from "../Layout";
-import { Input, Button, Typography } from "antd";
 import axios from "axios";
-import { getToken, getUser } from "../../helpers/auth";
 import { toast } from "react-toastify";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Input, Button, Typography } from "antd";
+import { getToken, getUser } from "../../helpers/auth";
+import Layout from "../Layout";
 
 //css imports
 import "./about.css";
@@ -15,7 +15,7 @@ const { Title } = Typography;
 const About = () => {
   // Get user data from local storage
   const currentUser = getUser();
-  const BASE_URL = process.env.BASE_API;
+  const BASE_URL = process.env.REACT_APP_BASE_API;
   const { name, age, gender } = currentUser;
 
   // Define validation schema using Yup

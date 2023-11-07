@@ -8,7 +8,6 @@ const {
   User,
   Topic,
   Question,
-  UserFollows,
   Like,
   Answer,
   Dislike,
@@ -33,7 +32,6 @@ exports.register = async (req, res) => {
           console.error(error);
         } else {
           //if everything is ok
-          console.log(result);
           const profilePic = result.url;
           // Create a new user
           const newUser = await User.create({

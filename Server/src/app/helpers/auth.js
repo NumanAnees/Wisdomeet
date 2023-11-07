@@ -11,7 +11,6 @@ exports.requireSignin = expressJwt({
 
 exports.authMiddleware = async (req, res, next) => {
   const authUserId = req.user.id;
-  console.log(req.user);
   const user = await User.findOne({ where: { id: authUserId } });
   if (!user) {
     return res.status(400).json({

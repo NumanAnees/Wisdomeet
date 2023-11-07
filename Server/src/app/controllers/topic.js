@@ -31,7 +31,6 @@ exports.create = async (req, res) => {
           console.error(error);
         } else {
           //if everything is ok
-          console.log(result);
           const topicPicture = result.url;
           // Create a new topic
           const newTopic = await Topic.create({

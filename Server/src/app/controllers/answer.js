@@ -1,12 +1,4 @@
-const {
-  User,
-  Topic,
-  Question,
-  UserFollows,
-  Like,
-  Answer,
-  Dislike,
-} = require("../../../models");
+const { Like, Answer, Dislike } = require("../../../models");
 
 // -------------------------------------------Create answer-------------------------------------------------
 exports.createAnswer = async (req, res) => {

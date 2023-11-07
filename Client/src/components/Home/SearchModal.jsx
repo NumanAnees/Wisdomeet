@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Modal } from "antd";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { getToken } from "../../helpers/auth";
@@ -9,7 +8,7 @@ import { getToken } from "../../helpers/auth";
 const SearchModal = ({ setQuestions, setIsSearchOpen }) => {
   const [open, setOpen] = useState(false);
   const authToken = getToken();
-  const BASE_URL = process.env.BASE_API;
+  const BASE_URL = process.env.REACT_APP_BASE_API;
 
   const handleSubmit = async (values, { resetForm }) => {
     try {

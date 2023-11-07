@@ -23,7 +23,6 @@ function Layout({ children }) {
   useEffect(() => {
     const user = getUser();
     setUser(user);
-    console.log(user);
   }, []);
 
   const handleLogout = () => {

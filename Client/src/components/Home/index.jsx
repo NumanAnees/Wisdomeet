@@ -18,19 +18,17 @@ const Home = () => {
   const [notFollowing, setNotFollowing] = useState();
   const [Questions, setQuestions] = useState();
   const [IsSearchOpen, setIsSearchOpen] = useState();
-  const BASE_URL = process.env.BASE_API;
+  const BASE_URL = process.env.REACT_APP_BASE_API;
 
   const getTopics = async () => {
     const authToken = getToken();
     try {
-      //request for all topics excluding the following ones
       const AllTopics = await axios.get(`${BASE_URL}/topics`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
       });
       setNotFollowing(AllTopics.data);
-      //request for topics following
       const Topics = await axios.get(`${BASE_URL}/topics/followed`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -46,7 +44,6 @@ const Home = () => {
   const handleFollowUnfollowBtn = async (id) => {
     try {
       await handleFollowUnfollow(id);
-      //update the following and notFollowing
       getTopics();
       getQuestions();
     } catch (err) {
@@ -63,7 +60,6 @@ const Home = () => {
           Authorization: `Bearer ${authToken}`,
         },
       });
-      // console.log(questions.data);
       setQuestions(questions.data);
     } catch (err) {
       console.error("There was a problem with the request:", err);

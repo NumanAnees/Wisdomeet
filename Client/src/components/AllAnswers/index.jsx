@@ -13,7 +13,7 @@ import "./AllAnswers.css";
 const AllAnswers = () => {
   const { id } = useParams();
   const [question, setQuestion] = useState();
-  const BASE_URL = process.env.BASE_API;
+  const BASE_URL = process.env.REACT_APP_BASE_API;
 
   useEffect(() => {
     getAnswers();
@@ -28,10 +28,8 @@ const AllAnswers = () => {
           Authorization: `Bearer ${authToken}`,
         },
       });
-      console.log(answers.data);
       setQuestion(answers.data);
     } catch (error) {
-      console.log(error);
       toast.error(error.message);
     }
   };

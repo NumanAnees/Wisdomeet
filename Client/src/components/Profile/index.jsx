@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Layout from "../Layout";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from "axios";
 import { getToken } from "../../helpers/auth";
 import { Tabs } from "antd";
 import QuestionAnswerTab from "./QuestionAnswerTab";
@@ -17,7 +17,7 @@ const Profile = () => {
   const [Questions, setQuestions] = useState();
   const [Answers, setAnswers] = useState();
   const [topics, setTopics] = useState();
-  const BASE_URL = process.env.BASE_API;
+  const BASE_URL = process.env.REACT_APP_BASE_API;
 
   useEffect(() => {
     getUser();
@@ -40,7 +40,6 @@ const Profile = () => {
           },
         });
       }
-      console.log(request.data);
       const user = {
         id: request.data.id,
         name: request.data.name,
@@ -54,7 +53,6 @@ const Profile = () => {
       setTopics(request.data.followedTopics);
       setUser(user);
     } catch (error) {
-      console.log(error);
       toast.error(error.message);
     }
   };

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Avatar, Button } from "antd";
 import { LikeOutlined, DislikeOutlined } from "@ant-design/icons";
-import "./Answer.css";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { getToken } from "../../helpers/auth";
 import { Link } from "react-router-dom";
+import axios from "axios";
+
+import "./Answer.css";
 
 const Answer = ({ answer }) => {
   const [likes, setLikes] = useState(answer.likes);
@@ -13,7 +14,7 @@ const Answer = ({ answer }) => {
   const [userLiked, setUserLiked] = useState(answer.isLiked);
   const [userDisliked, setUserDisliked] = useState(answer.isDisliked);
   const authToken = getToken();
-  const BASE_URL = process.env.BASE_API;
+  const BASE_URL = process.env.REACT_APP_BASE_API;
 
   const handleLike = async () => {
     try {
@@ -30,13 +31,12 @@ const Answer = ({ answer }) => {
             },
           }
         );
-        console.log(like.data);
       } else {
         setLikes(likes + 1);
         setUserLiked(true);
         // call like api to add like...
         const like = await axios.post(
-          `${BASE_URL}/api/answers/${answer.id}/like`,
+          `${BASE_URL}/answers/${answer.id}/like`,
           {},
           {
             headers: {
@@ -44,7 +44,6 @@ const Answer = ({ answer }) => {
             },
           }
         );
-        console.log(like.data);
         if (userDisliked) {
           setDislikes(dislikes - 1);
           setUserDisliked(false);
@@ -58,11 +57,9 @@ const Answer = ({ answer }) => {
               },
             }
           );
-          console.log(dislike.data);
         }
       }
     } catch (err) {
-      console.log(err);
       toast.error("An error occurred");
     }
   };
@@ -81,7 +78,6 @@ const Answer = ({ answer }) => {
           },
         }
       );
-      console.log(dislike.data);
     } else {
       setDislikes(dislikes + 1);
       setUserDisliked(true);
@@ -95,13 +91,12 @@ const Answer = ({ answer }) => {
           },
         }
       );
-      console.log(dislike.data);
       if (userLiked) {
         setLikes(likes - 1);
         setUserLiked(false);
         // if liked already, remove that like...
         const like = await axios.post(
-          `${BASE_URL}/api/answers/${answer.id}/like`,
+          `${BASE_URL}/answers/${answer.id}/like`,
           {},
           {
             headers: {
@@ -109,7 +104,6 @@ const Answer = ({ answer }) => {
             },
           }
         );
-        console.log(like.data);
       }
     }
   };
