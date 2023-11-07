@@ -6,13 +6,13 @@ exports.topicValidator = [
     .not()
     .isEmpty()
     .withMessage("Title is required")
-    .isLength({ min: 3 })
-    .withMessage("Title must be at least 3 characters long"),
+    .isLength({ min: 3, max: 100 })
+    .withMessage("Title must 3 to 100 characters long"),
   check("description")
     .trim()
     .not()
     .isEmpty()
     .withMessage("Description is required")
-    .isLength({ min: 3 })
-    .withMessage("Description must be at least 3 characters long"),
+    .isLength({ min: 3, max: 100 })
+    .withMessage("Description must 3 to 100 characters long"),
 ];

@@ -19,6 +19,7 @@ module.exports = {
       password: {
         type: Sequelize.STRING,
         allowNull: false,
+        required: true,
         validate: {
           notEmpty: true,
           len: [6, 255],
@@ -27,14 +28,21 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
         allowNull: false,
+        required: true,
         validate: {
           notEmpty: true,
           len: [3, 255],
         },
       },
+      isVerified: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
+      },
       age: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        required: true,
         validate: {
           isInt: true,
           min: 1,
@@ -44,6 +52,7 @@ module.exports = {
       gender: {
         type: Sequelize.STRING,
         allowNull: false,
+        required: true,
         validate: {
           notEmpty: true,
           isIn: [["male", "female"]],
@@ -51,7 +60,8 @@ module.exports = {
       },
       profilePic: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
+        required: true,
       },
       role: {
         type: Sequelize.STRING,
@@ -61,14 +71,14 @@ module.exports = {
           notEmpty: true,
           isIn: [["admin", "user"]],
         },
-        createdAt: {
-          type: Sequelize.DATE,
-          allowNull: true,
-        },
-        updatedAt: {
-          type: Sequelize.DATE,
-          allowNull: true,
-        },
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
       },
     });
   },

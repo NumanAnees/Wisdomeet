@@ -67,9 +67,13 @@ exports.login = async (req, res, next) => {
       return next(err);
     }
     if (!user) {
-      return res.status(401).json({ message: "Incorrect email or password." });
+      return res.status(204).json({ message: "Incorrect email or password." });
     }
-
+    if (!user.isVerified) {
+      return res
+        .status(203)
+        .json({ message: "Please confirm your email to login" });
+    }
     // Generate JWT token
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
@@ -172,6 +176,11 @@ exports.about = async (req, res) => {
               model: Dislike,
               as: "dislikes",
             },
+            {
+              model: User,
+              as: "user",
+              attributes: ["id"],
+            },
           ],
         },
         {
@@ -188,6 +197,11 @@ exports.about = async (req, res) => {
               as: "dislikes",
             },
             {
+              model: User,
+              as: "user",
+              attributes: ["id"],
+            },
+            {
               model: Question,
               as: "question",
               attributes: ["id", "text"],
@@ -201,14 +215,12 @@ exports.about = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Map followed topics
     const followedTopics = user.followedTopics.map((topic) => ({
       id: topic.id,
       title: topic.title,
       topicPicture: topic.topicPicture,
     }));
 
-    // Map questions with empty answers arrays
     const userQuestions = user.questions.map((question) => ({
       question: {
         id: question.id,
@@ -226,14 +238,13 @@ exports.about = async (req, res) => {
       answers: [],
     }));
 
-    // Map answers to questions
     const userAnswers = await Promise.all(
       user.answers.map(async (answer) => {
         const questionId = answer.questionId;
 
         const question = await QuestionHelper(questionId, req.user.id);
         return {
-          question: question, // Include the question data
+          question: question,
           answers: [
             {
               id: answer.id,
@@ -300,6 +311,11 @@ exports.viewProfile = async (req, res) => {
               model: Dislike,
               as: "dislikes",
             },
+            {
+              model: User,
+              as: "user",
+              attributes: ["id"],
+            },
           ],
         },
         {
@@ -320,6 +336,11 @@ exports.viewProfile = async (req, res) => {
               as: "question",
               attributes: ["id", "text"],
             },
+            {
+              model: User,
+              as: "user",
+              attributes: ["id"],
+            },
           ],
         },
       ],
@@ -338,6 +359,7 @@ exports.viewProfile = async (req, res) => {
     const userQuestions = user.questions.map((question) => ({
       question: {
         id: question.id,
+        userId: question.user ? question.user.id : "",
         name: user.name,
         picture: user.profilePic,
         text: question.text,
@@ -361,6 +383,7 @@ exports.viewProfile = async (req, res) => {
             {
               id: answer.id,
               name: user.name,
+              userId: answer.user ? answer.user.id : "",
               picture: user.profilePic,
               text: answer.text,
               likes: answer.likes.length,
@@ -513,5 +536,21 @@ exports.getAllUsers = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+//---------------------------------------------User Verification --------------------------------
+exports.confirmation = async (req, res) => {
+  try {
+    const { id } = jwt.verify(req.params.token, process.env.EMAIL_SECRET);
+    const user = await User.findByPk(id);
+    console.log("before", user);
+    user.isVerified = true;
+    console.log("after", user);
+    await user.save();
+    return res.redirect("http://localhost:3000");
+  } catch (e) {
+    console.error(e);
+    res.status(500).send("Error verifying user");
   }
 };

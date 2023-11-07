@@ -6,6 +6,6 @@ exports.questionValidator = [
     .not()
     .isEmpty()
     .withMessage("Text is required")
-    .isLength({ min: 3 })
-    .withMessage("Text must be at least 3 characters long"),
+    .isLength({ min: 3, max: 100 })
+    .withMessage("Text must 3 to 100 characters long"),
 ];
