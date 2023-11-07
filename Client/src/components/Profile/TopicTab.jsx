@@ -21,6 +21,7 @@ const TopicTab = ({ topics, getUser }) => {
               key={topic.id}
               topic={topic}
               handleFollowUnfollowBtn={handleFollowUnfollowBtn}
+              followButton={false}
             />
           );
         })}

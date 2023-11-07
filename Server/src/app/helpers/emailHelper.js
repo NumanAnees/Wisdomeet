@@ -49,12 +49,13 @@ const emailHelper = async (savedUser) => {
             .button {
               display: inline-block;
               padding: 10px 20px;
-              background-color: red;
+              background-color: white;
               color: white;
               font-size: 14px;
               font-weight: 600;
               text-decoration: none;
               border-radius: 5px;
+              border:2px solid black;
             }
           </style>
         </head>
