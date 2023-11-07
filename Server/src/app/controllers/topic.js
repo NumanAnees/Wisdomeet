@@ -69,26 +69,35 @@ exports.update = async (req, res) => {
         .json({ message: "You are not authorized to update this topic." });
     }
 
-    const imagePath = req.files.picture; //name on postman
-    cloudinary.uploader.upload(
-      imagePath.tempFilePath,
-      async (error, result) => {
-        if (error) {
-          console.error(error);
-        } else {
-          //if everything is ok
-          const topicPicture = result.url;
-          // Create a new topic
-          topicToUpdate.topicPicture = topicPicture;
-          topicToUpdate.title = title;
-          topicToUpdate.description = description;
+    const imagePath = req?.files?.picture; //name on postman
+    if (imagePath) {
+      cloudinary.uploader.upload(
+        imagePath.tempFilePath,
+        async (error, result) => {
+          if (error) {
+            console.error(error);
+          } else {
+            //if everything is ok
+            const topicPicture = result.url;
+            // Create a new topic
+            topicToUpdate.topicPicture = topicPicture;
+            topicToUpdate.title = title;
+            topicToUpdate.description = description;
 
-          await topicToUpdate.save();
-          // Return topic object and token
-          res.status(201).json({ message: "Success", topic: topicToUpdate });
+            await topicToUpdate.save();
+            // Return topic object and token
+            res.status(201).json({ message: "Success", topic: topicToUpdate });
+          }
         }
-      }
-    );
+      );
+    } else {
+      topicToUpdate.title = title;
+      topicToUpdate.description = description;
+
+      await topicToUpdate.save();
+      // Return topic object and token
+      res.status(201).json({ message: "Success", topic: topicToUpdate });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Topic update failed." });
