@@ -1,0 +1,24 @@
+.topic-image {
+  height: 380px;
+  width: 460px;
+}
+
+.topic-main {
+  display: flex;
+}
+.topic-content {
+  margin-left: 3rem;
+}
+.topic-title {
+  margin-top: 2rem;
+  color: #b92b27;
+}
+.topic-description {
+  margin-top: 2rem;
+}
+.topic-followers {
+  margin-top: 2rem;
+}
+.topic-follow-btn {
+  margin-top: 2rem;
+}

@@ -163,15 +163,31 @@ exports.getFollowCount = async (req, res) => {
   }
 };
 
-//-------------------------------------------Get All topics-----------------------------------
+//-------------------------------------------Get All topics user not following-----------------------------------
 
 exports.getAllTopics = async (req, res) => {
   try {
-    const topics = await Topic.findAll();
-    res.status(200).json({ topics: topics });
+    const userId = req.user.id;
+    const allTopics = await Topic.findAll();
+    const followedTopics = await UserFollows.findAll({
+      where: {
+        userId: userId,
+      },
+    });
+
+    // Extract the IDs of followed topics in an array[]
+    const followedTopicIds = followedTopics.map(
+      (followedTopic) => followedTopic.topicId
+    );
+
+    const topicsNotFollowedByUser = allTopics.filter((topic) => {
+      return !followedTopicIds.includes(topic.id); //if included in array ignore otherwise add
+    });
+
+    res.json(topicsNotFollowedByUser);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to retrieve topics." });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -199,11 +215,51 @@ exports.getTopic = async (req, res) => {
     const sortedQuestion = questions.sort(
       (a, b) => b.Likes.length - a.Likes.length
     );
+    //check if user followed the topic or not
+    const isUserFollowed = await UserFollows.findOne({
+      where: { userId: req.user.id, topicId: topicId },
+    });
 
-    res.status(200).json({ Topic: topic, Questions: sortedQuestion });
+    if (isUserFollowed) {
+      isFollowed = true;
+    } else {
+      isFollowed = false;
+    }
+    res
+      .status(200)
+      .json({ Topic: topic, Questions: sortedQuestion, isFollowed });
   } catch (error) {
     console.error(error);
 
     res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+//------------------------------------_All topics logged in user following--------------------------------
+exports.getFollowedTopics = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findByPk(userId, {
+      attributes: ["name", "email"],
+      include: [
+        {
+          model: Topic,
+          as: "followedTopics",
+          attributes: ["id", "title", "topicPicture"],
+        },
+      ],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const followedTopics = user.followedTopics;
+    return res.status(200).json(followedTopics);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: "Internal server error, Cannot find topics" });
   }
 };
