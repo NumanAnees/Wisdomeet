@@ -31,3 +31,9 @@
 .btn-style {
   margin-right: 6px;
 }
+
+.username-link {
+  outline: none;
+  text-decoration: none !important;
+  color: #b92b27;
+}

@@ -40,6 +40,19 @@ function Layout({ children }) {
           key: "1",
           label: (
             <li className="nav-item p-1">
+              <Link to="/profile" className="no-link-style">
+                <div className="nav-link text-dark text-center text-top">
+                  {" "}
+                  <span className="text-span4 no-link-style">My Profile</span>
+                </div>
+              </Link>
+            </li>
+          ),
+        },
+        {
+          key: "2",
+          label: (
+            <li className="nav-item p-1">
               <Link to="/update/profile" className="no-link-style">
                 <div className="nav-link text-dark text-center text-top">
                   {" "}
@@ -52,7 +65,7 @@ function Layout({ children }) {
           ),
         },
         {
-          key: "2",
+          key: "3",
           danger: true,
           label: (
             <li className="nav-item pointer p-1">

@@ -34,3 +34,7 @@
 .btn-style {
   margin-right: 6px;
 }
+.ant-list-item {
+  margin-top: 0.7rem;
+  margin-left: 1.5rem;
+}
