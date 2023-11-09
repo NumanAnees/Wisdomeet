@@ -3,80 +3,64 @@ import { Modal } from "antd";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { getToken } from "../../helpers/auth";
 import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
+import { getToken } from "../../helpers/auth";
 
-const QuestionModal = ({ getTopic }) => {
-  const { id } = useParams();
+const SearchModal = ({ setQuestions, setIsSearchOpen }) => {
   const [open, setOpen] = useState(false);
-  //validation...
-  const validationSchema = Yup.object().shape({
-    text: Yup.string()
-      .min(3, "Question must be at least 3 characters long")
-      .required("Title is required"),
-  });
+  const authToken = getToken();
 
   const handleSubmit = async (values, { resetForm }) => {
-    const authToken = getToken();
     try {
-      const formData = new FormData();
-      formData.append("text", values.text);
-
-      const response = await axios.post(
-        `http://localhost:8000/api/questions/${id}`,
-        formData,
+      const response = await axios.get(
+        `http://localhost:8000/api/user/?keyword=${values.text}`,
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
-            "Content-Type": "multipart/form-data",
           },
         }
       );
-
       if (response.status === 201 || response.status === 200) {
         resetForm();
+        setQuestions(response.data);
+        setIsSearchOpen(true);
         setOpen(false);
-        getTopic();
-        toast.success("Question added successfully!");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to add question!");
+      toast.error("Failed to search!");
     }
   };
 
   return (
     <>
       <button className="nav-btn" onClick={() => setOpen(true)}>
-        Ask Question
+        Search
       </button>
 
       <Modal
-        title="Add new Question"
+        title="Search for any Question"
         centered
         open={open}
         footer={null}
         className="custom-modal"
-        width={1300}
+        width={900}
+        height={500}
         onCancel={() => setOpen(false)}
       >
         <Formik
           initialValues={{
             text: "",
           }}
-          validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ setFieldValue }) => (
-            <Form>
-              <div className="mb-3">
+          {({}) => (
+            <Form className="d-flex justify-content-between">
+              <div className="mb-3 w-100">
                 <Field
-                  as="textarea"
                   name="text"
                   className="form-control"
-                  placeholder="Your Answer"
-                  rows={6} // number of rows needed to display
+                  placeholder="Search..."
                 />
                 <ErrorMessage
                   name="text"
@@ -84,8 +68,8 @@ const QuestionModal = ({ getTopic }) => {
                   className="text-danger"
                 />
               </div>
-              <button type="submit" className="btn btn-danger w-100">
-                Add Question
+              <button type="submit" className="btn btn-danger custom-btn">
+                Search
               </button>
             </Form>
           )}
@@ -95,4 +79,4 @@ const QuestionModal = ({ getTopic }) => {
   );
 };
 
-export default QuestionModal;
+export default SearchModal;

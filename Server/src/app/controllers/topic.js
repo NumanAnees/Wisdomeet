@@ -176,13 +176,12 @@ exports.getAllTopics = async (req, res) => {
       },
     });
 
-    // Extract the IDs of followed topics in an array[]
     const followedTopicIds = followedTopics.map(
       (followedTopic) => followedTopic.topicId
     );
 
     const topicsNotFollowedByUser = allTopics.filter((topic) => {
-      return !followedTopicIds.includes(topic.id); //if included in array ignore otherwise add
+      return !followedTopicIds.includes(topic.id);
     });
 
     res.json(topicsNotFollowedByUser);
@@ -192,85 +191,7 @@ exports.getAllTopics = async (req, res) => {
   }
 };
 
-//-------------------------------------Get a single topic--------------------------------
-
-// exports.getTopic = async (req, res) => {
-//   try {
-//     const topicId = req.params.id;
-
-//     const topic = await Topic.findByPk(topicId);
-
-//     if (!topic) {
-//       return res.status(404).json({ message: "Topic not found." });
-//     }
-
-//     // Check if the user followed the topic
-//     const isUserFollowed = await UserFollows.findOne({
-//       where: { userId: req.user.id, topicId: topicId },
-//     });
-
-//     const isFollowed = !!isUserFollowed;
-
-//     const questions = await Question.findAll({
-//       where: { topicId: topicId },
-//       include: [
-//         {
-//           model: Like,
-//           as: "likes",
-//           attributes: ["id", "questionId", "userId"],
-//         },
-//         {
-//           model: Answer,
-//           as: "answers", // Include answers
-//           include: [
-//             {
-//               model: Like,
-//               as: "likes",
-//               attributes: ["id", "answerId", "userId"],
-//             },
-//           ],
-//           attributes: ["id", "text"],
-//         },
-//       ],
-//       attributes: ["id", "text"],
-//     });
-
-//     const formattedQuestions = questions.map((question) => {
-//       const sortedAnswers = question.answers.map((answer) => {
-//         return {
-//           id: answer.id,
-//           name: "", // You can populate user data here
-//           picture: "", // You can populate user data here
-//           text: answer.text,
-//           likes: answer.likes.length,
-//           dislikes: 0, // Initialize dislikes count to 0
-//         };
-//       });
-
-//       sortedAnswers.sort((a, b) => b.likes - a.likes); // Sort answers by likes
-
-//       return {
-//         question: {
-//           id: question.id,
-//           name: "John Doe", // You can populate user data here
-//           picture: "profile-pic.jpg", // You can populate user data here
-//           text: question.text,
-//           likes: question.likes.length,
-//           dislikes: 0, // Initialize dislikes count to 0
-//         },
-//         answers: sortedAnswers.slice(0, 2), // Get the top 2 answers
-//       };
-//     });
-
-//     res
-//       .status(200)
-//       .json({ Topic: topic, Questions: formattedQuestions, isFollowed });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Something went wrong." });
-//   }
-// };
-
+//------------------------------------------Get single topic----------------------
 exports.getTopic = async (req, res) => {
   try {
     const topicId = req.params.id;
@@ -281,7 +202,6 @@ exports.getTopic = async (req, res) => {
       return res.status(404).json({ message: "Topic not found." });
     }
 
-    // Check if the user followed the topic
     const isUserFollowed = await UserFollows.findOne({
       where: { userId: req.user.id, topicId: topicId },
     });
@@ -297,13 +217,18 @@ exports.getTopic = async (req, res) => {
           attributes: ["id", "questionId", "userId"],
         },
         {
-          model: User, // Include the user who posted the question
+          model: Dislike,
+          as: "dislikes",
+          attributes: ["id", "questionId", "userId"],
+        },
+        {
+          model: User,
           as: "user",
-          attributes: ["id", "name", "profilePic"], // Include user information
+          attributes: ["id", "name", "profilePic"],
         },
         {
           model: Answer,
-          as: "answers", // Include answers
+          as: "answers",
           include: [
             {
               model: Like,
@@ -311,9 +236,14 @@ exports.getTopic = async (req, res) => {
               attributes: ["id", "answerId", "userId"],
             },
             {
-              model: User, // Include the user who posted the answer
+              model: Dislike,
+              as: "dislikes",
+              attributes: ["id", "answerId", "userId"],
+            },
+            {
+              model: User,
               as: "user",
-              attributes: ["id", "name", "profilePic"], // Include user information
+              attributes: ["id", "name", "profilePic"],
             },
           ],
           attributes: ["id", "text"],
@@ -323,29 +253,50 @@ exports.getTopic = async (req, res) => {
     });
 
     const formattedQuestions = questions.map((question) => {
-      const sortedAnswers = question.answers.map((answer) => {
-        return {
-          id: answer.id,
-          name: answer.user ? answer.user.name : "", // User who posted the answer
-          picture: answer.user ? answer.user.profilePic : "", // User who posted the answer
-          text: answer.text,
-          likes: answer.likes.length,
-          dislikes: 0, // Initialize dislikes count to 0
-        };
-      });
+      const sortedAnswers = question.answers
+        .map((answer) => {
+          const isLikedAnswer = answer.likes.some(
+            (like) => like.userId === req.user.id
+          );
 
-      sortedAnswers.sort((a, b) => b.likes - a.likes); // Sort answers by likes
+          const isDislikedAnswer = answer.dislikes.some(
+            (dislike) => dislike.userId === req.user.id
+          );
+
+          return {
+            id: answer.id,
+            name: answer.user ? answer.user.name : "",
+            picture: answer.user ? answer.user.profilePic : "",
+            text: answer.text,
+            likes: answer.likes.length,
+            dislikes: answer.dislikes.length,
+            isLiked: isLikedAnswer,
+            isDisliked: isDislikedAnswer,
+          };
+        })
+        .sort((a, b) => b.likes - a.likes)
+        .slice(0, 2);
+
+      const isLikedQuestion = question.likes.some(
+        (like) => like.userId === req.user.id
+      );
+
+      const isDislikedQuestion = question.dislikes.some(
+        (dislike) => dislike.userId === req.user.id
+      );
 
       return {
         question: {
           id: question.id,
-          name: question.user ? question.user.name : "", // User who posted the question
-          picture: question.user ? question.user.profilePic : "", // User who posted the question
+          name: question.user ? question.user.name : "",
+          picture: question.user ? question.user.profilePic : "",
           text: question.text,
           likes: question.likes.length,
-          dislikes: 0, // Initialize dislikes count to 0
+          dislikes: question.dislikes.length,
+          isLiked: isLikedQuestion,
+          isDisliked: isDislikedQuestion,
         },
-        answers: sortedAnswers.slice(0, 2), // Get the top 2 answers
+        answers: sortedAnswers,
       };
     });
 

@@ -6,7 +6,7 @@ import axios from "axios";
 import { getToken } from "../../helpers/auth";
 import { toast } from "react-toastify";
 
-const TopicModalComponent = () => {
+const TopicModalComponent = ({ getTopics }) => {
   const [open, setOpen] = useState(false);
   //validation...
   const validationSchema = Yup.object().shape({
@@ -19,7 +19,6 @@ const TopicModalComponent = () => {
   });
 
   const handleSubmit = async (values, { resetForm }) => {
-    alert("Submit");
     const authToken = getToken();
     try {
       const formData = new FormData();
@@ -41,6 +40,7 @@ const TopicModalComponent = () => {
       if (response.status === 201 || response.status === 200) {
         resetForm();
         setOpen(false);
+        getTopics();
         toast.success("Topic added successfully!");
       }
     } catch (error) {
@@ -92,10 +92,12 @@ const TopicModalComponent = () => {
               </div>
               <div className="mb-3">
                 <Field
+                  as="textarea"
                   type="description"
                   name="description"
                   className="form-control"
                   placeholder="Description"
+                  rows={6}
                 />
                 <ErrorMessage
                   name="description"

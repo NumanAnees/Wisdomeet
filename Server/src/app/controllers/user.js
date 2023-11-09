@@ -13,6 +13,7 @@ const {
   Answer,
   Dislike,
 } = require("../../../models");
+const { QuestionHelper } = require("../helpers/ControllerHelper.js");
 
 //-----------------------------Register--------------------------------
 exports.register = async (req, res) => {
@@ -153,7 +154,7 @@ exports.about = async (req, res) => {
         {
           model: Topic,
           as: "followedTopics",
-          attributes: ["id", "title"],
+          attributes: ["id", "title", "topicPicture"],
           through: {
             attributes: [],
           },
@@ -162,11 +163,36 @@ exports.about = async (req, res) => {
           model: Question,
           as: "questions",
           attributes: ["id", "text"],
+          include: [
+            {
+              model: Like,
+              as: "likes",
+            },
+            {
+              model: Dislike,
+              as: "dislikes",
+            },
+          ],
         },
         {
           model: Answer,
           as: "answers",
-          attributes: ["id", "text"],
+          attributes: ["id", "text", "questionId"],
+          include: [
+            {
+              model: Like,
+              as: "likes",
+            },
+            {
+              model: Dislike,
+              as: "dislikes",
+            },
+            {
+              model: Question, // Include the Question model for answers
+              as: "question",
+              attributes: ["id", "text"], // You can add more attributes as needed
+            },
+          ],
         },
       ],
     });
@@ -175,7 +201,70 @@ exports.about = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    res.status(200).json(user);
+    // Map followed topics
+    const followedTopics = user.followedTopics.map((topic) => ({
+      id: topic.id,
+      title: topic.title,
+      topicPicture: topic.topicPicture,
+    }));
+
+    // Map questions with empty answers arrays
+    const userQuestions = user.questions.map((question) => ({
+      question: {
+        id: question.id,
+        name: user.name,
+        picture: user.profilePic,
+        text: question.text,
+        likes: question.likes.length,
+        dislikes: question.dislikes.length,
+        isLiked: !!question.likes.find((like) => like.userId === userId),
+        isDisliked: !!question.dislikes.find(
+          (dislike) => dislike.userId === userId
+        ),
+      },
+      answers: [],
+    }));
+
+    // Map answers to questions
+    const userAnswers = await Promise.all(
+      user.answers.map(async (answer) => {
+        const questionId = answer.questionId;
+        // const question = userQuestions.find(
+        //   (q) => q.question.id === questionId
+        // );
+        const question = await QuestionHelper(questionId, req.user.id);
+        return {
+          question: question, // Include the question data
+          answers: [
+            {
+              id: answer.id,
+              name: user.name,
+              picture: user.profilePic,
+              text: answer.text,
+              likes: answer.likes.length,
+              dislikes: answer.dislikes.length,
+              isLiked: !!answer.likes.find((like) => like.userId === userId),
+              isDisliked: !!answer.dislikes.find(
+                (dislike) => dislike.userId === userId
+              ),
+            },
+          ],
+        };
+      })
+    );
+    res.status(200).json({
+      id: user.id,
+      email: user.email,
+      password: user.password,
+      name: user.name,
+      age: user.age,
+      gender: user.gender,
+      profilePic: user.profilePic,
+      role: user.role,
+      followedTopics,
+      questions_posted: userQuestions,
+      answer_posted: userAnswers,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Unable to fetch user info" });
@@ -218,41 +307,35 @@ exports.search = async (req, res) => {
 
     const questions = await Question.findAll({
       where: {
-        text: {
-          [Op.like]: `%${keyword}%`,
-        },
+        [Op.and]: [
+          {
+            text: {
+              [Op.iLike]: `%${keyword}%`, // Use Op.iLike for case-insensitive search
+            },
+          },
+        ],
       },
       attributes: ["id", "text"],
       include: [
-        {
-          model: Like,
-          as: "likes",
-          attributes: [],
-        },
-        {
-          model: Dislike,
-          as: "dislikes",
-          attributes: [],
-        },
         {
           model: Answer,
           as: "answers",
           attributes: ["id", "text"],
           include: [
             {
+              model: User,
+              as: "user",
+              attributes: ["id", "name", "profilePic"],
+            },
+            {
               model: Like,
               as: "likes",
-              attributes: [],
+              attributes: ["id", "userId"],
             },
             {
               model: Dislike,
               as: "dislikes",
-              attributes: [],
-            },
-            {
-              model: User,
-              as: "user",
-              attributes: ["id", "name", "profilePic"],
+              attributes: ["id", "userId"],
             },
           ],
         },
@@ -261,48 +344,66 @@ exports.search = async (req, res) => {
           as: "user",
           attributes: ["id", "name", "profilePic"],
         },
+        {
+          model: Like,
+          as: "likes",
+          attributes: ["id", "userId"],
+        },
+        {
+          model: Dislike,
+          as: "dislikes",
+          attributes: ["id", "userId"],
+        },
       ],
     });
 
-    // Process the questions and answers to include IDs, likes, dislikes, and top 2 answers
     const formattedQuestions = questions.map((question) => {
-      const formattedQuestion = {
-        id: question.id,
-        name: question.user ? question.user.name : "Unknown User",
-        picture: question.user
-          ? question.user.profilePic
-          : "https://example.com/default-avatar.jpg",
-        text: question.text,
-        likes: question.likes ? question.likes.length : 0,
-        dislikes: question.dislikes ? question.dislikes.length : 0,
-      };
+      const formattedAnswers = [];
 
-      // Sort answers by likes and get the top 2 answers
       if (question.answers && question.answers.length > 0) {
         const sortedAnswers = question.answers.sort(
           (a, b) =>
             (b.likes ? b.likes.length : 0) - (a.likes ? a.likes.length : 0)
         );
-        const topAnswers = sortedAnswers.slice(0, 2).map((answer) => ({
-          id: answer.id,
-          name: answer.user ? answer.user.name : "Unknown User",
-          picture: answer.user
-            ? answer.user.profilePic
-            : "https://example.com/default-avatar.jpg",
-          text: answer.text,
-          likes: answer.likes ? answer.likes.length : 0,
-          dislikes: answer.dislikes ? answer.dislikes.length : 0,
-        }));
 
-        formattedQuestion.answers = topAnswers;
-      } else {
-        formattedQuestion.answers = [];
+        sortedAnswers.slice(0, 2).forEach((answer) => {
+          formattedAnswers.push({
+            id: answer.id,
+            name: answer.user ? answer.user.name : "Unknown User",
+            picture: answer.user
+              ? answer.user.profilePic
+              : "https://example.com/default-avatar.jpg",
+            text: answer.text,
+            likes: answer.likes.length,
+            dislikes: answer.dislikes.length,
+            isLiked: answer.likes.some((like) => like.userId === req.user.id),
+            isDisliked: answer.dislikes.some(
+              (dislike) => dislike.userId === req.user.id
+            ),
+          });
+        });
       }
 
-      return formattedQuestion;
+      return {
+        question: {
+          id: question.id,
+          name: question.user ? question.user.name : "Unknown User",
+          picture: question.user
+            ? question.user.profilePic
+            : "https://example.com/default-avatar.jpg",
+          text: question.text,
+          likes: question.likes.length,
+          dislikes: question.dislikes.length,
+          isLiked: question.likes.some((like) => like.userId === req.user.id),
+          isDisliked: question.dislikes.some(
+            (dislike) => dislike.userId === req.user.id
+          ),
+        },
+        answers: formattedAnswers,
+      };
     });
 
-    res.status(200).json({ questions: formattedQuestions });
+    res.status(200).json(formattedQuestions);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Something went wrong." });
