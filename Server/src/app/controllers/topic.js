@@ -256,15 +256,16 @@ exports.getTopic = async (req, res) => {
       const sortedAnswers = question.answers
         .map((answer) => {
           const isLikedAnswer = answer.likes.some(
-            (like) => like.userId === req.user.id
+            (like) => like.userId == req.user.id
           );
 
           const isDislikedAnswer = answer.dislikes.some(
-            (dislike) => dislike.userId === req.user.id
+            (dislike) => dislike.userId == req.user.id
           );
 
           return {
             id: answer.id,
+            userId: answer.user ? answer.user.id : "",
             name: answer.user ? answer.user.name : "",
             picture: answer.user ? answer.user.profilePic : "",
             text: answer.text,
@@ -278,16 +279,17 @@ exports.getTopic = async (req, res) => {
         .slice(0, 2);
 
       const isLikedQuestion = question.likes.some(
-        (like) => like.userId === req.user.id
+        (like) => like.userId == req.user.id
       );
 
       const isDislikedQuestion = question.dislikes.some(
-        (dislike) => dislike.userId === req.user.id
+        (dislike) => dislike.userId == req.user.id
       );
 
       return {
         question: {
           id: question.id,
+          userId: question.user ? question.user.id : "",
           name: question.user ? question.user.name : "",
           picture: question.user ? question.user.profilePic : "",
           text: question.text,

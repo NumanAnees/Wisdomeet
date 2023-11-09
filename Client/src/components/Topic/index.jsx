@@ -68,29 +68,33 @@ const Topic = () => {
             <div className="topic-description">
               <p>{topic?.description}</p>
             </div>
-            <div className="topic-followers">Followers: {followersCount}</div>
-            <div className="topic-follow-btn">
-              {isFollowed ? (
-                <button
-                  className="btn btn-danger"
-                  onClick={() => handleFollowUnfollowBtn(id)}
-                >
-                  Unfollow
-                </button>
-              ) : (
-                <button
-                  className="btn btn-info"
-                  onClick={() => handleFollowUnfollowBtn(id)}
-                >
-                  Follow
-                </button>
-              )}
+            <div className="topic-follow-btn ">
+              <div className="m-2">
+                {isFollowed ? (
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => handleFollowUnfollowBtn(id)}
+                  >
+                    Unfollow
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-info"
+                    onClick={() => handleFollowUnfollowBtn(id)}
+                  >
+                    Follow
+                  </button>
+                )}
+              </div>
+              <button className="btn btn-secondary m-2">
+                {followersCount} Followers
+              </button>
             </div>
           </div>
         </div>
         <div className="topic-questions">
           <div className="topic-questions-title">
-            <h4>Questions</h4>
+            <h4 className="question-title">Questions</h4>
             <div className="topic-questions-btn">
               <QuestionModal getTopic={getTopic} />
             </div>

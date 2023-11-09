@@ -1,50 +1,44 @@
-.topic-image {
+.user-image {
   height: 360px;
   width: 360px;
   border-radius: 50%;
   border: 1px solid #b92b27;
 }
 
-.topic-main {
+.user-main {
   display: flex;
 }
-.topic-content {
+.user-content {
   margin-left: 3rem;
   border-radius: 2%;
   width: 100%;
   background-color: white;
   padding: 5px 5%;
 }
-.topic-title {
+.user-title {
   margin-top: 2rem;
   color: #b92b27;
 }
-.topic-description {
+.user-information {
   margin-top: 2rem;
 }
-.topic-followers {
+.user-followers {
   margin-top: 2rem;
 }
-.topic-follow-btn {
+.user-follow-btn {
   margin-top: 2rem;
+}
+.user-questions-title {
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.topic-questions {
+.tabs {
   margin-top: 4rem;
 }
-.topic-questions-title {
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: space-between;
-}
-.topic-span {
+.user-span {
   color: #b92b27;
   font-weight: 500;
   font-size: 18px;
   margin-right: 1.5rem;
-}
-.question-title {
-  color: #b92b27;
-  font-weight: 600;
-  font-size: 24px;
 }

@@ -37,18 +37,25 @@ exports.QuestionHelper = async (QuestionId, userId) => {
     return null;
   }
 
-  const userLiked = question.likes.some((like) => like.userId === userId);
-  const userDisliked = question.dislikes.some(
-    (dislike) => dislike.userId === userId
-  );
+  const {
+    id,
+    text,
+    likes,
+    dislikes,
+    user: { name: userName, profilePic: userPic } = {},
+  } = question;
 
+  const userLiked = question.likes.some((like) => like.userId == userId);
+  const userDisliked = question.dislikes.some(
+    (dislike) => dislike.userId == userId
+  );
   return {
-    id: question.id,
-    name: question?.User?.name || "No name",
-    picture: question?.User?.profilePic || "default-profile-pic.jpg",
-    text: question.text,
-    likes: question.likes.length,
-    dislikes: question.dislikes.length,
+    id,
+    name: userName ?? "No name",
+    picture: userPic ?? "default-profile-pic.jpg",
+    text,
+    likes: likes.length,
+    dislikes: dislikes.length,
     isLiked: userLiked,
     isDisliked: userDisliked,
   };

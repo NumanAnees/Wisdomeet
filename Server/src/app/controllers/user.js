@@ -188,9 +188,9 @@ exports.about = async (req, res) => {
               as: "dislikes",
             },
             {
-              model: Question, // Include the Question model for answers
+              model: Question,
               as: "question",
-              attributes: ["id", "text"], // You can add more attributes as needed
+              attributes: ["id", "text"],
             },
           ],
         },
@@ -212,14 +212,15 @@ exports.about = async (req, res) => {
     const userQuestions = user.questions.map((question) => ({
       question: {
         id: question.id,
+        userId: question.user ? question.user.id : "",
         name: user.name,
         picture: user.profilePic,
         text: question.text,
         likes: question.likes.length,
         dislikes: question.dislikes.length,
-        isLiked: !!question.likes.find((like) => like.userId === userId),
+        isLiked: !!question.likes.find((like) => like.userId == req.user.id),
         isDisliked: !!question.dislikes.find(
-          (dislike) => dislike.userId === userId
+          (dislike) => dislike.userId == req.user.id
         ),
       },
       answers: [],
@@ -229,23 +230,24 @@ exports.about = async (req, res) => {
     const userAnswers = await Promise.all(
       user.answers.map(async (answer) => {
         const questionId = answer.questionId;
-        // const question = userQuestions.find(
-        //   (q) => q.question.id === questionId
-        // );
+
         const question = await QuestionHelper(questionId, req.user.id);
         return {
           question: question, // Include the question data
           answers: [
             {
               id: answer.id,
+              userId: answer.user ? answer.user.id : "",
               name: user.name,
               picture: user.profilePic,
               text: answer.text,
               likes: answer.likes.length,
               dislikes: answer.dislikes.length,
-              isLiked: !!answer.likes.find((like) => like.userId === userId),
+              isLiked: !!answer.likes.find(
+                (like) => like.userId == req.user.id
+              ),
               isDisliked: !!answer.dislikes.find(
-                (dislike) => dislike.userId === userId
+                (dislike) => dislike.userId == req.user.id
               ),
             },
           ],
@@ -275,27 +277,121 @@ exports.about = async (req, res) => {
 exports.viewProfile = async (req, res) => {
   try {
     const userId = req.params.id;
-
-    const user = await User.findByPk(userId);
+    const user = await User.findByPk(userId, {
+      include: [
+        {
+          model: Topic,
+          as: "followedTopics",
+          attributes: ["id", "title", "topicPicture"],
+          through: {
+            attributes: [],
+          },
+        },
+        {
+          model: Question,
+          as: "questions",
+          attributes: ["id", "text"],
+          include: [
+            {
+              model: Like,
+              as: "likes",
+            },
+            {
+              model: Dislike,
+              as: "dislikes",
+            },
+          ],
+        },
+        {
+          model: Answer,
+          as: "answers",
+          attributes: ["id", "text", "questionId"],
+          include: [
+            {
+              model: Like,
+              as: "likes",
+            },
+            {
+              model: Dislike,
+              as: "dislikes",
+            },
+            {
+              model: Question,
+              as: "question",
+              attributes: ["id", "text"],
+            },
+          ],
+        },
+      ],
+    });
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const answeredQuestions = await Question.findAll({
-      include: [
-        {
-          model: Answer,
-          as: "answers",
-          where: { userId },
-        },
-      ],
-    });
+    const followedTopics = user.followedTopics.map((topic) => ({
+      id: topic.id,
+      title: topic.title,
+      topicPicture: topic.topicPicture,
+    }));
 
-    res.status(200).json({ user, answeredQuestions });
+    const userQuestions = user.questions.map((question) => ({
+      question: {
+        id: question.id,
+        name: user.name,
+        picture: user.profilePic,
+        text: question.text,
+        likes: question.likes.length,
+        dislikes: question.dislikes.length,
+        isLiked: !!question.likes.find((like) => like.userId == req.params.id),
+        isDisliked: !!question.dislikes.find(
+          (dislike) => dislike.userId == req.params.id
+        ),
+      },
+      answers: [],
+    }));
+
+    const userAnswers = await Promise.all(
+      user.answers.map(async (answer) => {
+        const questionId = answer.questionId;
+        const question = await QuestionHelper(questionId, userId);
+        return {
+          question: question,
+          answers: [
+            {
+              id: answer.id,
+              name: user.name,
+              picture: user.profilePic,
+              text: answer.text,
+              likes: answer.likes.length,
+              dislikes: answer.dislikes.length,
+              isLiked: !!answer.likes.find(
+                (like) => like.userId == req.params.id
+              ),
+              isDisliked: !!answer.dislikes.find(
+                (dislike) => dislike.userId == req.params.id
+              ),
+            },
+          ],
+        };
+      })
+    );
+    res.status(200).json({
+      id: user.id,
+      email: user.email,
+      password: user.password,
+      name: user.name,
+      age: user.age,
+      gender: user.gender,
+      profilePic: user.profilePic,
+      role: user.role,
+      followedTopics,
+      questions_posted: userQuestions,
+      answer_posted: userAnswers,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Unable to fetch user profile" });
+    res.status(500).json({ error: "Unable to fetch user info" });
   }
 };
 
@@ -376,9 +472,9 @@ exports.search = async (req, res) => {
             text: answer.text,
             likes: answer.likes.length,
             dislikes: answer.dislikes.length,
-            isLiked: answer.likes.some((like) => like.userId === req.user.id),
+            isLiked: answer.likes.some((like) => like.userId == req.user.id),
             isDisliked: answer.dislikes.some(
-              (dislike) => dislike.userId === req.user.id
+              (dislike) => dislike.userId == req.user.id
             ),
           });
         });
@@ -394,9 +490,9 @@ exports.search = async (req, res) => {
           text: question.text,
           likes: question.likes.length,
           dislikes: question.dislikes.length,
-          isLiked: question.likes.some((like) => like.userId === req.user.id),
+          isLiked: question.likes.some((like) => like.userId == req.user.id),
           isDisliked: question.dislikes.some(
-            (dislike) => dislike.userId === req.user.id
+            (dislike) => dislike.userId == req.user.id
           ),
         },
         answers: formattedAnswers,

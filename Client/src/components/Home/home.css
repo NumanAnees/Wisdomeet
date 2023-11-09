@@ -23,15 +23,16 @@
   padding: 0.5rem;
   justify-content: space-between;
   align-items: center;
-  border: 0.1px solid #7a7a7a84;
+  border: 0.1px solid #b92c2767;
   margin-top: 1rem;
+  background-color: white;
 }
 .topic-link {
   outline: none;
   text-decoration: none !important;
 }
 .topic-card:hover {
-  background-color: #7a7a7a5b;
+  background-color: #c4acac78;
   cursor: pointer;
 }
 
@@ -46,7 +47,10 @@
 }
 .topic-card-title {
   margin-left: 0.8rem;
-  color: black;
+  color: #b92b27;
+}
+.topic-card-title:hover {
+  margin-left: 0.8rem;
 }
 .topic-card-btn {
   padding: 0.4rem 1.5rem !important;
