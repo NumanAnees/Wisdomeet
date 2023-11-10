@@ -1,100 +1,70 @@
-# Quora Clone
+# Wisdomeet
 
-Quora Clone is a question/answer platform that mimics the features and functionalities of the popular Quora platform. It allows users to ask questions, answer questions, like/dislike answers, and follow topics. This project is built using React for the frontend and Node.js with Sequelize and PostgreSQL for the backend.
+Wisdomeet is a web-based platform that fosters knowledge sharing, discussions, and community building. It provides a user-friendly environment for users to engage in the following key functionalities:
 
-## Table of Contents
+## Key Functionalities
 
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Project Structure](#project-structure)
-- [Usage](#usage)
-- [Features](#features)
-- [Contributing](#contributing)
-- [License](#license)
+- **User Authentication:**
+  - User registration and login.
+  - Personalized user profiles with customizable information and profile pictures.
 
-## Getting Started
+- **Topic Following:**
+  - Explore and follow topics of interest.
 
-### Prerequisites
+- **Questions and Answers:**
+  - Post questions on a wide range of topics.
+  - Share insights and answers.
+  - Like or dislike questions and answers for user engagement.
 
-Before you begin, ensure you have met the following requirements:
+- **Advanced Search:**
+  - Search topics or questions by specific keywords.
 
-- Node.js installed on your development machine.
-- PostgreSQL installed and running.
-- Clone this repository to your local machine.
+- **Topic Management:**
+  - Create and manage topics with titles, descriptions, and images.
+  - Associate questions with one or more topics for comprehensive categorization.
 
-### Installation
+- **Engagement Ranking:**
+  - View questions and answers sorted by user engagement (likes and dislikes).
 
-1. **Server Setup**
+- **User Profiles:**
+  - Explore user profiles and view their information.
+  - Navigate questions answered by a specific user for deeper insights.
 
-   - Navigate to the `Server` directory:
+## Tech Stack
 
-     ```bash
-     cd Server
-     ```
+Wisdomeet leverages the following technologies to deliver a robust and seamless experience:
 
-   - Install server dependencies:
+- Frontend: React
+- Backend: Node.js
+- Database: PostgreSQL
+- ORM: Sequelize
 
-     ```bash
-     npm install
-     ```
+## Installation
 
-   - Set up your environment variables by creating a `.env` file based on `.env.example`.
+To set up Wisdomeet on your local environment, follow these steps:
 
-   - Run the server:
+1. Clone this repository.
+2. Install the required dependencies for both the frontend and backend.
+3. Configure your PostgreSQL database.
+4. Run the backend server.
+5. Run the frontend application.
 
-     ```bash
-     npm start
-     ```
-
-   The server will start on port 8000 by default.
-
-2. **Client Setup**
-
-   - Navigate to the `Client` directory:
-
-     ```bash
-     cd Client
-     ```
-
-   - Install client dependencies:
-
-     ```bash
-     npm install
-     ```
-
-   - Set up your environment variables by creating a `.env` file based on `.env.example`.
-
-   - Run the client:
-
-     ```bash
-     npm start
-     ```
-
-   The client will start on port 3000 by default.
-
-## Project Structure
-
-The project is structured as follows:
-
-- `Client/`: Contains the React frontend.
-- `Server/`: Contains the Node.js backend.
-- `.env.example`: Example environment variables file for both client and server.
+For detailed installation instructions and additional configuration options, refer to the project documentation.
 
 ## Usage
 
-- Open your web browser and visit `http://localhost:3000` to access the Quora Clone frontend.
-- The backend API is accessible at `http://localhost:8000`.
+1. Register or log in to your Wisdomeet account.
+2. Explore topics and follow those of interest.
+3. Ask questions, provide answers, and engage in discussions.
+4. Customize your profile and view user profiles.
+5. Enjoy a rich, community-driven knowledge-sharing experience.
 
-## Features
+For in-depth guidance and best practices, consult the project documentation and user guides.
 
-- **Authentication**: Users can sign up, log in, and edit their profile information.
-- **Home Page**: Users can view questions related to topics they are following, search for topics, answer questions, and like/dislike questions and answers.
-- **Add Topics**: Users can add topics, add questions to topics, and follow topics.
-- **Topic Page**: Users can view questions related to a specific topic, sorted by likes/dislikes, and navigate between pages.
-- **About Page**: Users can view their profile information, followed topics, asked questions, and answers.
-- **Profile Page**: Users can view other users' profiles and their activity.
+## Contributing
+
+We welcome contributions from the community. If you'd like to enhance Wisdomeet, please follow our [contribution guidelines](CONTRIBUTING.md).
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
