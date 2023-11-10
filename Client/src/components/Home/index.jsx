@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
+import { toast } from "react-toastify";
+
+import { handleFollowUnfollow } from "../../helpers/topicHelpers";
+import { get } from "../../helpers/axiosHelper";
 import Layout from "../Layout";
 import TopicCard from "./TopicCard";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { getToken } from "../../helpers/auth";
-import { handleFollowUnfollow } from "../../helpers/topicHelpers";
 import Question from "../Question";
 import TopicModalComponent from "./TopicModal";
 import SearchModal from "./SearchModal";
+import NoDataMessage from "../NoDataMessage";
 
-//css imports
 import "./home.css";
 
 const Home = () => {
@@ -18,37 +18,23 @@ const Home = () => {
   const [notFollowing, setNotFollowing] = useState();
   const [Questions, setQuestions] = useState();
   const [IsSearchOpen, setIsSearchOpen] = useState();
+  const BASE_URL = process.env.REACT_APP_BASE_API;
 
   const getTopics = async () => {
-    const authToken = getToken();
     try {
-      //request for all topics excluding the following ones
-      const AllTopics = await axios.get("http://localhost:8000/api/topics", {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      const AllTopics = await get(`${BASE_URL}/topics`);
       setNotFollowing(AllTopics.data);
-      //request for topics following
-      const Topics = await axios.get(
-        "http://localhost:8000/api/topics/followed",
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
+      const Topics = await get(`${BASE_URL}/topics/followed`);
       setFollowing(Topics.data);
     } catch (error) {
       toast.error("Something went wrong!");
       console.error("There was a problem with the request:", error);
     }
   };
-  //follow unfollow handler
-  const handleFollowUnfollowBtn = async (id) => {
+
+  const handleFollowUnfollowBtn = async id => {
     try {
       await handleFollowUnfollow(id);
-      //update the following and notFollowing
       getTopics();
       getQuestions();
     } catch (err) {
@@ -57,18 +43,8 @@ const Home = () => {
     }
   };
   const getQuestions = async () => {
-    const authToken = getToken();
-
     try {
-      const questions = await axios.get(
-        "http://localhost:8000/api/questions/",
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
-      // console.log(questions.data);
+      const questions = await get(`${BASE_URL}/questions/`);
       setQuestions(questions.data);
     } catch (err) {
       console.error("There was a problem with the request:", err);
@@ -95,17 +71,19 @@ const Home = () => {
               <h2 className="heading-main">All Topics</h2>
               <TopicModalComponent getTopics={getTopics} />
             </div>
-            {notFollowing &&
-              notFollowing.map((topic) => {
-                return (
-                  <TopicCard
-                    key={topic.id}
-                    topic={topic}
-                    handleFollowUnfollowBtn={handleFollowUnfollowBtn}
-                    left={true}
-                  />
-                );
-              })}
+            {notFollowing?.length > 0 ? (
+              notFollowing.map(topic => {
+                <TopicCard
+                  key={topic.id}
+                  topic={topic}
+                  handleFollowUnfollowBtn={handleFollowUnfollowBtn}
+                  left={true}
+                  NoFollowButton={true}
+                />;
+              })
+            ) : (
+              <NoDataMessage text="Topic" />
+            )}
           </Col>
           <Col xs={6} className="center-column">
             <div className="mt-2 mb-2 d-flex justify-content-between sticky-header">
@@ -115,39 +93,34 @@ const Home = () => {
                   Clear
                 </button>
               ) : (
-                <SearchModal
-                  setQuestions={setQuestions}
-                  setIsSearchOpen={setIsSearchOpen}
-                />
+                <SearchModal setQuestions={setQuestions} setIsSearchOpen={setIsSearchOpen} />
               )}
             </div>
             <div style={{ height: "1000px" }}>
-              {Questions &&
-                Questions.map((item) => {
-                  return (
-                    <Question
-                      key={item.question.id}
-                      question={item.question}
-                      answers={item.answers}
-                      AnswerBtn={true}
-                    />
-                  );
-                })}
+              {Questions?.length > 0 ? (
+                Questions.map(item => {
+                  <Question key={item.question.id} question={item.question} answers={item.answers} AnswerBtn={true} />;
+                })
+              ) : (
+                <NoDataMessage text="Question to show..." />
+              )}
             </div>
           </Col>
           <Col xs={3} className="right-column">
             <h2 className="heading-main">Followed Topics</h2>
-            {following &&
-              following.map((topic) => {
-                return (
-                  <TopicCard
-                    key={topic.id}
-                    topic={topic}
-                    handleFollowUnfollowBtn={handleFollowUnfollowBtn}
-                    left={false}
-                  />
-                );
-              })}
+            {following?.length > 0 ? (
+              following.map(topic => {
+                <TopicCard
+                  key={topic.id}
+                  topic={topic}
+                  handleFollowUnfollowBtn={handleFollowUnfollowBtn}
+                  left={false}
+                  NoFollowButton={true}
+                />;
+              })
+            ) : (
+              <NoDataMessage text="Followed Topics" />
+            )}
           </Col>
         </Row>
       </Container>

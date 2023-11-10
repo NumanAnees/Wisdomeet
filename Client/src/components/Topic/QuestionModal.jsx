@@ -1,41 +1,47 @@
-import React, { useState } from "react";
-import { Modal } from "antd";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import axios from "axios";
-import { getToken } from "../../helpers/auth";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { Modal, Select } from "antd";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+
 import { useParams } from "react-router-dom";
+import { get, postFormData } from "../../helpers/axiosHelper";
+import { QuestionValidations } from "../../helpers/Validators";
+import { HTTP_STATUS_OK, HTTP_STATUS_CREATED } from "../../helpers/constants.js";
+
+const { Option } = Select;
 
 const QuestionModal = ({ getTopic }) => {
   const { id } = useParams();
   const [open, setOpen] = useState(false);
-  //validation...
-  const validationSchema = Yup.object().shape({
-    text: Yup.string()
-      .min(3, "Question must be at least 3 characters long")
-      .required("Title is required"),
-  });
+  const [topics, setTopics] = useState([]);
+  const [selectedTopics, setSelectedTopics] = useState([]);
+  const BASE_URL = process.env.REACT_APP_BASE_API;
+
+  useEffect(() => {
+    async function fetchTopics() {
+      try {
+        const response = await get(`${BASE_URL}/topics/topics`);
+        if (response.status === HTTP_STATUS_OK) {
+          setTopics(response.data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchTopics();
+  }, [BASE_URL]);
 
   const handleSubmit = async (values, { resetForm }) => {
-    const authToken = getToken();
     try {
-      const formData = new FormData();
-      formData.append("text", values.text);
+      const response = await postFormData(`${BASE_URL}/questions/${id}`, {
+        text: values.text,
+        topicIds: values.topicIds,
+      });
 
-      const response = await axios.post(
-        `http://localhost:8000/api/questions/${id}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      if (response.status === 201 || response.status === 200) {
+      if (response.status === HTTP_STATUS_CREATED || response.status === HTTP_STATUS_OK) {
         resetForm();
+        resetFormFields();
         setOpen(false);
         getTopic();
         toast.success("Question added successfully!");
@@ -44,6 +50,9 @@ const QuestionModal = ({ getTopic }) => {
       console.error(error);
       toast.error("Failed to add question!");
     }
+  };
+  const resetFormFields = () => {
+    setSelectedTopics([]);
   };
 
   return (
@@ -59,30 +68,44 @@ const QuestionModal = ({ getTopic }) => {
         footer={null}
         className="custom-modal"
         width={1300}
-        onCancel={() => setOpen(false)}
+        onCancel={() => {
+          resetFormFields();
+          setOpen(false);
+        }}
       >
         <Formik
           initialValues={{
             text: "",
+            topicIds: [],
           }}
-          validationSchema={validationSchema}
+          validationSchema={QuestionValidations}
           onSubmit={handleSubmit}
         >
           {({ setFieldValue }) => (
             <Form>
               <div className="mb-3">
-                <Field
-                  as="textarea"
-                  name="text"
-                  className="form-control"
-                  placeholder="Your Answer"
-                  rows={6} // number of rows needed to display
-                />
-                <ErrorMessage
-                  name="text"
-                  component="div"
-                  className="text-danger"
-                />
+                <Select
+                  name="topicIds"
+                  placeholder="Select Topics"
+                  mode="multiple"
+                  onChange={selectedValues => {
+                    setFieldValue("topicIds", selectedValues);
+                    setSelectedTopics(selectedValues);
+                  }}
+                  className="w-100"
+                  value={selectedTopics}
+                >
+                  {topics.map(topic => (
+                    <Option key={topic.id} value={topic.id}>
+                      {topic.title}
+                    </Option>
+                  ))}
+                </Select>
+                <ErrorMessage name="topicIds" component="div" className="text-danger" />
+              </div>
+              <div className="mb-3">
+                <Field as="textarea" name="text" className="form-control" placeholder="Your Answer" rows={6} />
+                <ErrorMessage name="text" component="div" className="text-danger" />
               </div>
               <button type="submit" className="btn btn-danger w-100">
                 Add Question

@@ -1,50 +1,29 @@
 import React, { useState, useEffect } from "react";
-import Layout from "../Layout";
-import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from "axios";
-import { getToken } from "../../helpers/auth";
 import { Tabs } from "antd";
+
+import { get } from "../../helpers/axiosHelper";
 import QuestionAnswerTab from "./QuestionAnswerTab";
 import TopicTab from "./TopicTab";
+import Layout from "../Layout";
 
-//import css
 import "./Profile.css";
 
 const Profile = () => {
-  const { id } = useParams();
   const [user, setUser] = useState();
   const [Questions, setQuestions] = useState();
   const [Answers, setAnswers] = useState();
   const [topics, setTopics] = useState();
-
-  console.log("working", id);
+  const BASE_URL = process.env.REACT_APP_BASE_API;
 
   useEffect(() => {
     getUser();
   }, []);
 
   const getUser = async () => {
-    const authToken = getToken();
     try {
-      let request;
-      if (!id) {
-        request = await axios.get("http://localhost:8000/api/user/about", {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-      } else {
-        request = await axios.get(
-          `http://localhost:8000/api/user/about/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          }
-        );
-      }
-      console.log(request.data);
+      const request = await get(`${BASE_URL}/user/about`);
+
       const user = {
         id: request.data.id,
         name: request.data.name,
@@ -58,7 +37,6 @@ const Profile = () => {
       setTopics(request.data.followedTopics);
       setUser(user);
     } catch (error) {
-      console.log(error);
       toast.error(error.message);
     }
   };
@@ -80,7 +58,7 @@ const Profile = () => {
           <h5>Asked Questions</h5>
         </div>
       ),
-      children: <QuestionAnswerTab Questions={Questions} />,
+      children: <QuestionAnswerTab isOwner={true} isQuestionOwner={true} Questions={Questions} loadData={getUser} />,
     },
     {
       key: "3",
@@ -89,20 +67,15 @@ const Profile = () => {
           <h5>Posted Answers</h5>
         </div>
       ),
-      children: <QuestionAnswerTab Questions={Answers} />, //will use the same component...
+      children: <QuestionAnswerTab isAnswerOwner={true} Questions={Answers} loadData={getUser} />,
     },
   ];
-
   return (
     <Layout>
       <div className="container">
         <div className="user-main">
           <div className="user-image">
-            <img
-              src={user?.profilePic}
-              alt={user?.name}
-              className="user-image"
-            />
+            <img src={user?.profilePic} alt={user?.name} className="user-image" />
           </div>
           <div className="user-content">
             <div className="user-title">

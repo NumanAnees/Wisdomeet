@@ -12,10 +12,13 @@ module.exports = function (sequelize, Sequelize) {
       userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        required: true,
       },
       entityType: {
         type: DataTypes.STRING,
         allowNull: false,
+        required: true,
+
         validate: {
           isIn: [["question", "answer"]],
         },
@@ -24,10 +27,13 @@ module.exports = function (sequelize, Sequelize) {
         type: DataTypes.INTEGER,
         defaultValue: null,
         allowNull: true,
+        required: true,
       },
       answerId: {
         type: DataTypes.INTEGER,
         allowNull: true,
+        required: true,
+
         defaultValue: null,
       },
     },
@@ -44,11 +50,13 @@ module.exports = function (sequelize, Sequelize) {
       foreignKey: "questionId",
       constraints: false,
       scope: { entityType: "question" },
+      onDelete: "CASCADE",
     });
     Like.belongsTo(models.Answer, {
       foreignKey: "answerId",
       constraints: false,
       scope: { entityType: "answer" },
+      onDelete: "CASCADE",
     });
   };
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+
 import Layout from "./Layout";
 
 const Error = () => {
@@ -8,7 +9,6 @@ const Error = () => {
   const goBack = () => {
     Navigate(-1);
   };
-
   return (
     <Layout>
       <div className="login-section d-flex justify-content-center align-items-center">

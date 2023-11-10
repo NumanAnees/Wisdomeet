@@ -37,3 +37,23 @@
   text-decoration: none !important;
   color: #b92b27;
 }
+.question-card-buttons {
+  position: absolute;
+  right: 20px;
+}
+.edit-button {
+  color: white;
+  background-color: rgb(107, 157, 26);
+  margin: 2px;
+}
+.delete-button {
+  color: white;
+  background-color: #b92b27;
+  margin: 2px;
+}
+.edit-button:hover {
+  color: white !important;
+}
+.delete-button:hover {
+  color: white !important;
+}

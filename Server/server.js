@@ -1,8 +1,6 @@
-//Module imports
 require("dotenv").config();
 require("./src/config/passport");
 
-//Libraries imports
 const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
@@ -11,23 +9,19 @@ const passport = require("passport");
 const fileUpload = require("express-fileupload");
 var cors = require("cors");
 
-//Initializing express
 const app = express();
 
-//Express Middlewares
 app.use(cors());
 app.use(bodyParser.json());
 app.use(morgan("dev"));
 app.use(passport.initialize());
 app.use(fileUpload({ useTempFiles: true }));
 
-//App routes
 const AppRoutes = require("./src/app/routes");
 app.use("/api", AppRoutes);
 
-//Testing route
 app.get("/", (req, res) => {
-  res.send({ message: "Hello World" });
+  res.send({ message: "Hello World!" });
 });
 
 app.listen(process.env.PORT, async () => {

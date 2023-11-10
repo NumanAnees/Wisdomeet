@@ -1,16 +1,15 @@
 const cloudinary = require("../helpers/cloudinary.js");
 
-const {
-  User,
-  Topic,
-  Question,
-  UserFollows,
-  Like,
-  Answer,
-  Dislike,
-} = require("../../../models");
+const { User, Topic, Question, UserFollows, Like, Answer, Dislike } = require("../../../models/index.js");
 
-//------------------------------Create a new topic ------------------------------
+const {
+  HTTP_STATUS_OK,
+  HTTP_STATUS_CREATED,
+  HTTP_STATUS_SERVER_ERROR,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_NOT_ALLOWED,
+} = require("../helpers/constants.js");
+
 exports.create = async (req, res) => {
   const userId = req.user.id;
   try {
@@ -24,35 +23,27 @@ exports.create = async (req, res) => {
     }
 
     const imagePath = req.files.picture; //name on postman
-    cloudinary.uploader.upload(
-      imagePath.tempFilePath,
-      async (error, result) => {
-        if (error) {
-          console.error(error);
-        } else {
-          //if everything is ok
-          console.log(result);
-          const topicPicture = result.url;
-          // Create a new topic
-          const newTopic = await Topic.create({
-            title: title,
-            description: description,
-            createdBy: userId,
-            topicPicture: topicPicture,
-          });
+    cloudinary.uploader.upload(imagePath.tempFilePath, async (error, result) => {
+      if (error) {
+        console.error(error);
+      } else {
+        const topicPicture = result.url;
+        const newTopic = await Topic.create({
+          title: title,
+          description: description,
+          createdBy: userId,
+          topicPicture: topicPicture,
+        });
 
-          // Return topic object and token
-          res.status(201).json({ message: "Success", topic: newTopic });
-        }
+        res.status(HTTP_STATUS_CREATED).json({ message: "Success", topic: newTopic });
       }
-    );
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Topic creation failed." });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ message: "Topic creation failed." });
   }
 };
 
-//---------------------------------------------Update topic --------------------------------
 exports.update = async (req, res) => {
   try {
     const { title, description } = req.body;
@@ -61,31 +52,41 @@ exports.update = async (req, res) => {
     const topicToUpdate = await Topic.findByPk(topicId);
 
     if (!topicToUpdate) {
-      return res.status(404).json({ message: "Topic not found." });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ message: "Topic not found." });
     }
 
     if (topicToUpdate.createdBy !== req.user.id) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to update this topic." });
+      return res.status(HTTP_STATUS_NOT_ALLOWED).json({ message: "You are not authorized to update this topic." });
     }
 
-    // Update the topic
-    await topicToUpdate.update({
-      title: title,
-      description: description,
-    });
+    const imagePath = req?.files?.picture;
+    if (imagePath) {
+      cloudinary.uploader.upload(imagePath.tempFilePath, async (error, result) => {
+        if (error) {
+          console.error(error);
+        } else {
+          const topicPicture = result.url;
+          topicToUpdate.topicPicture = topicPicture;
+          topicToUpdate.title = title;
+          topicToUpdate.description = description;
 
-    res
-      .status(200)
-      .json({ message: "Topic updated successfully.", topic: topicToUpdate });
+          await topicToUpdate.save();
+          res.status(201).json({ message: "Success", topic: topicToUpdate });
+        }
+      });
+    } else {
+      topicToUpdate.title = title;
+      topicToUpdate.description = description;
+
+      await topicToUpdate.save();
+      res.status(HTTP_STATUS_CREATED).json({ message: "Success", topic: topicToUpdate });
+    }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Topic update failed." });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ message: "Topic update failed." });
   }
 };
 
-//---------------------------------------Delete Topic --------------------------------
 exports.deleteTopic = async (req, res) => {
   try {
     const topicId = req.params.id;
@@ -93,26 +94,21 @@ exports.deleteTopic = async (req, res) => {
     const topicToDelete = await Topic.findByPk(topicId);
 
     if (!topicToDelete) {
-      return res.status(404).json({ message: "Topic not found." });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ message: "Topic not found." });
     }
 
     if (topicToDelete.createdBy !== req.user.id) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to delete this topic." });
+      return res.status(HTTP_STATUS_NOT_ALLOWED).json({ message: "You are not authorized to delete this topic." });
     }
 
-    // Delete the topic
     await topicToDelete.destroy();
 
-    res.status(200).json({ message: "Topic deleted successfully." });
+    res.status(HTTP_STATUS_OK).json({ message: "Topic deleted successfully." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Topic deletion failed." });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ message: "Topic deletion failed." });
   }
 };
-
-//---------------------------------Follow a topic------------------------------
 
 exports.followOrUnfollowTopic = async (req, res) => {
   try {
@@ -121,7 +117,7 @@ exports.followOrUnfollowTopic = async (req, res) => {
 
     const topic = await Topic.findByPk(topicId);
     if (!topic) {
-      return res.status(404).json({ message: "Topic not found." });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ message: "Topic not found." });
     }
 
     const existingFollow = await UserFollows.findOne({
@@ -130,24 +126,19 @@ exports.followOrUnfollowTopic = async (req, res) => {
 
     if (existingFollow) {
       await existingFollow.destroy();
-      return res
-        .status(200)
-        .json({ message: "You have unfollowed this topic." });
+      return res.status(HTTP_STATUS_OK).json({ message: "You have unfollowed this topic." });
     } else {
       await UserFollows.create({
         userId: userId,
         topicId: topicId,
       });
-      return res
-        .status(201)
-        .json({ message: "You are now following this topic." });
+      return res.status(HTTP_STATUS_CREATED).json({ message: "You are now following this topic." });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to update follow status." });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ message: "Failed to update follow status." });
   }
 };
-//---------------------------------Follower count of a topic -------------------------------
 
 exports.getFollowCount = async (req, res) => {
   try {
@@ -157,14 +148,12 @@ exports.getFollowCount = async (req, res) => {
       where: { topicId: topicId },
     });
 
-    res.status(200).json({ followersCount: followersCount });
+    res.status(HTTP_STATUS_OK).json({ followersCount: followersCount });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to retrieve followers count." });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ message: "Failed to retrieve followers count." });
   }
 };
-
-//-------------------------------------------Get All topics user not following-----------------------------------
 
 exports.getAllTopics = async (req, res) => {
   try {
@@ -176,30 +165,35 @@ exports.getAllTopics = async (req, res) => {
       },
     });
 
-    const followedTopicIds = followedTopics.map(
-      (followedTopic) => followedTopic.topicId
-    );
+    const followedTopicIds = followedTopics.map(followedTopic => followedTopic.topicId);
 
-    const topicsNotFollowedByUser = allTopics.filter((topic) => {
+    const topicsNotFollowedByUser = allTopics.filter(topic => {
       return !followedTopicIds.includes(topic.id);
     });
 
     res.json(topicsNotFollowedByUser);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ error: "Internal server error" });
   }
 };
 
-//------------------------------------------Get single topic----------------------
 exports.getTopic = async (req, res) => {
   try {
     const topicId = req.params.id;
 
-    const topic = await Topic.findByPk(topicId);
+    const topic = await Topic.findByPk(topicId, {
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "name", "profilePic"],
+        },
+      ],
+    });
 
     if (!topic) {
-      return res.status(404).json({ message: "Topic not found." });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ message: "Topic not found." });
     }
 
     const isUserFollowed = await UserFollows.findOne({
@@ -251,17 +245,14 @@ exports.getTopic = async (req, res) => {
       ],
       attributes: ["id", "text"],
     });
+    questions.sort((a, b) => b.likes.length - a.likes.length);
 
-    const formattedQuestions = questions.map((question) => {
+    const formattedQuestions = questions.map(question => {
       const sortedAnswers = question.answers
-        .map((answer) => {
-          const isLikedAnswer = answer.likes.some(
-            (like) => like.userId == req.user.id
-          );
+        .map(answer => {
+          const isLikedAnswer = answer.likes.some(like => like.userId == req.user.id);
 
-          const isDislikedAnswer = answer.dislikes.some(
-            (dislike) => dislike.userId == req.user.id
-          );
+          const isDislikedAnswer = answer.dislikes.some(dislike => dislike.userId == req.user.id);
 
           return {
             id: answer.id,
@@ -278,13 +269,9 @@ exports.getTopic = async (req, res) => {
         .sort((a, b) => b.likes - a.likes)
         .slice(0, 2);
 
-      const isLikedQuestion = question.likes.some(
-        (like) => like.userId == req.user.id
-      );
+      const isLikedQuestion = question.likes.some(like => like.userId == req.user.id);
 
-      const isDislikedQuestion = question.dislikes.some(
-        (dislike) => dislike.userId == req.user.id
-      );
+      const isDislikedQuestion = question.dislikes.some(dislike => dislike.userId == req.user.id);
 
       return {
         question: {
@@ -301,17 +288,18 @@ exports.getTopic = async (req, res) => {
         answers: sortedAnswers,
       };
     });
-
-    res
-      .status(200)
-      .json({ Topic: topic, Questions: formattedQuestions, isFollowed });
+    res.status(HTTP_STATUS_OK).json({
+      Topic: topic,
+      Questions: formattedQuestions,
+      isFollowed,
+      isOwner: topic && topic?.user.id == req.user.id,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Something went wrong." });
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ message: "Something went wrong." });
   }
 };
 
-//------------------------------------_All topics logged in user following--------------------------------
 exports.getFollowedTopics = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -327,15 +315,25 @@ exports.getFollowedTopics = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(HTTP_STATUS_NOT_FOUND).json({ message: "User not found" });
     }
 
     const followedTopics = user.followedTopics;
-    return res.status(200).json(followedTopics);
+    return res.status(HTTP_STATUS_OK).json(followedTopics);
   } catch (error) {
     console.error(error);
-    return res
-      .status(500)
-      .json({ error: "Internal server error, Cannot find topics" });
+    return res.status(HTTP_STATUS_SERVER_ERROR).json({ error: "Internal server error, Cannot find topics" });
+  }
+};
+
+exports.getEveryTopic = async (req, res) => {
+  try {
+    const allTopics = await Topic.findAll({
+      attributes: ["id", "title"],
+    });
+    res.status(HTTP_STATUS_OK).json(allTopics);
+  } catch (error) {
+    console.error(error);
+    res.status(HTTP_STATUS_SERVER_ERROR).json({ message: "Something went wrong." });
   }
 };

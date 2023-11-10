@@ -1,0 +1,44 @@
+.user-image {
+  height: 360px;
+  width: 360px;
+  border-radius: 50%;
+  border: 1px solid #b92b27;
+}
+
+.user-main {
+  display: flex;
+}
+.user-content {
+  margin-left: 3rem;
+  border-radius: 2%;
+  width: 100%;
+  background-color: white;
+  padding: 5px 5%;
+}
+.user-title {
+  margin-top: 2rem;
+  color: #b92b27;
+}
+.user-information {
+  margin-top: 2rem;
+}
+.user-followers {
+  margin-top: 2rem;
+}
+.user-follow-btn {
+  margin-top: 2rem;
+}
+.user-questions-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tabs {
+  margin-top: 4rem;
+}
+.user-span {
+  color: #b92b27;
+  font-weight: 500;
+  font-size: 18px;
+  margin-right: 1.5rem;
+}

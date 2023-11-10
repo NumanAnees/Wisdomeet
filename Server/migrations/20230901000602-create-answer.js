@@ -10,15 +10,26 @@ module.exports = {
       },
       text: {
         type: Sequelize.STRING,
+        required: true,
         allowNull: false,
       },
       userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        onDelete: "CASCADE",
+        references: {
+          model: "Users",
+          key: "id",
+        },
       },
       questionId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        onDelete: "CASCADE",
+        references: {
+          model: "Questions",
+          key: "id",
+        },
       },
     });
   },

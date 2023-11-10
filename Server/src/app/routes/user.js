@@ -1,12 +1,6 @@
 const express = require("express");
 const router = express.Router();
-//impoort middlewares
-const {
-  requireSignin,
-  authMiddleware,
-  adminMiddleware,
-} = require("../helpers/auth");
-//import controllers
+const { requireSignin, authMiddleware, adminMiddleware } = require("../helpers/auth");
 const {
   register,
   login,
@@ -16,45 +10,21 @@ const {
   about,
   viewProfile,
   search,
+  getAllUsers,
+  confirmation,
 } = require("../controllers/user");
-// import validator
-const {
-  userUpdateValidator,
-  userRegisterValidator,
-  userLoginValidator,
-} = require("../validators/user");
+const { userUpdateValidator, userRegisterValidator, userLoginValidator } = require("../validators/user");
 const { runValidation } = require("../validators");
 
-//----------------------------Routes----------------------------
-// User Registration
 router.post("/register", userRegisterValidator, runValidation, register);
-
-// User Login
 router.post("/login", userLoginValidator, runValidation, login);
-
-// User Update
-router.put(
-  "/",
-  requireSignin,
-  authMiddleware,
-  userUpdateValidator,
-  runValidation,
-  update
-);
-
-// User Deletion by admin
+router.put("/", requireSignin, authMiddleware, userUpdateValidator, runValidation, update);
+router.get("/confirmation/:token", confirmation);
 router.delete("/:id", requireSignin, adminMiddleware, deleteUser);
-
-// User's Questions
 router.get("/questions", requireSignin, authMiddleware, getUserQuestions);
-
-// User's Profile
 router.get("/about", requireSignin, authMiddleware, about);
-
-// View User's Profile
 router.get("/about/:id", viewProfile);
-
-// Search Users
 router.get("/", requireSignin, authMiddleware, search);
+router.get("/users", getAllUsers);
 
 module.exports = router;

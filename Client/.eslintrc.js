@@ -23,5 +23,7 @@ module.exports = {
   rules: {
     "react/prop-types": "off", // Turn off prop validation
     "react/react-in-jsx-scope": "off", // Turn off 'React' in
+    // "no-unused-vars": "warn", // or 'error' for strict checking
+    // "no-unused-modules": "warn", // or 'error'
   },
 };

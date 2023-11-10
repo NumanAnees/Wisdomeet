@@ -12,14 +12,21 @@ module.exports = function (sequelize, Sequelize) {
       text: {
         type: DataTypes.STRING,
         allowNull: false,
+        required: true,
+        validate: {
+          notEmpty: true,
+          len: [3, 100],
+        },
       },
       userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        required: true,
       },
       questionId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        required: true,
       },
     },
     {
@@ -29,24 +36,27 @@ module.exports = function (sequelize, Sequelize) {
   Answer.associate = (models) => {
     Answer.belongsTo(models.User, {
       foreignKey: "userId",
-      as: "user", // Add this alias
+      as: "user",
     });
     Answer.belongsTo(models.Question, {
       foreignKey: "questionId",
-      as: "question", // Add this alias
+      as: "question",
+      onDelete: "CASCADE",
     });
 
     Answer.hasMany(models.Like, {
       foreignKey: "answerId",
       constraints: false,
       scope: { entityType: "answer" },
-      as: "likes", // Add alias "likes" here
+      as: "likes",
+      onDelete: "CASCADE",
     });
     Answer.hasMany(models.Dislike, {
       foreignKey: "answerId",
       constraints: false,
       scope: { entityType: "answer" },
-      as: "dislikes", // Add alias "dislikes" here
+      as: "dislikes",
+      onDelete: "CASCADE",
     });
   };
 

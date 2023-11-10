@@ -13,6 +13,7 @@ module.exports = function (sequelize, Sequelize) {
       email: {
         type: DataTypes.STRING,
         allowNull: false,
+        required: true,
         unique: true,
         validate: {
           isEmail: true,
@@ -21,22 +22,24 @@ module.exports = function (sequelize, Sequelize) {
       password: {
         type: DataTypes.STRING,
         allowNull: false,
+        required: true,
         validate: {
           notEmpty: true,
-          len: [6, 255], // Minimum length of 6 characters
         },
       },
       name: {
         type: DataTypes.STRING,
         allowNull: false,
+        required: true,
         validate: {
           notEmpty: true,
-          len: [3, 255],
+          len: [3, 20],
         },
       },
       age: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        required: true,
         validate: {
           isInt: true,
           min: 1,
@@ -46,14 +49,21 @@ module.exports = function (sequelize, Sequelize) {
       gender: {
         type: DataTypes.STRING,
         allowNull: false,
+        required: true,
         validate: {
           notEmpty: true,
           isIn: [["male", "female"]],
         },
       },
+      isVerified: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
+      },
       profilePic: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
+        required: true,
       },
       role: {
         type: DataTypes.STRING,
@@ -70,10 +80,11 @@ module.exports = function (sequelize, Sequelize) {
     }
   );
 
-  User.associate = (models) => {
+  User.associate = models => {
     User.hasOne(models.Topic, {
       foreignKey: "createdBy",
-      as: "createdTopics", // Add this alias
+      as: "createdTopics",
+      onDelete: "CASCADE",
     });
     User.belongsToMany(models.Topic, {
       through: models.UserFollows,
@@ -82,28 +93,35 @@ module.exports = function (sequelize, Sequelize) {
     });
     User.hasMany(models.Question, {
       foreignKey: "userId",
-      as: "questions", // Add this alias
+      as: "questions",
+      onDelete: "CASCADE",
+      cascade: true,
     });
     User.hasMany(models.Like, {
       foreignKey: "userId",
-      as: "likes", // Add this alias
+      as: "likes",
+      onDelete: "CASCADE",
+      cascade: true,
     });
     User.hasMany(models.Answer, {
       foreignKey: "userId",
-      as: "answers", // Add this alias
+      as: "answers",
+      onDelete: "CASCADE",
+      cascade: true,
     });
     User.hasMany(models.Dislike, {
       foreignKey: "userId",
-      as: "dislikes", // Add this alias
+      as: "dislikes",
+      onDelete: "CASCADE",
+      cascade: true,
     });
   };
 
-  // Hook to hash the password before saving
-  User.beforeCreate(async (user) => {
+  User.beforeCreate(async user => {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     user.password = hashedPassword;
   });
-  User.beforeUpdate(async (user) => {
+  User.beforeUpdate(async user => {
     if (user.changed("password")) {
       const hashedPassword = await bcrypt.hash(user.password, 10);
       user.password = hashedPassword;

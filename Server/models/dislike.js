@@ -12,10 +12,12 @@ module.exports = function (sequelize, Sequelize) {
       userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        required: true,
       },
       entityType: {
         type: DataTypes.STRING,
         allowNull: false,
+        required: true,
         validate: {
           isIn: [["question", "answer"]],
         },
@@ -42,11 +44,13 @@ module.exports = function (sequelize, Sequelize) {
 
     Dislike.belongsTo(models.Question, {
       foreignKey: "questionId",
+      onDelete: "CASCADE",
       constraints: false,
       scope: { entityType: "question" },
     });
     Dislike.belongsTo(models.Answer, {
       foreignKey: "answerId",
+      onDelete: "CASCADE",
       constraints: false,
       scope: { entityType: "answer" },
     });

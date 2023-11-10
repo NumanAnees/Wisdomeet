@@ -10,23 +10,35 @@ module.exports = (sequelize, DataTypes) => {
       title: {
         type: DataTypes.STRING,
         allowNull: false,
+        required: true,
+        validate: {
+          notEmpty: true,
+          len: [3, 100],
+        },
       },
       description: {
         type: DataTypes.STRING,
         allowNull: false,
+        required: true,
+        validate: {
+          notEmpty: true,
+          len: [3, 100],
+        },
       },
       topicPicture: {
         type: DataTypes.STRING,
+        allowNull: false,
+        required: true,
       },
       createdBy: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        required: true,
       },
     },
     { timestamps: false }
   );
   Topic.associate = function (models) {
-    // associations can be defined here
     Topic.belongsTo(models.User, {
       foreignKey: "createdBy",
       as: "user",
@@ -40,6 +52,7 @@ module.exports = (sequelize, DataTypes) => {
     Topic.hasMany(models.Question, {
       foreignKey: "topicId",
       as: "questions",
+      onDelete: "CASCADE",
     });
   };
   return Topic;
