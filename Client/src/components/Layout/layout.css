@@ -1,0 +1,44 @@
+.logo-main {
+  color: #b92b27 !important;
+  font-size: 33px !important;
+  font-weight: 500 !important;
+}
+.image-container {
+  height: 50px !important;
+  width: 50px !important;
+}
+.nav-image {
+  border-radius: 50%;
+}
+
+.navbar-top {
+  background-color: white;
+  border-bottom: 0.5px solid rgba(205, 205, 205, 0.559);
+  box-shadow: 0px 0px 23px 6px rgba(205, 205, 205, 0.559);
+  position: fixed !important;
+  top: 0 !important;
+  width: 100% !important;
+  z-index: 10 !important;
+}
+
+.nav-btn {
+  background-color: #b92b27;
+  color: white;
+  border: none;
+  box-shadow: none;
+  padding: 0.4rem 2rem;
+  border-radius: 1000px;
+  font-size: 16px;
+  font-weight: 500;
+}
+.nav-btn:hover {
+  background-color: #7d1c19;
+}
+
+.custom-modal .ant-modal-header .ant-modal-title {
+  color: #ff0000;
+}
+.no-link-style {
+  text-decoration: none !important;
+  outline: none !important;
+}

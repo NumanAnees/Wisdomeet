@@ -1,0 +1,54 @@
+.answer-card-main {
+  border-left: 4px solid #e2e2e2;
+  padding-left: 24px;
+}
+
+.answer-card-container {
+  display: flex;
+  align-items: center;
+}
+.answer-card-avatar {
+  margin-right: 10px;
+}
+.answer-card-name {
+  margin: 0px;
+  font-size: 16px;
+}
+.answer-card-info {
+  color: gray;
+}
+.answer-card-body {
+  display: flex;
+  align-items: center;
+}
+.answer-card-parra {
+  margin-top: 10px;
+}
+.ant-btn-primary {
+  margin: 0px !important;
+  width: max-content !important;
+  margin-right: 6px !important;
+}
+.btn-style {
+  margin-right: 6px;
+}
+.ant-list-item {
+  margin-top: 0.7rem;
+  margin-left: 1.5rem;
+}
+.edit-button {
+  color: white;
+  background-color: rgb(107, 157, 26);
+  margin: 2px;
+}
+.delete-button {
+  color: white;
+  background-color: #b92b27;
+  margin: 2px;
+}
+.edit-button:hover {
+  color: white !important;
+}
+.delete-button:hover {
+  color: white !important;
+}

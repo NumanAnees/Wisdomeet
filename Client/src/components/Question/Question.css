@@ -1,0 +1,59 @@
+.question-card {
+  margin-bottom: 20px;
+}
+.question-card-main {
+  display: flex;
+  align-items: center;
+}
+.question-card-avatar {
+  margin-right: 10px;
+}
+.question-card-username {
+  margin: 0px;
+  font-size: 18px;
+}
+.question-card-info {
+  color: gray;
+}
+.question-card-body {
+  display: flex;
+  align-items: center;
+}
+.question-card-parra {
+  margin-top: 10px;
+}
+
+.ant-btn-primary {
+  margin: 0px !important;
+  width: max-content !important;
+  margin-right: 6px !important;
+}
+.btn-style {
+  margin-right: 6px;
+}
+
+.username-link {
+  outline: none;
+  text-decoration: none !important;
+  color: #b92b27;
+}
+.question-card-buttons {
+  position: absolute;
+  right: 20px;
+}
+.edit-button {
+  color: white;
+  background-color: rgb(107, 157, 26);
+  margin: 2px;
+}
+.delete-button {
+  color: white;
+  background-color: #b92b27;
+  margin: 2px;
+}
+.edit-button:hover {
+  color: white !important;
+}
+.delete-button:hover {
+  color: white !important;
+}

@@ -1,0 +1,74 @@
+.topic-image {
+  height: 360px;
+  width: 360px;
+  border-radius: 50%;
+  border: 1px solid #b92b27;
+}
+
+.topic-main {
+  display: flex;
+}
+.topic-content {
+  margin-left: 3rem;
+  border-radius: 2%;
+  width: 100%;
+  background-color: white;
+  padding: 5px 5%;
+  word-wrap: break-word;
+  overflow-x: hidden;
+}
+.topic-title {
+  margin-top: 2rem;
+  color: #b92b27;
+}
+.topic-description {
+  margin-top: 2rem;
+}
+.topic-followers {
+  margin-top: 2rem;
+}
+.topic-follow-btn {
+  margin-top: 2rem;
+  display: flex;
+}
+.topic-questions {
+  margin-top: 4rem;
+}
+.topic-questions-title {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+.topic-span {
+  color: #b92b27;
+  font-weight: 500;
+  font-size: 18px;
+  margin-right: 1.5rem;
+}
+.question-title {
+  color: #b92b27;
+  font-weight: 600;
+  font-size: 24px;
+}
+.topic-questions-content {
+  margin-bottom: 4rem;
+}
+.edit-button {
+  color: white;
+  background-color: rgb(107, 157, 26);
+  margin: 2px;
+}
+.delete-button {
+  color: white;
+  background-color: #b92b27;
+  margin: 2px;
+}
+.edit-button:hover {
+  color: white !important;
+}
+.delete-button:hover {
+  color: white !important;
+}
+.topic-card-buttons {
+  position: static;
+}
